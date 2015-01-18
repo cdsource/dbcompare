@@ -1,20 +1,18 @@
 /** 
- * @author å´å¹³ç¦ 
- * E-mail:wupf@asiainfo.com 
- * @version åˆ›å»ºæ—¶é—´ï¼š2015å¹´1æœˆ15æ—¥ ä¸‹åˆ4:00:30 
- * ç±»è¯´æ˜ 
+ * @author ÎâÆ½¸£ 
+ * E-mail:wupf@asiainfo-linkage.com 
+ * @version ´´½¨Ê±¼ä£º2015Äê1ÔÂ15ÈÕ ÏÂÎç4:00:30 
+ * ÀàËµÃ÷ 
  */
 
 package org.jpf.ci.dbs.compare;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpf.ci.dbs.DbUtils;
@@ -27,19 +25,9 @@ public class CompareTable
 			new StringBuffer(), new StringBuffer(), new StringBuffer(),
 			new StringBuffer() };
 
-	public Connection getTransaction_product() throws Exception
-	{
-		String driver = "com.mysql.jdbc.Driver";
-		Class.forName(driver).newInstance();
-		return DriverManager.getConnection(URL1, dbuser1, dbpass1);
-	}
+	private String sSql = " select TABLE_NAME,COLUMN_NAME,IS_NULLABLE,COLUMN_TYPE from information_schema.COLUMNS where table_schema ='ad' order By table_name,column_name";
+	
 
-	public Connection getTransaction_develop() throws Exception
-	{
-		String driver = "com.mysql.jdbc.Driver";
-		Class.forName(driver).newInstance();
-		return DriverManager.getConnection(URL2, dbuser2, dbpass2);
-	}
 
 	public static void main(String[] args) throws Exception
 	{
@@ -50,8 +38,8 @@ public class CompareTable
     {
     	try
 		{
-    		compareTables(); // æ¯”è¾ƒæ•°æ®åº“
-    		CompareUtil.writeFile(sb); // å†™å…¥æ–‡ä»¶
+    		compareTables(); // ±È½ÏÊı¾İ¿â
+    		CompareUtil.writeFile(sb); // Ğ´ÈëÎÄ¼ş
 		} catch (Exception ex)
 		{
 			// TODO: handle exception
@@ -67,61 +55,61 @@ public class CompareTable
 		try
 		{
 
-			// ç”Ÿäº§æ•°æ®åº“è¿æ¥
-			trans_product = getTransaction_product();
+			// Éú²úÊı¾İ¿âÁ¬½Ó
+			trans_product = DbInfo.GetInstance().getTransaction_product();
 			Map<String, Table> map_product = getTables(trans_product);
-			// å¼€å‘æ•°æ®åº“è¿æ¥
-			trans_develop = getTransaction_develop();
+			// ¿ª·¢Êı¾İ¿âÁ¬½Ó
+			trans_develop =  DbInfo.GetInstance().getTransaction_develop();
 			Map<String, Table> map_develop = getTables(trans_develop);
-			// éå†å¼€å‘åº“Map
+			// ±éÀú¿ª·¢¿âMap
 			for (Iterator iter_table = map_develop.keySet().iterator(); iter_table.hasNext();)
 			{
 				String key_table = (String) iter_table.next();
-				Table table_develop = map_develop.get(key_table);// è·å¾—å¼€å‘åº“ä¸­çš„è¡¨
-				Table table_product = map_product.get(key_table);// å°è¯•ä»ç”Ÿäº§åº“ä¸­è·å¾—åŒåè¡¨
+				Table table_develop = map_develop.get(key_table);// »ñµÃ¿ª·¢¿âÖĞµÄ±í
+				Table table_product = map_product.get(key_table);// ³¢ÊÔ´ÓÉú²ú¿âÖĞ»ñµÃÍ¬Ãû±í
 				if (table_product == null)
-				{ // å¦‚æœè·å¾—è¡¨ä¸ºç©ºï¼Œè¯´æ˜å¼€å‘å­˜åœ¨ï¼Œç”Ÿäº§ä¸å­˜åœ¨
+				{ // Èç¹û»ñµÃ±íÎª¿Õ£¬ËµÃ÷¿ª·¢´æÔÚ£¬Éú²ú²»´æÔÚ
 					CompareUtil.append(table_develop, null, 2,sb);
 				} else
-				{ // è¡¨ç›¸åŒï¼Œåˆ¤æ–­å­—æ®µã€å­—æ®µç±»å‹ã€å­—æ®µé•¿åº¦
+				{ // ±íÏàÍ¬£¬ÅĞ¶Ï×Ö¶Î¡¢×Ö¶ÎÀàĞÍ¡¢×Ö¶Î³¤¶È
 					for (Iterator iter_column = table_develop.columns.keySet().iterator(); iter_column.hasNext();)
 					{
 						String key_column = (String) iter_column.next();
-						Column column_develop = (Column) table_develop.columns.get(key_column);// è·å¾—å¼€å‘åº“ä¸­çš„åˆ—
-						Column column_product = (Column) table_product.columns.get(key_column);// å°è¯•ä»ç”Ÿäº§åº“ä¸­è·å¾—åŒååˆ—
+						Column column_develop = (Column) table_develop.columns.get(key_column);// »ñµÃ¿ª·¢¿âÖĞµÄÁĞ
+						Column column_product = (Column) table_product.columns.get(key_column);// ³¢ÊÔ´ÓÉú²ú¿âÖĞ»ñµÃÍ¬ÃûÁĞ
 						if (column_product == null)
-						{// å¦‚æœåˆ—åä¸ºç©ºï¼Œè¯´æ˜å¼€å‘å­˜åœ¨ï¼Œç”Ÿäº§ä¸å­˜åœ¨
+						{// Èç¹ûÁĞÃûÎª¿Õ£¬ËµÃ÷¿ª·¢´æÔÚ£¬Éú²ú²»´æÔÚ
 							CompareUtil.append(table_develop, column_develop, 4,sb);
 						} else
-						{// è¯´æ˜ä¸¤è€…éƒ½å­˜åœ¨
-							if (!column_develop.getDataType().equals(column_product.getDataType()))// å­—æ®µç±»å‹ä¸ä¸€è‡´
+						{// ËµÃ÷Á½Õß¶¼´æÔÚ
+							if (!column_develop.getDataType().equals(column_product.getDataType()))// ×Ö¶ÎÀàĞÍ²»Ò»ÖÂ
 								CompareUtil.append(table_develop, column_develop, 5,sb);
-							if (column_develop.getNullable().equals(column_product.getNullable()))// å­—æ®µé•¿åº¦ä¸ä¸€è‡´
+							if (column_develop.getNullable().equals(column_product.getNullable()))// ×Ö¶Î³¤¶È²»Ò»ÖÂ
 								CompareUtil.append(table_develop, column_develop, 6,sb);
 						}
 					}
 				}
 			}
-			// éå†ç”Ÿäº§åº“Map
+			// ±éÀúÉú²ú¿âMap
 			for (Iterator iter_table = map_product.keySet().iterator(); iter_table
 					.hasNext();)
 			{
 				String key_table = (String) iter_table.next();
-				Table table_product = map_product.get(key_table);// å°è¯•ä»ç”Ÿäº§åº“ä¸­è·å¾—åŒåè¡¨
-				Table table_develop = map_develop.get(key_table);// è·å¾—å¼€å‘åº“ä¸­çš„è¡¨
+				Table table_product = map_product.get(key_table);// ³¢ÊÔ´ÓÉú²ú¿âÖĞ»ñµÃÍ¬Ãû±í
+				Table table_develop = map_develop.get(key_table);// »ñµÃ¿ª·¢¿âÖĞµÄ±í
 				if (table_develop == null)
-				{ // å¦‚æœè·å¾—è¡¨ä¸ºç©ºï¼Œè¯´æ˜å¼€å‘å­˜åœ¨ï¼Œç”Ÿäº§ä¸å­˜åœ¨
+				{ // Èç¹û»ñµÃ±íÎª¿Õ£¬ËµÃ÷¿ª·¢´æÔÚ£¬Éú²ú²»´æÔÚ
 					CompareUtil.append(table_product, null, 1,sb);
 				} else
-				{ // è¡¨ç›¸åŒï¼Œåˆ¤æ–­å­—æ®µã€å­—æ®µç±»å‹ã€å­—æ®µé•¿åº¦
+				{ // ±íÏàÍ¬£¬ÅĞ¶Ï×Ö¶Î¡¢×Ö¶ÎÀàĞÍ¡¢×Ö¶Î³¤¶È
 					for (Iterator iter_column = table_product.columns
 							.keySet().iterator(); iter_column.hasNext();)
 					{
 						String key_column = (String) iter_column.next();
-						Column column_product = (Column) table_product.columns.get(key_column);// è·å¾—ç”Ÿäº§åº“ä¸­çš„åˆ—
-						Column column_develop = (Column) table_develop.columns.get(key_column);// å°è¯•ä»å¼€å‘åº“ä¸­è·å¾—åŒååˆ—
+						Column column_product = (Column) table_product.columns.get(key_column);// »ñµÃÉú²ú¿âÖĞµÄÁĞ
+						Column column_develop = (Column) table_develop.columns.get(key_column);// ³¢ÊÔ´Ó¿ª·¢¿âÖĞ»ñµÃÍ¬ÃûÁĞ
 						if (column_develop == null)
-						{// å¦‚æœåˆ—åä¸ºç©ºï¼Œè¯´æ˜ç”Ÿäº§å­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨
+						{// Èç¹ûÁĞÃûÎª¿Õ£¬ËµÃ÷Éú²ú´æÔÚ£¬¿ª·¢²»´æÔÚ
 							CompareUtil.append(table_product, column_product, 3,sb);
 						}
 					}
@@ -140,7 +128,6 @@ public class CompareTable
 
 	public Map<String, Table> getTables(Connection transaction) throws Exception
 	{
-		String sSql = " select TABLE_NAME,COLUMN_NAME,IS_NULLABLE,COLUMN_TYPE from information_schema.COLUMNS where table_schema ='ad' order By table_name,column_name";
 		Statement stmt = transaction.createStatement();
 		logger.info(sSql);
 		ResultSet rs = stmt.executeQuery(sSql);
@@ -150,7 +137,7 @@ public class CompareTable
 		while (rs.next())
 		{
 			if (!tableName.equals(rs.getString("table_name")))
-			{// ä¸€å¼ æ–°è¡¨
+			{// Ò»ÕÅĞÂ±í
 				tableName = rs.getString("table_name");
 				table = new Table(tableName);
 				Column column = new Column(rs.getString("Column_Name"),
@@ -158,7 +145,7 @@ public class CompareTable
 				table.columns.put(column.getColumnName(), column);
 				map.put(rs.getString("table_name"), table);
 			} else
-			{// å·²å­˜åœ¨çš„è¡¨ï¼Œå¢åŠ å­—æ®µ
+			{// ÒÑ´æÔÚµÄ±í£¬Ôö¼Ó×Ö¶Î
 				Column column = new Column(rs.getString("Column_Name"),
 						rs.getString("COLUMN_TYPE"), rs.getString("IS_NULLABLE"));
 				table.columns.put(column.getColumnName(), column);
