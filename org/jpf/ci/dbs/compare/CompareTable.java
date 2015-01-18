@@ -14,9 +14,6 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-//import com.amarsoft.are.sql.ASResultSet;
-//import com.amarsoft.are.sql.Transaction;
-//import com.amarsoft.are.util.DataConvert;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,14 +22,7 @@ import org.jpf.ci.dbs.DbUtils;
 public class CompareTable
 {
 	private static final Logger logger = LogManager.getLogger();
-	private String URL1 = "jdbc:mysql://10.10.12.153:4306/";
-	private String dbuser1 = "billing";
-	private String dbpass1 = "billing";
 
-	// for id
-	private String URL2 = "jdbc:mysql://10.10.12.150:4306/";
-	private String dbuser2 = "billing";
-	private String dbpass2 = "billing";
 	public StringBuffer[] sb = { new StringBuffer(), new StringBuffer(),
 			new StringBuffer(), new StringBuffer(), new StringBuffer(),
 			new StringBuffer() };
