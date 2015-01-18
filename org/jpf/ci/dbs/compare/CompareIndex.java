@@ -21,14 +21,7 @@ import org.jpf.ci.dbs.DbUtils;
 public class CompareIndex
 {
 	private static final Logger logger = LogManager.getLogger();
-	private String URL1 = "jdbc:mysql://10.10.12.153:4306/";
-	private String dbuser1 = "billing";
-	private String dbpass1 = "billing";
 
-	// for id
-	private String URL2 = "jdbc:mysql://10.10.12.150:4306/";
-	private String dbuser2 = "billing";
-	private String dbpass2 = "billing";
 	public static StringBuffer[] sb = { new StringBuffer(), new StringBuffer(),
 			new StringBuffer(), new StringBuffer(), new StringBuffer(),
 			new StringBuffer() };
