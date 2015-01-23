@@ -3,6 +3,7 @@
  * E-mail:wupf@asiainfo-linkage.com 
  * @version 创建时间：2015年1月15日 下午4:13:04 
  * 类说明 
+ * 更改记录：增加自动更改类型方法
  */
 
 package org.jpf.ci.dbs.compare;
@@ -10,6 +11,7 @@ package org.jpf.ci.dbs.compare;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -22,6 +24,9 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+//import org.apache.log4j.LogManager;
+//import org.apache.log4j.Logger;
+
 
 /**
  * Oracle 数据库比较
@@ -37,7 +42,7 @@ public class MysqlComparator
 	public static String PASSWORD = "billing";
 	public static boolean auto_syn = false;// 自动同步表结构,true 时启用
 	
-	private static final Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();/////////
 	private String URL1 = "jdbc:mysql://10.10.12.153:4306/";
 	private String dbuser1 = "billing";
 	private String dbpass1 = "billing";
@@ -115,6 +120,9 @@ public class MysqlComparator
 					if (auto_syn)
 					{
 						System.out.println("----------------此项目请手动修改!");
+						//自动更改字段类型
+//						String cType = map1.get(cname);
+//						this.alterType(name,cname,cType);
 					}
 				}
 			} else
@@ -256,5 +264,18 @@ public class MysqlComparator
 			e.printStackTrace();
 			return "fail";
 		}
+	}
+	//自动更给字段类型
+	private void alterType(String name,String cName,String cType,Connection conn){
+		try{
+			String sql ="alter table " +name+" modify "+cName+" "+cType ;
+			PreparedStatement pre = conn.prepareStatement(sql);
+			pre.execute();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DbUtils.DoClear(conn);
+		}
+		
 	}
 }
