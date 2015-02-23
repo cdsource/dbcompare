@@ -1,8 +1,8 @@
 /** 
- * @author 鍚村钩绂� 
+ * @author 吴平福 
  * E-mail:wupf@asiainfo.com 
- * @version 鍒涘缓鏃堕棿锛�2015骞�1鏈�15鏃� 涓嬪崍4:01:00 
- * 绫昏鏄� 
+ * @version 创建时间：2015年2月8日 下午10:09:38 
+ * 类说明 
  */
 
 package org.jpf.ci.dbs.compare;
