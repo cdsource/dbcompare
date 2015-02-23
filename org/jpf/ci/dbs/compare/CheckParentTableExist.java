@@ -1,6 +1,6 @@
 /** 
 * @author 吴平福 
-* E-mail:wupf@asiainfo-linkage.com 
+* E-mail:wupf@asiainfo.com 
 * @version 创建时间：2015年2月8日 下午11:07:00 
 * 类说明 
 */ 
@@ -14,8 +14,8 @@ import java.sql.ResultSet;
  */
 public class CheckParentTableExist extends AbstractCheckTable
 {
-	private final String TitleName="CheckSameTableName";
-	private final String CheckCountSql = "select * from information_schema.TABLES where table_name in (select table_name from information_schema.TABLES t1 group by table_name having count(*)>1) order by table_name";
+	private final String TitleName="CheckParentTableExist";
+	private final String CheckCountSql = "select * from zd.sys_partition_rule where base_name not in (select table_name from information_schema.TABLES ) order by base_name";
 	/**
 	 * 
 	 */

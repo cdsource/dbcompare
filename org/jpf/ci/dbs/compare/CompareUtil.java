@@ -1,8 +1,8 @@
 /** 
- * @author å´å¹³ç¦ 
- * E-mail:wupf@asiainfo-linkage.com 
- * @version åˆ›å»ºæ—¶é—´ï¼š2015å¹´1æœˆ16æ—¥ ä¸‹åˆ4:52:03 
- * ç±»è¯´æ˜ 
+ * @author ÎâÆ½¸£ 
+ * E-mail:wupf@asiainfo.com 
+ * @version ´´½¨Ê±¼ä£º2015Äê1ÔÂ16ÈÕ ÏÂÎç4:52:03 
+ * ÀàËµÃ÷ 
  */
 
 package org.jpf.ci.dbs.compare;
@@ -11,24 +11,49 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * 
  */
 public class CompareUtil
 {
-
+	private static final Logger logger = LogManager.getLogger();
 	public static void SortSb(StringBuffer sb)
 	{
 
 	}
-
+	public static void writeFile(String strTitle,StringBuffer sb) throws Exception
+	{
+		logger.info("write Result File...");
+		String fileName =strTitle+".txt";
+		OutputStream os=null;
+		try
+		{
+			File file = new File(fileName);
+			os = new FileOutputStream(file);
+			
+			os.write(sb.toString().getBytes());
+			os.flush();
+			os.close();
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}finally
+		{
+			if(os!=null)
+				os.close();
+		}
+	
+	}
 	public static void writeFile(StringBuffer[] sb) throws Exception
 	{
-		String[] fileName = { "D://table//ç”Ÿäº§å­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨çš„è¡¨.txt",
-				"D://table//ç”Ÿäº§ä¸å­˜åœ¨ï¼Œå¼€å‘å­˜åœ¨çš„è¡¨.txt", "D://table//ç”Ÿäº§å­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨çš„å­—æ®µ.txt",
-				"D://table//ç”Ÿäº§ä¸å­˜åœ¨ï¼Œå¼€å‘å­˜åœ¨çš„å­—æ®µ.txt",
-				"D://table//è¡¨å’Œå­—æ®µéƒ½ç›¸åŒï¼Œä½†å­—æ®µç±»å‹ä¸åŒçš„å†…å®¹.txt",
-				"D://table//è¡¨å’Œå­—æ®µã€å­—æ®µç±»å‹éƒ½ç›¸åŒï¼Œä½†å­—æ®µé•¿åº¦ä¸åŒçš„å†…å®¹.txt" };
+		logger.info("write Result File...");
+		String[] fileName = { "D://table//Éú²ú´æÔÚ£¬¿ª·¢²»´æÔÚµÄ±í.txt",
+				"D://table//Éú²ú²»´æÔÚ£¬¿ª·¢´æÔÚµÄ±í.txt", "D://table//Éú²ú´æÔÚ£¬¿ª·¢²»´æÔÚµÄ×Ö¶Î.txt",
+				"D://table//Éú²ú²»´æÔÚ£¬¿ª·¢´æÔÚµÄ×Ö¶Î.txt",
+				"D://table//±íºÍ×Ö¶Î¶¼ÏàÍ¬£¬µ«×Ö¶ÎÀàĞÍ²»Í¬µÄÄÚÈİ.txt",
+				"D://table//±íºÍ×Ö¶Î¡¢×Ö¶ÎÀàĞÍ¶¼ÏàÍ¬£¬µ«×Ö¶Î³¤¶È²»Í¬µÄÄÚÈİ.txt" };
 		for (int i = 0; i < fileName.length; i++)
 		{
 			File file = new File(fileName[i]);
@@ -40,57 +65,57 @@ public class CompareUtil
 		}
 	}
 	/*
-	 * ç´¢å¼•ä½¿ç”¨
+	 * Ë÷ÒıÊ¹ÓÃ
 	 */
 	public static void appendIndex(Table table, TableIndex cTableIndex, IndexColumn cIndexColumn,int flag, StringBuffer[] sb) throws Exception
 	{
 		switch (flag)
 		{
 		case 1:
-			System.out.println("1ã€ç”Ÿäº§å­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨çš„è¡¨ï¼š" + table.getTableName());// è·³è¿‡
+			System.out.println("1¡¢Éú²ú´æÔÚ£¬¿ª·¢²»´æÔÚµÄ±í£º" + table.getTableName());// Ìø¹ı
 			sb[0].append(table.getTableName() + "\n");
 			break;
 		case 2:
-			System.out.println("2ã€ç”Ÿäº§ä¸å­˜åœ¨ï¼Œå¼€å‘å­˜åœ¨çš„è¡¨ï¼š" + table.getTableName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+			System.out.println("2¡¢Éú²ú²»´æÔÚ£¬¿ª·¢´æÔÚµÄ±í£º" + table.getTableName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
 			sb[1].append(table.getTableName() + "\n");
 			break;
 		case 3:
-			System.out.println("3ã€ç”Ÿäº§å­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨çš„å­—æ®µï¼š" + table.getTableName()
-					+ " | " + cTableIndex.getIndexName());// éœ€äººå·¥åˆ¤æ–­å¦‚ä½•å¤„ç†
+			System.out.println("3¡¢Éú²ú´æÔÚ£¬¿ª·¢²»´æÔÚµÄ×Ö¶Î£º" + table.getTableName()
+					+ " | " + cTableIndex.getIndexName());// ĞèÈË¹¤ÅĞ¶ÏÈçºÎ´¦Àí
 			sb[2].append(table.getTableName() + " | " + cTableIndex.getIndexName()
 					+ "\n");
 			break;
 		case 4:
-			System.out.println("4ã€ç”Ÿäº§ä¸å­˜åœ¨ï¼Œå¼€å‘å­˜åœ¨çš„ç´¢å¼•ï¼š" + table.getTableName()
-					+ " | " + cTableIndex.getIndexName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+			System.out.println("4¡¢Éú²ú²»´æÔÚ£¬¿ª·¢´æÔÚµÄË÷Òı£º" + table.getTableName()
+					+ " | " + cTableIndex.getIndexName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
 			sb[3].append(table.getTableName() + " | " + cTableIndex.getIndexName()
 					+ "\n");
 			break;
 		case 5:
-			System.out.println("5ã€è¡¨å’Œå­—æ®µéƒ½ç›¸åŒï¼Œä½†å­—æ®µç±»å‹ä¸åŒçš„å†…å®¹ï¼š" + table.getTableName()
+			System.out.println("5¡¢±íºÍ×Ö¶Î¶¼ÏàÍ¬£¬µ«×Ö¶ÎÀàĞÍ²»Í¬µÄÄÚÈİ£º" + table.getTableName()
 					+ " | " + cTableIndex.getIndexName() + " | "
-					+ cIndexColumn.getColumnName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+					+ cIndexColumn.getColumnName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
 			sb[4].append(table.getTableName() + " | " + cTableIndex.getIndexName()
 					+ " | " + cIndexColumn.getSeqIndex()+ "\n");
 			break;
 		case 6:
-			System.out.println("6ã€è¡¨å’Œå­—æ®µã€å­—æ®µç±»å‹éƒ½ç›¸åŒï¼Œä½†å­—æ®µé•¿åº¦ä¸åŒçš„å†…å®¹ï¼š"
+			System.out.println("6¡¢±íºÍ×Ö¶Î¡¢×Ö¶ÎÀàĞÍ¶¼ÏàÍ¬£¬µ«×Ö¶Î³¤¶È²»Í¬µÄÄÚÈİ£º"
 					+ table.getTableName() + " | " +cTableIndex.getIndexName()
-					+ " | " + cIndexColumn.getColumnName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+					+ " | " + cIndexColumn.getColumnName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
 			sb[5].append(table.getTableName() + " | " + cTableIndex.getIndexName()
 					+ " | " + cIndexColumn.getColumnName() + "\n");
 			break;
 		case 7:
-			System.out.println("7ã€è¡¨å’Œç´¢å¼•ç›¸åŒï¼Œå­—æ®µä¸å­˜åœ¨å†…å®¹ï¼š"
+			System.out.println("7¡¢±íºÍË÷ÒıÏàÍ¬£¬×Ö¶Î²»´æÔÚÄÚÈİ£º"
 					+ table.getTableName() + " | " +cTableIndex.getIndexName()
-					+ " | " + cIndexColumn.getColumnName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+					+ " | " + cIndexColumn.getColumnName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
 			sb[5].append(table.getTableName() + " | " + cTableIndex.getIndexName()
 					+ " | " + cIndexColumn.getColumnName() + "\n");
 			break;
 		case 8:
-			System.out.println("8ã€è¡¨å’Œç´¢å¼•ã€å­—æ®µéƒ½ç›¸åŒï¼Œç´¢å¼•å­—æ®µä½ç½®ä¸åŒçš„å†…å®¹ï¼š"
+			System.out.println("8¡¢±íºÍË÷Òı¡¢×Ö¶Î¶¼ÏàÍ¬£¬Ë÷Òı×Ö¶ÎÎ»ÖÃ²»Í¬µÄÄÚÈİ£º"
 					+ table.getTableName() + " | " +cTableIndex.getIndexName()
-					+ " | " + cIndexColumn.getColumnName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+					+ " | " + cIndexColumn.getColumnName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
 			sb[5].append(table.getTableName() + " | " + cTableIndex.getIndexName()
 					+ " | " + cIndexColumn.getColumnName() + "\n");
 			break;
@@ -103,39 +128,46 @@ public class CompareUtil
 		switch (flag)
 		{
 		case 1:
-			System.out.println("1ã€ç”Ÿäº§å­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨çš„è¡¨ï¼š" + table.getTableName());// è·³è¿‡
+			System.out.println("1¡¢PDM´æÔÚ£¬¿ª·¢²»´æÔÚµÄ±í£º" + table.getTableName());// Ìø¹ı
 			sb[0].append(table.getTableName() + "\n");
 			break;
 		case 2:
-			System.out.println("2ã€ç”Ÿäº§ä¸å­˜åœ¨ï¼Œå¼€å‘å­˜åœ¨çš„è¡¨ï¼š" + table.getTableName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+			System.out.println("2¡¢PDM²»´æÔÚ£¬¿ª·¢´æÔÚµÄ±í£º" + table.getTableName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
 			sb[1].append(table.getTableName() + "\n");
 			break;
 		case 3:
-			System.out.println("3ã€ç”Ÿäº§å­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨çš„å­—æ®µï¼š" + table.getTableName()
-					+ " | " + column.getColumnName());// éœ€äººå·¥åˆ¤æ–­å¦‚ä½•å¤„ç†
+			System.out.println("3¡¢PDM´æÔÚ£¬¿ª·¢²»´æÔÚµÄ×Ö¶Î£º" + table.getTableName()
+					+ " | " + column.getColumnName());// ĞèÈË¹¤ÅĞ¶ÏÈçºÎ´¦Àí
 			sb[2].append(table.getTableName() + " | " + column.getColumnName()
 					+ "\n");
 			break;
 		case 4:
-			System.out.println("4ã€ç”Ÿäº§ä¸å­˜åœ¨ï¼Œå¼€å‘å­˜åœ¨çš„å­—æ®µï¼š" + table.getTableName()
-					+ " | " + column.getColumnName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+			System.out.println("4¡¢PDM²»´æÔÚ£¬¿ª·¢´æÔÚµÄ×Ö¶Î£º" + table.getTableName()
+					+ " | " + column.getColumnName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
 			sb[3].append(table.getTableName() + " | " + column.getColumnName()
 					+ "\n");
 			break;
 		case 5:
-			System.out.println("5ã€è¡¨å’Œå­—æ®µéƒ½ç›¸åŒï¼Œä½†å­—æ®µç±»å‹ä¸åŒçš„å†…å®¹ï¼š" + table.getTableName()
+			System.out.println("5¡¢±íºÍ×Ö¶Î¶¼ÏàÍ¬£¬µ«×Ö¶ÎÀàĞÍ²»Í¬µÄÄÚÈİ£º" + table.getTableName()
 					+ " | " + column.getColumnName() + " | "
-					+ column.getDataType());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+					+ column.getDataType());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
 			sb[4].append(table.getTableName() + " | " + column.getColumnName()
 					+ " | " + column.getDataType() + "\n");
 			break;
 		case 6:
-			System.out.println("6ã€è¡¨å’Œå­—æ®µã€å­—æ®µç±»å‹éƒ½ç›¸åŒï¼Œä½†å­—æ®µé•¿åº¦ä¸åŒçš„å†…å®¹ï¼š"
+			System.out.println("6¡¢±íºÍ×Ö¶Î¡¢×Ö¶ÎÀàĞÍ¶¼ÏàÍ¬£¬ÊÇ·ñÎª¿Õ²»Í¬£º"
 					+ table.getTableName() + " | " + column.getColumnName()
-					+ " | " + column.getNullable());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+					+ " | " + column.getNullable());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
 			sb[5].append(table.getTableName() + " | " + column.getColumnName()
 					+ " | " + column.getNullable() + "\n");
 			break;
+		case 7:
+			System.out.println("7¡¢×¢ÊÍ²»Í¬£º"
+					+ table.getTableName() + " | " + column.getColumnName()
+					+ " | " + column.getNullable()+ " | " +column.getComment());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
+			sb[6].append(table.getTableName() + " | " + column.getColumnName()
+					+ " | " + column.getNullable() + " | " +column.getComment()+ "\n");
+			break;	
 		}
 	}
 }

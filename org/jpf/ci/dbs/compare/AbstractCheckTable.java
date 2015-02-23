@@ -1,8 +1,8 @@
 /** 
-* @author ÎâÆ½¸£ 
-* E-mail:wupf@asiainfo-linkage.com 
-* @version ´´½¨Ê±¼ä£º2015Äê2ÔÂ8ÈÕ ÏÂÎç10:34:34 
-* ÀàËµÃ÷ 
+* @author å´å¹³ç¦ 
+* E-mail:wupf@asiainfo.com 
+* @version åˆ›å»ºæ—¶é—´ï¼š2015å¹´2æœˆ8æ—¥ ä¸‹åˆ11:07:00 
+* ç±»è¯´æ˜ 
 */ 
 
 package org.jpf.ci.dbs.compare;
@@ -13,8 +13,7 @@ import java.sql.Statement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jpf.ci.dbs.DbUtils;
-import org.jpf.utils.DateTimeUtil;
+import org.jpf.utils.JpfDateTimeUtil;
 
 /**
  * 
@@ -29,46 +28,36 @@ public abstract class AbstractCheckTable
 	/**
 	 * 
 	 */
-	public AbstractCheckTable()
+	public AbstractCheckTable(){}
+	
+
+	public void DoCheck(Connection conn)
 	{
 		// TODO Auto-generated constructor stub
 		try
 		{
-			DoCheck(); // ±È½ÏÊı¾İ¿â
-			CompareUtil.writeFile(GetCheckTitle(),sb); // Ğ´ÈëÎÄ¼ş
+			DoWork(conn); // ï¿½È½ï¿½ï¿½ï¿½ï¿½İ¿ï¿½
+			CompareUtil.writeFile(GetCheckTitle(),sb); // Ğ´ï¿½ï¿½ï¿½Ä¼ï¿½
 		} catch (Exception ex)
 		{
 			// TODO: handle exception
 			ex.printStackTrace();
 		}
 
-		System.out.println("game over");
 	}
-	public void DoCheck() throws Exception
+	
+	private void DoWork(Connection conn) throws Exception
 	{
-		Connection trans_product = null;
-		try
-		{
-			// Éú²úÊı¾İ¿âÁ¬½Ó
-			trans_product = DbInfo.GetInstance().getTransaction_product();
-
-			Statement stmt = trans_product.createStatement();
+			Statement stmt = conn.createStatement();
 			String sSql = GetCheckSql();
 			logger.info(sSql);
 			ResultSet rs = stmt.executeQuery(sSql);
 			
-			sb.append(GetCheckTitle()).append("\n").append(DateTimeUtil.getToday()).append("\n");
+			sb.append(GetCheckTitle()).append("\n").append(JpfDateTimeUtil.GetToday()).append("\n");
 			
 			FormatOutput(rs);
 
-		} catch (Exception ex)
-		{
-			ex.printStackTrace();
-			logger.error(ex);
-		} finally
-		{
-			DbUtils.DoClear(trans_product);
-		}
+
 	}
 	
 

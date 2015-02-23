@@ -1,123 +1,82 @@
 /** 
- * @author å´å¹³ç¦ 
- * E-mail:wupf@asiainfo.com 
- * @version åˆ›å»ºæ—¶é—´ï¼š2015å¹´1æœˆ15æ—¥ ä¸‹åˆ4:00:30 
- * ç±»è¯´æ˜ 
+ * @author ÎâÆ½¸£ 
+ * E-mail:wupf@asiainfo-linkage.com 
+ * @version ´´½¨Ê±¼ä£º2015Äê1ÔÂ15ÈÕ ÏÂÎç4:00:30 
+ * ÀàËµÃ÷ 
  */
 
 package org.jpf.ci.dbs.compare;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jpf.ci.dbs.DbUtils;
 
-public class CompareIndex
+public class CompareIndex extends AbstractDbCompare
 {
 	private static final Logger logger = LogManager.getLogger();
 
-	public static StringBuffer[] sb = { new StringBuffer(), new StringBuffer(),
-			new StringBuffer(), new StringBuffer(), new StringBuffer(),
-			new StringBuffer() };
 
-	public Connection getTransaction_product() throws Exception
+	public void DoWork(Connection conn_product, Connection conn_develop) throws Exception
 	{
-		String driver = "com.mysql.jdbc.Driver";
-		Class.forName(driver).newInstance();
-		return DriverManager.getConnection(URL1, dbuser1, dbpass1);
-	}
 
-	public Connection getTransaction_develop() throws Exception
-	{
-		String driver = "com.mysql.jdbc.Driver";
-		Class.forName(driver).newInstance();
-		return DriverManager.getConnection(URL2, dbuser2, dbpass2);
-	}
-
-	public static void main(String[] args) throws Exception
-	{
-		CompareIndex cCompareIndex = new CompareIndex();
-
-	}
-
-	public CompareIndex()
-	{
-		try
-		{
-			compareTables(); // æ¯”è¾ƒæ•°æ®åº“
-			CompareUtil.writeFile(sb); // å†™å…¥æ–‡ä»¶
-		} catch (Exception ex)
-		{
-			// TODO: handle exception
-			ex.printStackTrace();
-		}
-
-		System.out.println("game over");
-	}
-
-	public void compareTables() throws Exception
-	{
-		Connection trans_product = null;
-		Connection trans_develop = null;
-		try
-		{
-
-			// ç”Ÿäº§æ•°æ®åº“è¿æ¥
-			trans_product = getTransaction_product();
-			Map<String, Table> map_product = getTables(trans_product);
-			// å¼€å‘æ•°æ®åº“è¿æ¥
-			trans_develop = getTransaction_develop();
-			Map<String, Table> map_develop = getTables(trans_develop);
-			// éå†å¼€å‘åº“Map
+			// Éú²úÊı¾İ¿âÁ¬½Ó
+			Map<String, Table> map_product = GetTableIndexs(conn_product);
+			// ¿ª·¢Êı¾İ¿âÁ¬½Ó
+			Map<String, Table> map_develop = GetTableIndexs(conn_develop);
+			// ±éÀú¿ª·¢¿âMap
 			for (Iterator iter_table = map_develop.keySet().iterator(); iter_table.hasNext();)
 			{
 				String key_table = (String) iter_table.next();
-				// è·å¾—å¼€å‘åº“ä¸­çš„è¡¨
+				// »ñµÃ¿ª·¢¿âÖĞµÄ±í
 				Table table_develop = map_develop.get(key_table);
-				// å°è¯•ä»ç”Ÿäº§åº“ä¸­è·å¾—åŒåè¡¨
+				// ³¢ÊÔ´ÓÉú²ú¿âÖĞ»ñµÃÍ¬Ãû±í
 				Table table_product = map_product.get(key_table);
 				if (table_product == null)
-				{ // å¦‚æœè·å¾—è¡¨ä¸ºç©ºï¼Œè¯´æ˜å¼€å‘å­˜åœ¨ï¼Œç”Ÿäº§ä¸å­˜åœ¨
-					CompareUtil.appendIndex(table_develop, null, null,2, sb);
+				{ // Èç¹û»ñµÃ±íÎª¿Õ£¬ËµÃ÷¿ª·¢´æÔÚ£¬Éú²ú²»´æÔÚ
+					CompareUtil.appendIndex(table_develop, null, null, 2, sb);
 				} else
-				{ // è¡¨ç›¸åŒï¼Œåˆ¤æ–­å­—æ®µã€å­—æ®µç±»å‹ã€å­—æ®µé•¿åº¦
+				{ // ±íÏàÍ¬£¬ÅĞ¶Ï×Ö¶Î¡¢×Ö¶ÎÀàĞÍ¡¢×Ö¶Î³¤¶È
 					for (Iterator iter_column = table_develop.indexs.keySet().iterator(); iter_column.hasNext();)
 					{
 						String key_index = (String) iter_column.next();
-						//System.out.println(key_index);
-						// è·å¾—å¼€å‘åº“ä¸­çš„ç´¢å¼•
+						// System.out.println(key_index);
+						// »ñµÃ¿ª·¢¿âÖĞµÄË÷Òı
 						TableIndex index_develop = (TableIndex) table_develop.indexs.get(key_index);
-						// å°è¯•ä»ç”Ÿäº§åº“ä¸­è·å¾—åŒåç´¢å¼•
+						// ³¢ÊÔ´ÓÉú²ú¿âÖĞ»ñµÃÍ¬ÃûË÷Òı
 						TableIndex index_product = (TableIndex) table_product.indexs.get(key_index);
 						if (index_product == null)
-						{// å¦‚æœç´¢å¼•åä¸ºç©ºï¼Œè¯´æ˜å¼€å‘å­˜åœ¨ï¼Œç”Ÿäº§ä¸å­˜åœ¨
-							CompareUtil.appendIndex(table_develop, index_develop,null, 4, sb);
+						{// Èç¹ûË÷ÒıÃûÎª¿Õ£¬ËµÃ÷¿ª·¢´æÔÚ£¬Éú²ú²»´æÔÚ
+							CompareUtil.appendIndex(table_develop, index_develop, null, 4, sb);
 						} else
-						{// è¯´æ˜ä¸¤è€…éƒ½å­˜åœ¨
+						{// ËµÃ÷Á½Õß¶¼´æÔÚ
 							for (Iterator iter_idx_column = index_develop.indexColumns.keySet().iterator(); iter_idx_column
 									.hasNext();)
 							{
 								String key_index_name = (String) iter_idx_column.next();
-								//System.out.println(key_index);
-								IndexColumn indexcol_devlop = (IndexColumn) index_develop.indexColumns.get(key_index_name);
-								IndexColumn indexcol_product = (IndexColumn) index_product.indexColumns.get(key_index_name);
+								// System.out.println(key_index);
+								IndexColumn indexcol_devlop = (IndexColumn) index_develop.indexColumns
+										.get(key_index_name);
+								IndexColumn indexcol_product = (IndexColumn) index_product.indexColumns
+										.get(key_index_name);
 								if (indexcol_product == null)
 								{
-									//System.out.println("ç´¢å¼•å­—æ®µä¸å­˜åœ¨ï¼š" + key_index);
-									CompareUtil.appendIndex(table_develop, index_develop,indexcol_product, 7, sb);
+									// System.out.println("Ë÷Òı×Ö¶Î²»´æÔÚ£º" +
+									// key_index);
+									CompareUtil.appendIndex(table_develop, index_develop, indexcol_devlop, 7, sb);
 								} else
 								{
 									if (indexcol_devlop.getSeqIndex() != indexcol_product.getSeqIndex())
 									{
-										System.out.println("ç´¢å¼•ä½ç½®ä¸åŒï¼š"+key_table+" "+key_index+" "+key_index_name+" " + indexcol_devlop.getSeqIndex() + " <>"
+										System.out.println("Ë÷ÒıÎ»ÖÃ²»Í¬£º" + key_table + " " + key_index + " "
+												+ key_index_name + " " + indexcol_devlop.getSeqIndex() + " <>"
 												+ indexcol_product.getSeqIndex());
-										CompareUtil.appendIndex(table_develop, index_develop,indexcol_product, 8, sb);
+										CompareUtil.appendIndex(table_develop, index_develop, indexcol_product, 8, sb);
 									}
 								}
 							}
@@ -126,32 +85,28 @@ public class CompareIndex
 				}
 			}
 
-			// éå†ç”Ÿäº§åº“Map
+			// ±éÀúÉú²ú¿âMap
 
-		} catch (Exception ex)
-		{
-			// TODO: handle exception
-			ex.printStackTrace();
-		} finally
-		{
-			DbUtils.DoClear(trans_product);
-			DbUtils.DoClear(trans_develop);
-		}
+
 	}
 
-	public Map<String, Table> getTables(Connection transaction) throws Exception
+	public Map<String, Table> GetTableIndexs(Connection transaction) throws Exception
 	{
-		String sSql = " select TABLE_NAME,COLUMN_NAME,INDEX_NAME,SEQ_IN_INDEX from information_schema.STATISTICS  where table_schema ='ad' order By table_name,INDEX_NAME";
+		String sSql = " select TABLE_NAME,COLUMN_NAME,INDEX_NAME,SEQ_IN_INDEX from information_schema.STATISTICS  where table_schema =?  and table_name not REGEXP '[a-zA-Z]_[0-9]'  order By table_name,INDEX_NAME";
+		
+		PreparedStatement pstmt = transaction.prepareStatement(sSql);
+		pstmt.setString(1, strDomain);
 		logger.info(sSql);
-		Statement stmt = transaction.createStatement();
-		ResultSet rs = stmt.executeQuery(sSql);
+		logger.info(strDomain);
+		ResultSet rs = pstmt.executeQuery();
+		
 		Map<String, Table> map = new HashMap<String, Table>();
 		String tableName = "";
 		Table table = null;
 		while (rs.next())
 		{
 			if (!tableName.equals(rs.getString("table_name")))
-			{// ä¸€å¼ æ–°è¡¨
+			{// Ò»ÕÅĞÂ±í
 				tableName = rs.getString("table_name");
 				table = new Table(tableName);
 				TableIndex cTableIndex = new TableIndex(rs.getString("INDEX_NAME"));
@@ -159,7 +114,7 @@ public class CompareIndex
 				table.indexs.put(cTableIndex.getIndexName(), cTableIndex);
 				map.put(rs.getString("table_name"), table);
 			} else
-			{// å·²å­˜åœ¨çš„è¡¨ï¼Œå¢åŠ å­—æ®µ
+			{// ÒÑ´æÔÚµÄ±í£¬Ôö¼Ó×Ö¶Î
 				TableIndex cTableIndex = (TableIndex) table.indexs.get(rs.getString("INDEX_NAME"));
 				if (cTableIndex == null)
 				{
@@ -175,9 +130,11 @@ public class CompareIndex
 		}
 		if (null != rs)
 			rs.close();
-		// transaction.finalize();
-		DbUtils.DoClear(transaction);
+
 		return map;
 	}
+
+
+
 
 }
