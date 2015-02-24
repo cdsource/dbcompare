@@ -8,12 +8,9 @@
 package org.jpf.ci.dbs.compare;
 
 import java.sql.Connection;
-import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpf.ci.dbs.DbUtils;
-import org.jpf.sql.DBUtil;
 import org.jpf.utils.JpfFileUtil;
 import org.jpf.xmls.JpfXmlUtil;
 import org.w3c.dom.Element;
@@ -37,9 +34,24 @@ public class JpfDbCompare
 			// read config
 			System.out.println(System.getProperty("user.dir"));
 			System.out.println(System.getProperty("java.class.path"));
-
+			DbDescInfo cDbDescInfo = null;
 			JpfFileUtil.CheckFile(strConfigFileName);
-			NodeList nl = JpfXmlUtil.GetNodeList("dbcompare", strConfigFileName);
+			NodeList nl = JpfXmlUtil.GetNodeList("dbsource", strConfigFileName);
+			logger.debug(nl.getLength());
+			if(1==nl.getLength())
+			{
+				Element el = (Element) nl.item(0);
+				String strJdbcUrl = JpfXmlUtil.GetParStrValue(el, "dburl");
+				String strDbUsr = JpfXmlUtil.GetParStrValue(el, "dbusr");
+				String strDbPwd = JpfXmlUtil.GetParStrValue(el, "dbpwd");
+				logger.debug(strJdbcUrl);
+				logger.debug(strDbUsr);
+				logger.debug(strDbPwd);
+				cDbDescInfo = new DbDescInfo(strJdbcUrl, strDbUsr, strDbPwd);
+			}else {
+				logger.error("error source db info");
+			}
+			nl = JpfXmlUtil.GetNodeList("dbcompare", strConfigFileName);
 			logger.debug(nl.getLength());
 			for (int j = 0; j < nl.getLength(); j++)
 			{
@@ -56,14 +68,15 @@ public class JpfDbCompare
 				logger.debug(strDbPwd);
 				logger.debug(strMails);
 
-				DbDescInfo cDbDescInfo = new DbDescInfo(strJdbcUrl, strDbUsr, strDbPwd);
 
+				DbDescInfo cDbDescInfo2 = new DbDescInfo(strJdbcUrl, strDbUsr, strDbPwd);
+				
 				Connection conn_product = null;
 				Connection conn_develop = null;
 				try
 				{
-					conn_product = DbInfo.GetInstance().getTransaction_product();
-					conn_develop = cDbDescInfo.GetTransaction_develop();
+					conn_product =  cDbDescInfo.GetConn();
+					conn_develop = cDbDescInfo2.GetConn();
 					// ±È½Ï±í
 					logger.info("compare tables...");
 					logger.info("conn_product.isClosed()="+conn_product.isClosed());

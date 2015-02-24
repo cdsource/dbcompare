@@ -32,7 +32,7 @@ public class DbDescInfo
 		this.Usr=Usr;
 		this.Pwd=Pwd;
 	}
-	public Connection GetTransaction_develop() throws Exception
+	public Connection GetConn() throws Exception
 	{
 		logger.info(this.Url);
 		String driver = "com.mysql.jdbc.Driver";
