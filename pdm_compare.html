@@ -1,0 +1,107 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=GBK" />
+<title>CSS Tables</title>
+<link href="styles.css" rel="stylesheet" type="text/css" />
+</head>
+<style type="text/css">
+/* CSS Document */
+
+body {
+ font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+ color: #000000;
+ background: #E6EAE9;
+}
+
+#mytable {
+ width: 700px;
+ padding: 0;
+ margin: 0;
+}
+
+caption {
+ padding: 0 0 5px 0;
+ width: 700px; 
+ font: italic 12px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+ text-align: right;
+}
+
+th {
+ font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+ color: #000000;
+ border-right: 1px solid #C1DAD7;
+ border-bottom: 1px solid #C1DAD7;
+ border-top: 1px solid #C1DAD7;
+ letter-spacing: 2px;
+
+ text-align: left;
+ padding: 6px 6px 6px 12px;
+ background: #CAE8EA  no-repeat;
+}
+
+th.nobg {
+ border-top: 0;
+ border-left: 0;
+ border-right: 1px solid #C1DAD7;
+ background: none;
+}
+
+td {
+ border-right: 1px solid #C1DAD7;
+ border-bottom: 1px solid #C1DAD7;
+ background: #fff;
+ font-size:11px;
+ padding: 6px 6px 6px 12px;
+ color: #000000;
+}
+
+tr.alt {
+ background: #F5FAFA;
+ color: #000000;
+}
+th.spec {
+ border-left: 1px solid #C1DAD7;
+ border-top: 0;
+ background: #fff no-repeat;
+ font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+}
+
+th.specalt {
+ border-left: 1px solid #C1DAD7;
+ border-top: 0;
+ background: #f5fafa  no-repeat;
+ font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+ color: #797268;
+}
+/*---------for IE 5.x bug*/
+html>body td{ font-size:11px;}
+</style>
+<body>
+<b>比对结果：</b></p>
+<p>比对时间：#wupf1；</p>
+<p>1、PDM存在，开发不存在的表</p>
+<p>2、PDM不存在，开发存在的表</p>
+<p>3、PDM存在，开发不存在的字段</p>
+<p>4、PDM不存在，开发存在的字段</p>
+<p>5、表和字段都相同，但字段类型不同的内容</p>
+<p>6、表和字段、字段类型都相同，是否为空不同</p>
+<table id="mytable" cellspacing="0" summary="The technical specifications of the Apple PowerMac G5 series">
+  <tr>
+    <th scope="row" abbr="Model" class="spec" colspan="3">pdm(#wupf2)</th>
+    <td colspan="3">比对库(#wupf3)</td>
+  </tr>
+  <tr>
+    <th scope="row" class="specalt">表</th>
+    <td class="alt">字段</td>
+    <td class="alt">类型</td>
+    <td class="alt">表</td>
+    <td class="alt">字段</td>
+    <td class="alt">类型</td>
+  </tr>
+
+
+ #wupf4
+</table>
+
+</body>
+</html>
