@@ -35,7 +35,7 @@ public class JpfDbCompare
 			// read config
 			//System.out.println(System.getProperty("user.dir"));
 			//System.out.println(System.getProperty("java.class.path"));
-			DbDescInfo cDbDescInfo = null;
+			DbDescInfo cPdmDbDescInfo = null;
 			JpfFileUtil.CheckFile(strConfigFileName);
 			NodeList nl = JpfXmlUtil.GetNodeList("dbsource", strConfigFileName);
 			logger.debug(nl.getLength());
@@ -50,7 +50,7 @@ public class JpfDbCompare
 				logger.debug(strJdbcUrl);
 				logger.debug(strDbUsr);
 				logger.debug(strDbPwd);
-				cDbDescInfo = new DbDescInfo(strJdbcUrl, strDbUsr, strDbPwd);
+				cPdmDbDescInfo = new DbDescInfo(strJdbcUrl, strDbUsr, strDbPwd);
 			}else {
 				logger.error("error source db info");
 			}
@@ -74,23 +74,23 @@ public class JpfDbCompare
 
 				DbDescInfo cDbDescInfo2 = new DbDescInfo(strJdbcUrl, strDbUsr, strDbPwd);
 				
-				Connection conn_product = null;
+				Connection conn_pdm = null;
 				Connection conn_develop = null;
 				try
 				{
-					conn_product =  cDbDescInfo.GetConn();
+					conn_pdm =  cPdmDbDescInfo.GetConn();
 					conn_develop = cDbDescInfo2.GetConn();
 					// 比较表
 					System.out.println(".....................................................................................................................");
 					System.out.println("compare tables...");
-					logger.debug("conn_product.isClosed()="+conn_product.isClosed());
+					//logger.debug("conn_product.isClosed()="+conn_product.isClosed());
 					CompareTable cCompareTable = new CompareTable();
-					cCompareTable.DoCompare(conn_product, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain);
+					cCompareTable.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain);
 					
 					// 比较索引
 					System.out.println(".....................................................................................................................");
 					System.out.println("compare index...");
-					logger.debug("conn_product.isClosed()="+conn_product.isClosed());
+					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CompareIndex cCompareIndex = new CompareIndex();
 					//cCompareIndex.DoCompare(conn_product, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain);
 
@@ -104,20 +104,20 @@ public class JpfDbCompare
 					
 					System.out.println(".....................................................................................................................");
 					System.out.println("CheckSameTableName...");
-					logger.debug("conn_product.isClosed()="+conn_product.isClosed());
+					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CheckSameTableName cCheckSameTableName = new CheckSameTableName();
 					//cCheckSameTableName.DoCheck(conn_product,strDomain);
 					//cCheckSameTableName.DoCheck(conn_develop,strDomain);
 					
 					System.out.println(".....................................................................................................................");
 					System.out.println("Compare Data...");
-					logger.debug("conn_product.isClosed()="+conn_product.isClosed());
+					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CompareData cCompareData = new CompareData();
 					//cCompareData.DoCompare(conn_product, conn_develop, "zd.sys_partition_rule","base_name");
 					
 					System.out.println(".....................................................................................................................");
 					System.out.println("Check sub table...");
-					logger.debug("conn_product.isClosed()="+conn_product.isClosed());
+					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CompareSubTables cCompareSubTables = new CompareSubTables();
 					//cCompareSubTables.DoCheck(conn_develop,strDomain);
 					//cCompareSubTables.DoCheck(conn_product,strDomain);
@@ -129,7 +129,7 @@ public class JpfDbCompare
 					ex.printStackTrace();
 				} finally
 				{
-					JpfDbUtils.DoClear(conn_product);
+					JpfDbUtils.DoClear(conn_pdm);
 					JpfDbUtils.DoClear(conn_develop);
 				}
 			}
