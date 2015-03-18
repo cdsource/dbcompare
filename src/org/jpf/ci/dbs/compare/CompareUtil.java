@@ -104,7 +104,7 @@ public class CompareUtil
 		case 2:
 			System.out.println("2、PDM不存在，开发存在的表：" + table.getTableName());// 需要人工判断脚本
 			sb[1].append("<tr ").append(strClassTypeString).append("><th scope=\"row\"  class=\"specalt\">2")
-		    .append("</th><td></td><td ></td><td ></td>").append(table.getTableName()).append("<td ></td><td ></td></tr>");
+		    .append("</th><td></td><td ></td><td >").append(table.getTableName()).append("</td><td ></td><td ></td></tr>");
 		
 			break;
 		case 3:
@@ -166,26 +166,28 @@ public class CompareUtil
 		switch (flag)
 		{
 		case 1:
-			System.out.println("1、PDM存在，开发不存在的表：" + table.getTableName());// 跳过
+			System.out.println("1、PDM存在，比对库不存在的表：" + table.getTableName());// 跳过
 			//sb[0].append(table.getTableName() + "\n");
 		    sb[0].append("<tr").append(strClassTypeString).append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">1").append(table.getTableName())
 		    .append("</th><td></td><td ></td><td ></td><td ></td><td ></td></tr>");
+		    //System.out.println(sb[0]);// 跳过
 			break;
 		case 2:
-			System.out.println("2、PDM不存在，开发存在的表：" + table.getTableName());// 需要人工判断脚本
+			System.out.println("2、PDM不存在，比对库存在的表：" + table.getTableName());// 需要人工判断脚本
 			//sb[1].append(table.getTableName() + "\n");
 			sb[1].append("<tr ").append(strClassTypeString).append("><th scope=\"row\"  class=\"specalt\">2")
 		    .append("</th><td></td><td ></td><td ></td>").append(table.getTableName()).append("<td ></td><td ></td></tr>");
-			
+			//System.out.println(sb[1]);
 			break;
 		case 3:
-			System.out.println("3、PDM存在，开发不存在的字段：" + table.getTableName()
+			System.out.println("3、PDM存在，比对库不存在的字段：" + table.getTableName()
 					+ " | " + pmdColumn.getColumnName());// 需人工判断如何处理
 			sb[2].append("<tr").append(strClassTypeString).append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">3").append(table.getTableName())
 		    .append("</th><td >").append(pmdColumn.getColumnName()).append("</td><td >").append(pmdColumn.getDataType()).append("</td><td ></td><td ></td><td ></td></tr>");
+			//System.out.println(sb[2]);
 			break;
 		case 4:
-			System.out.println("4、PDM不存在，开发存在的字段：" + table.getTableName()
+			System.out.println("4、PDM不存在，比对库存在的字段：" + table.getTableName()
 					+ " | " + pmdColumn.getColumnName());// 需要人工判断脚本
 			sb[3].append("<tr").append(strClassTypeString).append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">4")
 		    .append("</th><td ></td><td ></td><td >")
