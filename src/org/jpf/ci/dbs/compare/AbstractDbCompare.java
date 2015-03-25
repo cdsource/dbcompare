@@ -20,7 +20,8 @@ public abstract class AbstractDbCompare
     
     protected String strDomain="";
     protected String strMails="";
-
+    protected String strExcludeTable="";
+    
     protected StringBuffer[] sb = { new StringBuffer(), new StringBuffer(),
 			new StringBuffer(), new StringBuffer(), new StringBuffer(),
 			new StringBuffer(),new StringBuffer() };
@@ -30,15 +31,16 @@ public abstract class AbstractDbCompare
 	/**
 	 * 
 	 */
-	public void DoCompare(Connection conn_product,Connection conn_develop,String strDomain,String strMails,String strDbUrl )
+	public void DoCompare(Connection conn_product,Connection conn_develop,String strDomain,String strMails,String strDbUrl,String strPdmInfo,String strExcludeTable )
 	{
 		// TODO Auto-generated constructor stub
     	try
 		{
     		this.strDomain=strDomain;
     		this.strMails=strMails;
+    		this.strExcludeTable=strExcludeTable;
     		DoWork( conn_product, conn_develop);    	
-    		CompareUtil.SendMail(sb, strMails,strDbUrl); 
+    		CompareUtil.SendMail(sb, strMails,strDbUrl,strPdmInfo); 
 		} catch (Exception ex)
 		{
 			// TODO: handle exception

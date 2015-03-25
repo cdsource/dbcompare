@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpf.utils.JpfDbUtils;
 import org.jpf.utils.JpfFileUtil;
+import org.jpf.utils.SvnInfoUtil;
 import org.jpf.xmls.JpfXmlUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -40,6 +41,8 @@ public class JpfDbCompare
 			NodeList nl = JpfXmlUtil.GetNodeList("dbsource", strConfigFileName);
 			logger.debug(nl.getLength());
 			String strDefaultMail=""; 
+			String strPdmInfo="";
+			String strExcludeTable="";
 			if(1==nl.getLength())
 			{
 				Element el = (Element) nl.item(0);
@@ -47,6 +50,12 @@ public class JpfDbCompare
 				String strDbUsr = JpfXmlUtil.GetParStrValue(el, "dbusr");
 				String strDbPwd = JpfXmlUtil.GetParStrValue(el, "dbpwd");
 				strDefaultMail= JpfXmlUtil.GetParStrValue(el, "dbmails");
+				strPdmInfo= JpfXmlUtil.GetParStrValue(el, "svnurl");
+				strExcludeTable= JpfXmlUtil.GetParStrValue(el, "excludetable");
+				if (strPdmInfo!=null)
+				{
+					strPdmInfo=SvnInfoUtil.GetSvnFileAuthorDate(strPdmInfo);
+				}
 				logger.debug(strJdbcUrl);
 				logger.debug(strDbUsr);
 				logger.debug(strDbPwd);
@@ -85,7 +94,7 @@ public class JpfDbCompare
 					System.out.println("compare tables...");
 					//logger.debug("conn_product.isClosed()="+conn_product.isClosed());
 					CompareTable cCompareTable = new CompareTable();
-					cCompareTable.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain);
+					cCompareTable.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
 					
 					// ±È½ÏË÷Òý
 					System.out.println(".....................................................................................................................");
@@ -119,7 +128,7 @@ public class JpfDbCompare
 					System.out.println("Check sub table...");
 					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CompareSubTables cCompareSubTables = new CompareSubTables();
-					//cCompareSubTables.DoCheck(conn_develop,strDomain);
+					cCompareSubTables.DoCheck(conn_develop,strDomain);
 					//cCompareSubTables.DoCheck(conn_product,strDomain);
 					
 

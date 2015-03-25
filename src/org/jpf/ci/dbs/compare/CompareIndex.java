@@ -92,7 +92,12 @@ public class CompareIndex extends AbstractDbCompare
 
 	public Map<String, Table> GetTableIndexs(Connection transaction) throws Exception
 	{
-		String sSql = " select TABLE_NAME,COLUMN_NAME,INDEX_NAME,SEQ_IN_INDEX from information_schema.STATISTICS  where table_schema =?  and table_name not REGEXP '[a-zA-Z]_[0-9]'  order By table_name,INDEX_NAME";
+		String sSql = " select TABLE_NAME,COLUMN_NAME,INDEX_NAME,SEQ_IN_INDEX from information_schema.STATISTICS  where table_schema =?  and table_name not REGEXP '[a-zA-Z]_[0-9]'  ";
+		if (strExcludeTable !=null && strExcludeTable.length()>0)
+		{
+			sSql+=" and table_name not like %'"+strExcludeTable+"%' ";
+		}
+		sSql+=" order By table_name,INDEX_NAME";
 		
 		PreparedStatement pstmt = transaction.prepareStatement(sSql);
 		pstmt.setString(1, strDomain);

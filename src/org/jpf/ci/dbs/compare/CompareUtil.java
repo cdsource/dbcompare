@@ -72,12 +72,13 @@ public class CompareUtil
 			os.close();
 		}
 	}
-	public static void SendMail(StringBuffer[] sb,String strMailers,String strDbInfo) throws Exception
+	public static void SendMail(StringBuffer[] sb,String strMailers,String strDbInfo,String strPdmInfo) throws Exception
 	{
 		logger.debug("write Result File...");
 		
 		String strMailText=JpfFileUtil.GetFileTxt("pdm_compare.html");
 		strMailText=strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDate());
+		strMailText=strMailText.replaceAll("#wupf2", strPdmInfo);
 		strMailText=strMailText.replaceAll("#wupf3", strDbInfo);
 		
 		strMailText=strMailText.replaceAll("#wupf4", sb[0].toString()+sb[1].toString()+sb[2].toString()+sb[3].toString()+sb[4].toString()+sb[5].toString());

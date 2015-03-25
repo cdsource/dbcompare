@@ -95,7 +95,12 @@ public class CompareTable extends AbstractDbCompare
 
 	public Map<String, Table> GetTables(Connection transaction) throws Exception
 	{
-		String sSql = " select TABLE_NAME,COLUMN_NAME,IS_NULLABLE,COLUMN_TYPE,COLUMN_comment from information_schema.COLUMNS where table_schema=? and table_name not REGEXP '[a-zA-Z]_[0-9]' order By table_name,column_name";
+		String sSql = " select TABLE_NAME,COLUMN_NAME,IS_NULLABLE,COLUMN_TYPE,COLUMN_comment from information_schema.COLUMNS where table_schema=? and table_name not REGEXP '[a-zA-Z]_[0-9]' ";
+		if (strExcludeTable !=null && strExcludeTable.length()>0)
+		{
+			sSql+=" and table_name not like %'"+strExcludeTable+"%' ";
+		}
+		sSql+=" order By table_name,column_name";
 		PreparedStatement pstmt = transaction.prepareStatement(sSql);
 		pstmt.setString(1, strDomain);
 		logger.debug(sSql);
