@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hamcrest.core.Is;
 
 public class CompareTable extends AbstractDbCompare
 {
@@ -33,10 +34,7 @@ public class CompareTable extends AbstractDbCompare
 		for (Iterator iter_table = map_develop.keySet().iterator(); iter_table.hasNext();)
 		{
 			String key_table = (String) iter_table.next();
-			if (key_table.equalsIgnoreCase("test_hanyd_sys_data_history"))
-			{
-				System.out.println(key_table);
-			}
+
 			Table table_develop = map_develop.get(key_table);// 获得PDM中的表
 			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
 			if (table_pdm == null)
@@ -55,7 +53,7 @@ public class CompareTable extends AbstractDbCompare
 					} else
 					{// 说明两者都存在
 						if (!column_develop.getDataType().equals(column_product.getDataType()))// 字段类型不一致
-							CompareUtil.append(table_develop, column_develop, column_product,5, sb);
+							CompareUtil.append(table_develop, column_product,column_develop, 5, sb);
 						if (!column_develop.getNullable().equals(column_product.getNullable()))// 字段长度不一致
 							CompareUtil.append(table_develop, column_develop, column_product,6, sb);
 					}
