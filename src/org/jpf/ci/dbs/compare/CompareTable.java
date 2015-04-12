@@ -37,7 +37,7 @@ public class CompareTable extends AbstractDbCompare
 			Table table_develop = map_develop.get(key_table);// 获得PDM中的表
 			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
 			if (table_pdm == null)
-			{ // 如果获得表为空，说明PDM存在，比对库不存在
+			{ // 如果获得表为空，说明PDM不存在，比对库存在
 				CompareUtil.append(table_develop, null, null,2, sb);
 			} else
 			{ // 表相同，判断字段、字段类型、字段长度
@@ -45,16 +45,16 @@ public class CompareTable extends AbstractDbCompare
 				{
 					String key_column = (String) iter_column.next();
 					Column column_develop = (Column) table_develop.columns.get(key_column);// 获得开发库中的列
-					Column column_product = (Column) table_pdm.columns.get(key_column);// 尝试从生产库中获得同名列
-					if (column_product == null)
-					{// 如果列名为空，说明PDM存在，比对库不存在
+					Column column_pdm = (Column) table_pdm.columns.get(key_column);// 尝试从生产库中获得同名列
+					if (column_pdm == null)
+					{// 如果列名为空，说明PDM不存在，比对库存在
 						CompareUtil.append(table_develop, column_develop, null,4, sb);
 					} else
 					{// 说明两者都存在
-						if (!column_develop.getDataType().equals(column_product.getDataType()))// 字段类型不一致
-							CompareUtil.append(table_develop, column_product,column_develop, 5, sb);
-						if (!column_develop.getNullable().equals(column_product.getNullable()))// 字段长度不一致
-							CompareUtil.append(table_develop, column_develop, column_product,6, sb);
+						if (!column_develop.getDataType().equals(column_pdm.getDataType()))// 字段类型不一致
+							CompareUtil.append(table_develop, column_pdm,column_develop, 5, sb);
+						if (!column_develop.getNullable().equals(column_pdm.getNullable()))// 字段长度不一致
+							CompareUtil.append(table_develop, column_develop, column_pdm,6, sb);
 					}
 				}
 			}
@@ -63,26 +63,28 @@ public class CompareTable extends AbstractDbCompare
 		for (Iterator iter_table = map_pdm.keySet().iterator(); iter_table.hasNext();)
 		{
 			String key_table = (String) iter_table.next();
-			if (key_table.equalsIgnoreCase("test_hanyd_sys_data_history"))
-			{
-				System.out.println(key_table);
-			}
-			Table table_pdm = map_pdm.get(key_table);// 尝试从生产库中获得同名表
-			Table table_develop = map_develop.get(key_table);// 获得开发库中的表
+
+			Table table_develop = map_develop.get(key_table);// 获得PDM中的表
+			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
 			if (table_develop == null)
 			{ // 如果获得表为空，说明PDM存在，比对库不存在
-				CompareUtil.append(table_pdm, null, null,1, sb);
+				CompareUtil.append(table_develop, null, null,2, sb);
 			} else
 			{ // 表相同，判断字段、字段类型、字段长度
-				for (Iterator iter_column = table_pdm.columns
-						.keySet().iterator(); iter_column.hasNext();)
+				for (Iterator iter_column = table_pdm.columns.keySet().iterator(); iter_column.hasNext();)
 				{
 					String key_column = (String) iter_column.next();
-					Column column_product = (Column) table_pdm.columns.get(key_column);// 获得生产库中的列
-					Column column_develop = (Column) table_develop.columns.get(key_column);// 尝试从开发库中获得同名列
+					Column column_develop = (Column) table_develop.columns.get(key_column);// 获得开发库中的列
+					Column column_pdm = (Column) table_pdm.columns.get(key_column);// 尝试从生产库中获得同名列
 					if (column_develop == null)
-					{// 如果列名为空，说明生产存在，PDM不存在
-						CompareUtil.append(table_pdm, column_product, null,3, sb);
+					{// 如果列名为空，说明PDM存在，比对库不存在
+						CompareUtil.append(table_develop, column_develop, null,4, sb);
+					} else
+					{// 说明两者都存在
+						if (!column_develop.getDataType().equals(column_develop.getDataType()))// 字段类型不一致
+							CompareUtil.append(table_develop, column_develop,column_develop, 5, sb);
+						if (!column_develop.getNullable().equals(column_develop.getNullable()))// 字段长度不一致
+							CompareUtil.append(table_develop, column_develop, column_develop,6, sb);
 					}
 				}
 			}
@@ -116,7 +118,7 @@ public class CompareTable extends AbstractDbCompare
 				Column column = new Column(rs.getString("Column_Name").toLowerCase().trim(),
 						rs.getString("COLUMN_TYPE").toLowerCase().trim(), rs.getString("IS_NULLABLE").toLowerCase().trim(), rs.getString("COLUMN_comment"));
 				table.columns.put(column.getColumnName(), column);
-				map.put(rs.getString("table_name").toLowerCase().trim(), table);
+				map.put(tableName, table);
 			} else
 			{// �Ѵ��ڵı������ֶ�
 				Column column = new Column(rs.getString("Column_Name").toLowerCase().trim(),
@@ -128,6 +130,16 @@ public class CompareTable extends AbstractDbCompare
 			rs.close();
 		// transaction.finalize();
 		return map;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetHtmlName()
+	 */
+	@Override
+	String GetHtmlName()
+	{
+		// TODO Auto-generated method stub
+		return "compare_table.html";
 	}
 
 }

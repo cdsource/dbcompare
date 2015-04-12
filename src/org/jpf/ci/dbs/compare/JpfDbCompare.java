@@ -101,7 +101,7 @@ public class JpfDbCompare
 					System.out.println("compare index...");
 					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CompareIndex cCompareIndex = new CompareIndex();
-					cCompareIndex.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
+					//cCompareIndex.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
 
 					// 检查是否母表是否存在
 					//logger.info(".....................................................................................................................");
@@ -128,7 +128,7 @@ public class JpfDbCompare
 					System.out.println("Check sub table...");
 					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CompareSubTables cCompareSubTables = new CompareSubTables();
-					cCompareSubTables.DoCheck(conn_develop,strDomain);
+					//cCompareSubTables.DoCheck(conn_develop,strDomain);
 					//cCompareSubTables.DoCheck(conn_product,strDomain);
 					
 

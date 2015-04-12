@@ -27,7 +27,7 @@ public abstract class AbstractDbCompare
 			new StringBuffer(),new StringBuffer() };
 	
 	abstract void DoWork(Connection conn_product,Connection conn_develop) throws Exception;
-
+	abstract String GetHtmlName();
 	/**
 	 * 
 	 */
@@ -40,7 +40,7 @@ public abstract class AbstractDbCompare
     		this.strMails=strMails;
     		this.strExcludeTable=strExcludeTable;
     		DoWork( conn_product, conn_develop);    	
-    		CompareUtil.SendMail(sb, strMails,strDbUrl,strPdmInfo); 
+    		CompareUtil.SendMail(sb, strMails,strDbUrl,strPdmInfo,GetHtmlName()); 
 		} catch (Exception ex)
 		{
 			// TODO: handle exception

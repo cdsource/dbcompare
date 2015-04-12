@@ -72,22 +72,22 @@ public class CompareUtil
 			os.close();
 		}
 	}
-	public static void SendMail(StringBuffer[] sb,String strMailers,String strDbInfo,String strPdmInfo) throws Exception
+	public static void SendMail(StringBuffer[] sb,String strMailers,String strDbInfo,String strPdmInfo,String strHtmlName) throws Exception
 	{
 		logger.debug("write Result File...");
 		
-		String strMailText=JpfFileUtil.GetFileTxt("pdm_compare.html");
+		String strMailText=JpfFileUtil.GetFileTxt(strHtmlName);
 		strMailText=strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDate());
 		strMailText=strMailText.replaceAll("#wupf2", strPdmInfo);
 		strMailText=strMailText.replaceAll("#wupf3", strDbInfo);
 		
 		strMailText=strMailText.replaceAll("#wupf4", sb[0].toString()+sb[1].toString()+sb[2].toString()+sb[3].toString()+sb[4].toString()+sb[5].toString());
-		JpfMail.SendMail(strMailers, strMailText, "GBK", "数据库比对结果");
+		JpfMail.SendMail(strMailers, strMailText, "GBK", "数据库比对结果(自动发出)");
 	}
 	/*
 	 * 索引使用
 	 */
-	public static void appendIndex(Table table, TableIndex cTableIndex, IndexColumn cIndexColumn, int flag,
+	public static void appendIndex(Table table, TableIndex cTableIndexPdm, TableIndex cTableIndexDev, int flag,
 			StringBuffer[] sb) throws Exception
 	{
 		iCount++;
@@ -98,55 +98,32 @@ public class CompareUtil
 		switch (flag)
 		{
 		case 1:
-			System.out.println("1、PDM存在，开发不存在的表：" + table.getTableName());// 跳过
-		    sb[0].append("<tr").append(strClassTypeString).append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">1").append(table.getTableName())
-		    .append("</th><td></td><td ></td><td ></td><td ></td><td ></td></tr>");
+			System.out.println("1、PDM存在，开发不存在的索引：" + table.getTableName());    
+			sb[0].append("<tr").append(strClassTypeString).append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">7")
+		    .append(table.getTableName())
+			.append("</th><td >") .append(cTableIndexPdm.getIndexName()).append("</td><td ></td><td >")
+		    .append("</td><td >")
+		   .append("</td><td ></td></tr>");
 			break;
 		case 2:
-			System.out.println("2、PDM不存在，开发存在的表：" + table.getTableName());// 需要人工判断脚本
-			sb[1].append("<tr ").append(strClassTypeString).append("><th scope=\"row\"  class=\"specalt\">2")
-		    .append("</th><td></td><td ></td><td >").append(table.getTableName()).append("</td><td ></td><td ></td></tr>");
-		
+			System.out.println("2、PDM不存在，开发存在的索引：" + table.getTableName());// 需要人工判断脚本
+			sb[1].append("<tr").append(strClassTypeString).append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">8")
+		    .append("</th><td ></td><td ></td><td >")
+		    .append(table.getTableName()).append("</td><td >")
+		    .append(cTableIndexDev.getIndexName()).append("</td><td ></td></tr>");
 			break;
 		case 3:
-			System.out.println("3、PDM存在，开发不存在的字段：" + table.getTableName()
-					+ " | " + cTableIndex.getIndexName());// 需人工判断如何处理
-			sb[2].append(table.getTableName() + " | " + cTableIndex.getIndexName()
-					+ "\n");
-			break;
-		case 4:
-			System.out.println("4、PDM不存在，开发存在的索引：" + table.getTableName()
-					+ " | " + cTableIndex.getIndexName());// 需要人工判断脚本
-			sb[3].append(table.getTableName() + " | " + cTableIndex.getIndexName()
-					+ "\n");
-			break;
-		case 5:
-			System.out.println("5、表和字段都相同，但字段类型不同的内容：" + table.getTableName()
-					+ " | " + cTableIndex.getIndexName() + " | "
-					+ cIndexColumn.getColumnName());
-			sb[4].append(table.getTableName() + " | " + cTableIndex.getIndexName()
-					+ " | " + cIndexColumn.getSeqIndex() + "\n");
-			break;
-		case 6:
-			System.out.println("6、表和字段、字段类型都相同，但字段长度不同的内容："
-					+ table.getTableName() + " | " + cTableIndex.getIndexName()
-					+ " | " + cIndexColumn.getColumnName());// 需要人工判断脚本
-			sb[5].append(table.getTableName() + " | " + cTableIndex.getIndexName()
-					+ " | " + cIndexColumn.getColumnName() + "\n");
-			break;
-		case 7:
-			System.out.println("7、表和索引相同，字段不存在内容："
-					+ table.getTableName() + " | " + cTableIndex.getIndexName()
-					+ " | " + cIndexColumn.getColumnName());// 需要人工判断脚本
-			sb[5].append(table.getTableName() + " | " + cTableIndex.getIndexName()
-					+ " | " + cIndexColumn.getColumnName() + "\n");
-			break;
-		case 8:
-			System.out.println("8、表和索引、字段都相同，索引字段位置不同的内容："
-					+ table.getTableName() + " | " + cTableIndex.getIndexName()
-					+ " | " + cIndexColumn.getColumnName());// 需要人工判断脚本
-			sb[5].append(table.getTableName() + " | " + cTableIndex.getIndexName()
-					+ " | " + cIndexColumn.getColumnName() + "\n");
+			System.out.println("3、 索引内容不同：" + table.getTableName()
+					+ " | " + cTableIndexPdm.getIndexName());// 需人工判断如何处理
+			sb[2].append("<tr").append(strClassTypeString).append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">9")
+		    .append(table.getTableName())
+			.append("</th><td >") .append(cTableIndexPdm.getIndexName()).append("</td><td >")
+			.append(cTableIndexPdm.getColNames())
+			.append("</td><td >")
+		    .append("</td><td >")
+		   .append("</td><td >")
+		   .append(cTableIndexDev.getColNames())
+		   .append("</td></tr>");
 			break;
 
 		}

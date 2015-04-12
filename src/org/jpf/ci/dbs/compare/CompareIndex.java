@@ -21,116 +21,122 @@ public class CompareIndex extends AbstractDbCompare
 {
 	private static final Logger logger = LogManager.getLogger();
 
-
 	public void DoWork(Connection conn_product, Connection conn_develop) throws Exception
 	{
 
-			// 生产数据库连接
-			Map<String, Table> map_product = GetTableIndexs(conn_product);
-			// 开发数据库连接
-			Map<String, Table> map_develop = GetTableIndexs(conn_develop);
-			// 遍历开发库Map
-			for (Iterator iter_table = map_develop.keySet().iterator(); iter_table.hasNext();)
+		// 生产数据库连接
+		Map<String, Table> map_pdm = GetTableIndexs(conn_product);
+		// 开发数据库连接
+		Map<String, Table> map_develop = GetTableIndexs(conn_develop);
+		// 遍历开发库Map
+		for (Iterator iter_table = map_develop.keySet().iterator(); iter_table.hasNext();)
+		{
+			String key_table = (String) iter_table.next();
+			// 获得开发库中的表
+			Table table_develop = map_develop.get(key_table);
+			// 尝试从生产库中获得同名表
+			Table table_pdm = map_pdm.get(key_table);
+			if (table_pdm != null)
 			{
-				String key_table = (String) iter_table.next();
-				// 获得开发库中的表
-				Table table_develop = map_develop.get(key_table);
-				// 尝试从生产库中获得同名表
-				Table table_product = map_product.get(key_table);
-				if (table_product == null)
-				{ // 如果获得表为空，说明开发存在，生产不存在
-					CompareUtil.appendIndex(table_develop, null, null, 2, sb);
-				} else
-				{ // 表相同，判断字段、字段类型、字段长度
-					for (Iterator iter_column = table_develop.indexs.keySet().iterator(); iter_column.hasNext();)
-					{
-						String key_index = (String) iter_column.next();
-						// System.out.println(key_index);
-						// 获得开发库中的索引
-						TableIndex index_develop = (TableIndex) table_develop.indexs.get(key_index);
-						// 尝试从生产库中获得同名索引
-						TableIndex index_product = (TableIndex) table_product.indexs.get(key_index);
-						if (index_product == null)
-						{// 如果索引名为空，说明开发存在，生产不存在
-							CompareUtil.appendIndex(table_develop, index_develop, null, 4, sb);
-						} else
-						{// 说明两者都存在
-							for (Iterator iter_idx_column = index_develop.indexColumns.keySet().iterator(); iter_idx_column
-									.hasNext();)
-							{
-								String key_index_name = (String) iter_idx_column.next();
-								// System.out.println(key_index);
-								IndexColumn indexcol_devlop = (IndexColumn) index_develop.indexColumns
-										.get(key_index_name);
-								IndexColumn indexcol_product = (IndexColumn) index_product.indexColumns
-										.get(key_index_name);
-								if (indexcol_product == null)
-								{
-									// System.out.println("索引字段不存在：" +
-									// key_index);
-									CompareUtil.appendIndex(table_develop, index_develop, indexcol_devlop, 7, sb);
-								} else
-								{
-									if (indexcol_devlop.getSeqIndex() != indexcol_product.getSeqIndex())
-									{
-										System.out.println("索引位置不同：" + key_table + " " + key_index + " "
-												+ key_index_name + " " + indexcol_devlop.getSeqIndex() + " <>"
-												+ indexcol_product.getSeqIndex());
-										CompareUtil.appendIndex(table_develop, index_develop, indexcol_product, 8, sb);
-									}
-								}
-							}
+				for (Iterator iter_column = table_develop.indexs.keySet().iterator(); iter_column.hasNext();)
+				{
+					String key_index = (String) iter_column.next();
+					// System.out.println(key_index);
+					// 获得开发库中的索引
+					TableIndex index_develop = (TableIndex) table_develop.indexs.get(key_index);
+					// 尝试从PDM库中获得同名索引
+					TableIndex index_pdm = (TableIndex) table_pdm.indexs.get(key_index);
+					if (index_pdm == null)
+					{// 如果索引名为空，说明开发存在，pdm不存在
+						CompareUtil.appendIndex(table_develop, null,index_develop,  2, sb);
+					} else
+					{// 说明两者都存在
+
+						if (!index_develop.getColNames().equalsIgnoreCase(index_pdm.getColNames()))
+						{
+							CompareUtil.appendIndex(table_develop, index_pdm,index_develop,  3, sb);
 						}
 					}
 				}
 			}
+		}
 
-			// 遍历生产库Map
-
+		// 遍历PDMMap
+		for (Iterator iter_table = map_pdm.keySet().iterator(); iter_table.hasNext();)
+		{
+			String key_table = (String) iter_table.next();
+			// 获得开发库中的表
+			Table table_develop = map_develop.get(key_table);
+			// 尝试从生产库中获得同名表
+			Table table_pdm = map_pdm.get(key_table);
+			if (table_develop != null)
+			{
+				for (Iterator iter_column = table_pdm.indexs.keySet().iterator(); iter_column.hasNext();)
+				{
+					String key_index = (String) iter_column.next();
+					// System.out.println(key_index);
+					// 获得开发库中的索引
+					TableIndex index_develop = (TableIndex) table_develop.indexs.get(key_index);
+					// 尝试从PDM库中获得同名索引
+					TableIndex index_pdm = (TableIndex) table_pdm.indexs.get(key_index);
+					if (index_develop == null)
+					{// 如果索引名为空，说明开发存在，pdm不存在
+						CompareUtil.appendIndex(table_pdm, index_pdm, null, 1, sb);
+					} else
+					{// 说明两者都存在
+						
+						if (!index_develop.getColNames().equalsIgnoreCase(index_pdm.getColNames()))
+						{
+							CompareUtil.appendIndex(table_develop, index_pdm,index_develop,  3, sb);
+						}
+					}
+				}
+			}
+		}
 
 	}
 
 	public Map<String, Table> GetTableIndexs(Connection transaction) throws Exception
 	{
 		String sSql = " select TABLE_NAME,COLUMN_NAME,INDEX_NAME,SEQ_IN_INDEX from information_schema.STATISTICS  where table_schema =?  and table_name not REGEXP '[a-zA-Z]_[0-9]'  ";
-		if (strExcludeTable !=null && strExcludeTable.length()>0)
+		if (strExcludeTable != null && strExcludeTable.length() > 0)
 		{
-			sSql+=" and table_name not like %'"+strExcludeTable+"%' ";
+			sSql += " and table_name not like %'" + strExcludeTable + "%' ";
 		}
-		sSql+=" order By table_name,INDEX_NAME";
-		
+		sSql += " order By table_name,INDEX_NAME,SEQ_IN_INDEX";
+
 		PreparedStatement pstmt = transaction.prepareStatement(sSql);
 		pstmt.setString(1, strDomain);
 		logger.debug(sSql);
-		System.out.println("Domain:"+strDomain);
+		logger.debug("Domain:" + strDomain);
 
 		ResultSet rs = pstmt.executeQuery();
-		
+
 		Map<String, Table> map = new HashMap<String, Table>();
 		String tableName = "";
-		Table table = null;
+		Table cTable = null;
 		while (rs.next())
 		{
-			if (!tableName.equals(rs.getString("table_name")))
+			if (!tableName.equals(rs.getString("table_name").toLowerCase().trim()))
 			{// 一张新表
-				tableName = rs.getString("table_name");
-				table = new Table(tableName);
+				tableName = rs.getString("table_name").toLowerCase().trim();
+				cTable = new Table(tableName);
 				TableIndex cTableIndex = new TableIndex(rs.getString("INDEX_NAME"));
-				cTableIndex.AddIndexColumn(rs.getString("Column_Name"), rs.getInt("SEQ_IN_INDEX"));
-				table.indexs.put(cTableIndex.getIndexName(), cTableIndex);
-				map.put(rs.getString("table_name"), table);
+				cTableIndex.AddColName(rs.getString("COLUMN_NAME"));
+				cTable.indexs.put(cTableIndex.getIndexName(), cTableIndex);
+				map.put(tableName, cTable);
 			} else
 			{// 已存在的表，增加字段
-				TableIndex cTableIndex = (TableIndex) table.indexs.get(rs.getString("INDEX_NAME"));
+				TableIndex cTableIndex = (TableIndex) cTable.indexs.get(rs.getString("INDEX_NAME"));
 				if (cTableIndex == null)
 				{
 					TableIndex cTableIndex2 = new TableIndex(rs.getString("INDEX_NAME"));
-					cTableIndex2.AddIndexColumn(rs.getString("Column_Name"), rs.getInt("SEQ_IN_INDEX"));
-					table.indexs.put(cTableIndex2.getIndexName(), cTableIndex2);
+					cTableIndex2.AddColName(rs.getString("COLUMN_NAME"));
+					cTable.indexs.put(cTableIndex2.getIndexName(), cTableIndex2);
 				} else
 				{
-					cTableIndex.AddIndexColumn(rs.getString("Column_Name"), rs.getInt("SEQ_IN_INDEX"));
-					table.indexs.put(cTableIndex.getIndexName(), cTableIndex);
+					cTableIndex.AddColName(rs.getString("COLUMN_NAME"));
+					cTable.indexs.put(cTableIndex.getIndexName(), cTableIndex);
 				}
 			}
 		}
@@ -140,7 +146,14 @@ public class CompareIndex extends AbstractDbCompare
 		return map;
 	}
 
-
-
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetHtmlName()
+	 */
+	@Override
+	String GetHtmlName()
+	{
+		// TODO Auto-generated method stub
+		return "compare_index.html";
+	}
 
 }

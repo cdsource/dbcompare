@@ -7,27 +7,24 @@
 
 package org.jpf.ci.dbs.compare;
 
-import java.util.HashMap;
-
 /**
  * 
  */
 public class TableIndex
 {
-    //Ë÷Òý£¬×é¼þ
-	public HashMap indexColumns = new HashMap();
+
+	private String indexName;
+	private String colNames="";
 	
 	public String getIndexName()
 	{
 		return indexName;
 	}
+
 	public void setIndexName(String indexName)
 	{
 		this.indexName = indexName;
 	}
-
-
-	private String indexName;
 
 	/**
 	 * 
@@ -38,10 +35,19 @@ public class TableIndex
 		this.indexName = indexName;
 	}
 	
-	public void AddIndexColumn(String columnName, int seqIndex)
+	public void AddColName(String columnName)
 	{
-		IndexColumn cIndexColumn = new IndexColumn(columnName,seqIndex);
-		indexColumns.put(columnName, cIndexColumn);
+		colNames+=columnName+",";
 
+	}
+
+	public String getColNames()
+	{
+		return colNames;
+	}
+
+	public void setColNames(String colNames)
+	{
+		this.colNames = colNames;
 	}
 }
