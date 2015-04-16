@@ -33,12 +33,13 @@ public class CompareTable extends AbstractDbCompare
 		for (Iterator iter_table = map_develop.keySet().iterator(); iter_table.hasNext();)
 		{
 			String key_table = (String) iter_table.next();
-
+   
 			Table table_develop = map_develop.get(key_table);// 获得PDM中的表
 			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
 			if (table_pdm == null)
 			{ // 如果获得表为空，说明PDM不存在，比对库存在
 				CompareUtil.append(table_develop, null, null,2, sb);
+				iCount2++;
 			} else
 			{ // 表相同，判断字段、字段类型、字段长度
 				for (Iterator iter_column = table_develop.columns.keySet().iterator(); iter_column.hasNext();)
@@ -49,12 +50,18 @@ public class CompareTable extends AbstractDbCompare
 					if (column_pdm == null)
 					{// 如果列名为空，说明PDM不存在，比对库存在
 						CompareUtil.append(table_develop, column_develop, null,4, sb);
+						iCount4++;
 					} else
 					{// 说明两者都存在
-						if (!column_develop.getDataType().equals(column_pdm.getDataType()))// 字段类型不一致
-							CompareUtil.append(table_develop, column_pdm,column_develop, 5, sb);
-						if (!column_develop.getNullable().equals(column_pdm.getNullable()))// 字段长度不一致
-							CompareUtil.append(table_develop, column_develop, column_pdm,6, sb);
+						if (!column_develop.getDataType().equalsIgnoreCase(column_pdm.getDataType()))// 字段类型不一致
+						{	CompareUtil.append(table_develop, column_develop,column_pdm, 5, sb);
+						    iCount5++;
+						}
+						 if (!column_develop.getNullable().equalsIgnoreCase(column_pdm.getNullable()))// 是否为空不一致
+						 {	
+							 CompareUtil.append(table_develop, column_develop, column_pdm,6, sb);
+						     iCount6++;
+						 }
 					}
 				}
 			}
@@ -68,7 +75,8 @@ public class CompareTable extends AbstractDbCompare
 			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
 			if (table_develop == null)
 			{ // 如果获得表为空，说明PDM存在，比对库不存在
-				CompareUtil.append(table_develop, null, null,2, sb);
+				CompareUtil.append(table_pdm, null, null,1, sb);
+				iCount1++;
 			} else
 			{ // 表相同，判断字段、字段类型、字段长度
 				for (Iterator iter_column = table_pdm.columns.keySet().iterator(); iter_column.hasNext();)
@@ -78,13 +86,20 @@ public class CompareTable extends AbstractDbCompare
 					Column column_pdm = (Column) table_pdm.columns.get(key_column);// 尝试从生产库中获得同名列
 					if (column_develop == null)
 					{// 如果列名为空，说明PDM存在，比对库不存在
-						CompareUtil.append(table_develop, column_develop, null,4, sb);
+						CompareUtil.append(table_develop, column_pdm, null,3, sb);
+						iCount3++;
 					} else
 					{// 说明两者都存在
-						if (!column_develop.getDataType().equals(column_develop.getDataType()))// 字段类型不一致
-							CompareUtil.append(table_develop, column_develop,column_develop, 5, sb);
-						if (!column_develop.getNullable().equals(column_develop.getNullable()))// 字段长度不一致
-							CompareUtil.append(table_develop, column_develop, column_develop,6, sb);
+						if (!column_pdm.getDataType().equalsIgnoreCase(column_develop.getDataType()))// 字段类型不一致
+						{	
+							CompareUtil.append(table_develop, column_pdm,column_develop, 5, sb);
+							iCount5++;
+						}
+						if (!column_pdm.getNullable().equalsIgnoreCase(column_develop.getNullable()))// 是否为空不一致
+						{
+							CompareUtil.append(table_develop, column_pdm, column_develop,6, sb);
+							iCount6++;
+						}
 					}
 				}
 			}
