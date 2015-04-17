@@ -94,7 +94,7 @@ public class JpfDbCompare
 					System.out.println("compare tables...");
 					//logger.debug("conn_product.isClosed()="+conn_product.isClosed());
 					CompareTable cCompareTable = new CompareTable();
-					cCompareTable.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
+					//cCompareTable.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
 					
 					// ±È½ÏË÷Òý
 					System.out.println(".....................................................................................................................");
@@ -128,8 +128,7 @@ public class JpfDbCompare
 					System.out.println("Check sub table...");
 					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CompareSubTables cCompareSubTables = new CompareSubTables();
-					//cCompareSubTables.DoCheck(conn_develop,strDomain);
-					//cCompareSubTables.DoCheck(conn_product,strDomain);
+					cCompareSubTables.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
 					
 
 				} catch (Exception ex)

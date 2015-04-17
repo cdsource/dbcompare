@@ -54,12 +54,12 @@ public class CompareTable extends AbstractDbCompare
 					} else
 					{// 说明两者都存在
 						if (!column_develop.getDataType().equalsIgnoreCase(column_pdm.getDataType()))// 字段类型不一致
-						{	CompareUtil.append(table_develop, column_develop,column_pdm, 5, sb);
+						{	CompareUtil.append(table_develop, column_pdm,column_develop, 5, sb);
 						    iCount5++;
 						}
 						 if (!column_develop.getNullable().equalsIgnoreCase(column_pdm.getNullable()))// 是否为空不一致
 						 {	
-							 CompareUtil.append(table_develop, column_develop, column_pdm,6, sb);
+							 CompareUtil.append(table_develop, column_pdm, column_develop,6, sb);
 						     iCount6++;
 						 }
 					}
@@ -92,7 +92,7 @@ public class CompareTable extends AbstractDbCompare
 					{// 说明两者都存在
 						if (!column_pdm.getDataType().equalsIgnoreCase(column_develop.getDataType()))// 字段类型不一致
 						{	
-							CompareUtil.append(table_develop, column_pdm,column_develop, 5, sb);
+							CompareUtil.append(table_develop,column_pdm, column_develop, 5, sb);
 							iCount5++;
 						}
 						if (!column_pdm.getNullable().equalsIgnoreCase(column_develop.getNullable()))// 是否为空不一致

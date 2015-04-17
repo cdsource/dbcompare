@@ -1,8 +1,8 @@
 /** 
- * @author ÎâÆ½¸£ 
+ * @author ï¿½ï¿½Æ½ï¿½ï¿½ 
  * E-mail:wupf@asiainfo.com 
- * @version ´´½¨Ê±¼ä£º2015Äê2ÔÂ8ÈÕ ÏÂÎç10:09:38 
- * ÀàËµÃ÷ 
+ * @version ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ä£º2015ï¿½ï¿½2ï¿½ï¿½8ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½10:09:38 
+ * ï¿½ï¿½Ëµï¿½ï¿½ 
  */
 
 package org.jpf.ci.dbs.compare;
@@ -13,90 +13,82 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * 
  */
-public class CompareSubTables
+public class CompareSubTables extends AbstractDbCompare
 {
 	private static final Logger logger = LogManager.getLogger();
 
-	public StringBuffer[] sb = { new StringBuffer(), new StringBuffer(),
-			new StringBuffer(), new StringBuffer(), new StringBuffer(),
-			new StringBuffer() };
-
-	public static void main(String[] args) throws Exception
+    private void  CheckSubTables(Map<String, Table> map_dev)
 	{
-		CompareSubTables cCompareSubTables = new CompareSubTables();
-
-	}
-
-	public CompareSubTables()
-	{
-	}
-
-	public void DoCheck(Connection conn, String strDomain) throws Exception
-	{
-		try
+		
+    	for (Iterator iter_table = map_dev.keySet().iterator(); iter_table.hasNext();)
 		{
-			compareTables(conn, strDomain); // ±È½ÏÊı¾İ¿â
-			CompareUtil.writeFile(sb); // Ğ´ÈëÎÄ¼ş
-		} catch (Exception ex)
-		{
-			// TODO: handle exception
-			ex.printStackTrace();
-		}
-	}
-
-	private void compareTables(Connection conn, String strDomain) throws Exception
-	{
-
-		// Éú²úÊı¾İ¿âÁ¬½Ó
-
-		Map<String, Table> map_product = getTables(conn, strDomain);
-
-		String sSql = " SELECT t1.base_name FROM zd.sys_partition_rule t1,information_schema.TABLES t2 where t1.base_name=t2.table_name and t2.table_schema =?";
-		PreparedStatement pstmt1 = conn.prepareStatement(sSql);
-		logger.debug(sSql);
-		pstmt1.setString(1, strDomain);
-		ResultSet rs = pstmt1.executeQuery();
-		while (rs.next())
-		{
-			String strParentTableName = rs.getString("base_name");
-			System.out.println("checking parent table:" + strParentTableName );
-			String strFindSubSql = "SELECT  * FROM information_schema.TABLES WHERE table_schema =? and table_name REGEXP '^"
-					+ strParentTableName.toLowerCase() + "_[0-9]'";
-			PreparedStatement pstmt = conn.prepareStatement(strFindSubSql);
-			pstmt.setString(1, strDomain);
-			logger.debug(strFindSubSql);
-			ResultSet rs2 = pstmt.executeQuery();
-			while (rs2.next())
+			String key_table = (String) iter_table.next();
+			
+			if (!CompareUtil.IsSubTable(key_table))
 			{
-				String strChildTableName = rs2.getString("TABLE_NAME");
-				Table table_parent = map_product.get(strParentTableName);
-				if (null == table_parent)
-				{
-					System.out.println("miss parent table:" + strParentTableName + "   " + strChildTableName);
-					continue;
-				}
-				Table table_child = map_product.get(strChildTableName);
+				//åˆ†è¡¨
+				//logger.info(key_table);
+				iter_table.remove();
+			}
+		}
+    	
+	}
+  
+	public void DoWork(Connection conn_pdm, Connection conn_develop) throws Exception
+	{
 
-				for (Iterator iter_column = table_parent.columns.keySet().iterator(); iter_column.hasNext();)
+		// PDMæ•°æ®åº“è¿æ¥
+		Map<String, Table> map_pdm = GetTables(conn_pdm);
+		// å¼€å‘æ•°æ®åº“è¿æ¥
+
+		Map<String, Table> map_develop = GetTables(conn_develop);
+		logger.info(map_develop.size());
+		CheckSubTables(map_develop);
+		logger.info(map_develop.size());
+		
+		// éå†å¼€å‘åº“Map
+		for (Iterator iter_table = map_develop.keySet().iterator(); iter_table.hasNext();)
+		{
+			String key_table = (String) iter_table.next();
+   
+			Table table_develop = map_develop.get(key_table);// è·å¾—PDMä¸­çš„è¡¨
+			key_table=CompareUtil. GetParentTableName(key_table);
+			Table table_pdm = map_pdm.get(key_table);// å°è¯•ä»æ¯”å¯¹åº“ä¸­è·å¾—åŒåè¡¨
+			if (table_pdm == null)
+			{ // å¦‚æœè·å¾—è¡¨ä¸ºç©ºï¼Œè¯´æ˜PDMä¸å­˜åœ¨ï¼Œæ¯”å¯¹åº“å­˜åœ¨
+				CompareUtil.append(table_develop, null, null,2, sb);
+				iCount2++;
+			} else
+			{ // è¡¨ç›¸åŒï¼Œåˆ¤æ–­å­—æ®µã€å­—æ®µç±»å‹ã€å­—æ®µé•¿åº¦
+				for (Iterator iter_column = table_develop.columns.keySet().iterator(); iter_column.hasNext();)
 				{
 					String key_column = (String) iter_column.next();
-					Column column_develop = (Column) table_child.columns.get(key_column);// »ñµÃ¿ª·¢¿âÖĞµÄÁĞ
-					Column column_product = (Column) table_child.columns.get(key_column);// ³¢ÊÔ´ÓÉú²ú¿âÖĞ»ñµÃÍ¬ÃûÁĞ
-					if (column_product == null)
-					{// Èç¹ûÁĞÃûÎª¿Õ£¬ËµÃ÷¿ª·¢´æÔÚ£¬Éú²ú²»´æÔÚ
-						CompareUtil.append(table_parent, column_develop, null,4, sb);
+					Column column_develop = (Column) table_develop.columns.get(key_column);// è·å¾—å¼€å‘åº“ä¸­çš„åˆ—
+					Column column_pdm = (Column) table_pdm.columns.get(key_column);// å°è¯•ä»ç”Ÿäº§åº“ä¸­è·å¾—åŒååˆ—
+					if (column_pdm == null)
+					{// å¦‚æœåˆ—åä¸ºç©ºï¼Œè¯´æ˜PDMä¸å­˜åœ¨ï¼Œæ¯”å¯¹åº“å­˜åœ¨
+						CompareUtil.append(table_develop, column_develop, null,4, sb);
+						iCount4++;
 					} else
-					{// ËµÃ÷Á½Õß¶¼´æÔÚ
-						if (!column_develop.getDataType().equals(column_product.getDataType()))// ×Ö¶ÎÀàĞÍ²»Ò»ÖÂ
-							CompareUtil.append(table_parent, column_develop, column_product,5, sb);
-						if (column_develop.getNullable().equals(column_product.getNullable()))// ×Ö¶Î³¤¶È²»Ò»ÖÂ
-							CompareUtil.append(table_parent, column_develop, column_product,6, sb);
+					{// è¯´æ˜ä¸¤è€…éƒ½å­˜åœ¨
+						if (!column_develop.getDataType().equalsIgnoreCase(column_pdm.getDataType()))// å­—æ®µç±»å‹ä¸ä¸€è‡´
+						{	CompareUtil.append(table_develop, column_pdm,column_develop, 5, sb);
+						    iCount5++;
+						}
+						 if (!column_develop.getNullable().equalsIgnoreCase(column_pdm.getNullable()))// æ˜¯å¦ä¸ºç©ºä¸ä¸€è‡´
+						 {	
+							 CompareUtil.append(table_develop, column_pdm, column_develop,6, sb);
+						     iCount6++;
+						 }
 					}
 				}
 			}
@@ -104,33 +96,37 @@ public class CompareSubTables
 
 	}
 
-	public Map<String, Table> getTables(Connection transaction, String strDomain) throws Exception
+	public Map<String, Table> GetTables(Connection transaction) throws Exception
 	{
-		String sSql = " select TABLE_NAME,COLUMN_NAME,IS_NULLABLE,COLUMN_TYPE from information_schema.COLUMNS where table_schema =? order By table_name,column_name";
+		String sSql = " select TABLE_NAME,COLUMN_NAME,IS_NULLABLE,COLUMN_TYPE,COLUMN_comment from information_schema.COLUMNS where table_schema=? ";
+		if (strExcludeTable !=null && strExcludeTable.length()>0)
+		{
+			sSql+=" and table_name not like %'"+strExcludeTable+"%' ";
+		}
+		sSql+=" order By table_name,column_name";
 		PreparedStatement pstmt = transaction.prepareStatement(sSql);
 		pstmt.setString(1, strDomain);
 		logger.debug(sSql);
-		System.out.println("Domain:"+strDomain);
+		System.out.println("Domain="+strDomain);
 
 		ResultSet rs = pstmt.executeQuery();
-
 		Map<String, Table> map = new HashMap<String, Table>();
 		String tableName = "";
 		Table table = null;
 		while (rs.next())
 		{
-			if (!tableName.equals(rs.getString("table_name")))
-			{// Ò»ÕÅĞÂ±í
-				tableName = rs.getString("table_name");
+			if (!tableName.equals(rs.getString("table_name").toLowerCase().trim()))
+			{// Ò»ï¿½ï¿½ï¿½Â±ï¿½
+				tableName = rs.getString("table_name").toLowerCase().trim();
 				table = new Table(tableName);
-				Column column = new Column(rs.getString("Column_Name"),
-						rs.getString("COLUMN_TYPE"), rs.getString("IS_NULLABLE"), "");
+				Column column = new Column(rs.getString("Column_Name").toLowerCase().trim(),
+						rs.getString("COLUMN_TYPE").toLowerCase().trim(), rs.getString("IS_NULLABLE").toLowerCase().trim(), rs.getString("COLUMN_comment"));
 				table.columns.put(column.getColumnName(), column);
-				map.put(rs.getString("table_name"), table);
+				map.put(tableName, table);
 			} else
-			{// ÒÑ´æÔÚµÄ±í£¬Ôö¼Ó×Ö¶Î
-				Column column = new Column(rs.getString("Column_Name"),
-						rs.getString("COLUMN_TYPE"), rs.getString("IS_NULLABLE"), "");
+			{// ï¿½Ñ´ï¿½ï¿½ÚµÄ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¶ï¿½
+				Column column = new Column(rs.getString("Column_Name").toLowerCase().trim(),
+						rs.getString("COLUMN_TYPE").toLowerCase().trim(), rs.getString("IS_NULLABLE").toLowerCase().trim(), rs.getString("COLUMN_comment"));
 				table.columns.put(column.getColumnName(), column);
 			}
 		}
@@ -138,5 +134,15 @@ public class CompareSubTables
 			rs.close();
 		// transaction.finalize();
 		return map;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetHtmlName()
+	 */
+	@Override
+	String GetHtmlName()
+	{
+		// TODO Auto-generated method stub
+		return "compare_table.html";
 	}
 }
