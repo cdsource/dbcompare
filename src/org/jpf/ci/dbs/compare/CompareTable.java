@@ -90,6 +90,7 @@ public class CompareTable extends AbstractDbCompare
 						iCount3++;
 					} else
 					{// 说明两者都存在
+						/* 
 						if (!column_pdm.getDataType().equalsIgnoreCase(column_develop.getDataType()))// 字段类型不一致
 						{	
 							CompareUtil.append(table_develop,column_pdm, column_develop, 5, sb);
@@ -100,6 +101,7 @@ public class CompareTable extends AbstractDbCompare
 							CompareUtil.append(table_develop, column_pdm, column_develop,6, sb);
 							iCount6++;
 						}
+						*/ 
 					}
 				}
 			}

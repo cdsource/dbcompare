@@ -27,8 +27,10 @@ public class CompareUtil
 	// 存放修改SQL
 	private static StringBuffer sbAlterSql = new StringBuffer();
 
-	public static void CleanBuf()
+	private static String DbDomain="";
+	public static void CleanBuf(String strDomain)
 	{
+		DbDomain=strDomain;
 		sbAlterSql.setLength(0);
 	}
 
@@ -90,11 +92,12 @@ public class CompareUtil
 		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDate());
 		strMailText = strMailText.replaceAll("#wupf2", strPdmInfo);
 		strMailText = strMailText.replaceAll("#wupf3", strDbInfo);
-
-		strMailText = strMailText.replaceAll(
-				"#wupf4",
-				sb[0].toString() + sb[1].toString() + sb[2].toString() + sb[3].toString() + sb[4].toString()
-						+ sb[5].toString());
+		String tmpStr = sb[0].toString() + sb[1].toString() + sb[2].toString() + sb[3].toString() + sb[4].toString()
+				+ sb[5].toString();
+		tmpStr = java.util.regex.Matcher.quoteReplacement(tmpStr);
+		strMailText = strMailText.replaceAll("#wupf4", tmpStr);
+		
+		strMailText+=sbAlterSql.toString();
 		JpfMail.SendMail(strMailers, strMailText, "GBK", "数据库比对结果(自动发出) 比对库" + strDbInfo);
 	}
 
@@ -187,7 +190,7 @@ public class CompareUtil
 					.append("</th><td>")
 					.append(table.getTableName())
 					.append("</td><td></td><td ></td><td ></td><td ></td><td ></td></tr>");
-			sbAlterSql.append("create table ").append("\n");
+			//sbAlterSql.append("create table ").append("\n");
 			// System.out.println(sb[0]);// 跳过
 			break;
 		case 2:
@@ -198,18 +201,39 @@ public class CompareUtil
 					.append("</td><td></td><td ></td><td ></td>").append(table.getTableName())
 					.append("<td ></td><td ></td></tr>");
 
-			sbAlterSql.append("drop table ").append(table.getTableName()).append("\n");
+			sbAlterSql.append("drop table ").append(DbDomain).append(".").append(table.getTableName()).append(";<br>");
 			// System.out.println(sb[1]);
 			break;
 		case 3:
 			System.out.println("3、PDM存在，比对库不存在的字段：" + table.getTableName()
 					+ " | " + pmdColumn.getColumnName());// 需人工判断如何处理
 			sb[2].append("<tr").append(strClassTypeString)
-					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">3").append("</th><td>")
-					.append(table.getTableName())
-					.append("</td><td >").append(pmdColumn.getColumnName()).append("</td><td >")
-					.append(pmdColumn.getDataType()).append("</td><td ></td><td ></td><td ></td></tr>");
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">3").append("</th><td>");
+			tmpStr = GetParentTableName(table.getTableName());
+			if (tmpStr.equalsIgnoreCase(table.getTableName()))
+			{
+				sb[2].append(table.getTableName());
+			} else
+			{
+				sb[2].append(tmpStr);
+			}
+			
+			sb[2].append("</td><td >").append(pmdColumn.getColumnName()).append("</td><td >")
+			.append(pmdColumn.getDataType()).append("</td><td >").append(table.getTableName()).append("</td><td ></td><td ></td></tr>");
 			// System.out.println(sb[2]);
+			sbAlterSql.append("ALTER TABLE ")
+			.append(DbDomain)
+			.append(".")
+			.append(table.getTableName())
+			.append(" ADD COLUMN ")
+			.append(pmdColumn.getColumnName())
+			.append(" ")
+			.append(pmdColumn.getDataType());
+			if (pmdColumn.getNullable().equalsIgnoreCase("yes"))
+			{
+				sbAlterSql.append(" NOT NULL");
+			}
+			sbAlterSql.append(";<br>");
 			break;
 		case 4:
 			System.out.println("4、PDM不存在，比对库存在的字段：" + table.getTableName()
@@ -220,7 +244,7 @@ public class CompareUtil
 			tmpStr = GetParentTableName(table.getTableName());
 			if (tmpStr.equalsIgnoreCase(table.getTableName()))
 			{
-				sb[3].append(table.getTableName()).append("</td><td ></td><td ></td><td >");
+				sb[3].append(table.getTableName()).append("</td><td ></td><td ></td><td >").append(table.getTableName());
 			} else
 			{
 				sb[3].append(tmpStr).append("</td><td ></td><td ></td><td >").append(table.getTableName());
@@ -229,7 +253,16 @@ public class CompareUtil
 			sb[3].append("</td><td >")
 					.append(pmdColumn.getColumnName()).append("</td><td >")
 					.append(pmdColumn.getDataType()).append("</td></tr>");
-
+			sb[2].append("</td><td >").append(pmdColumn.getColumnName()).append("</td><td >")
+			.append(pmdColumn.getDataType()).append("</td><td >").append(table.getTableName()).append("</td><td ></td><td ></td></tr>");
+			// System.out.println(sb[2]);
+			sbAlterSql.append("ALTER TABLE ")
+			.append(DbDomain)
+			.append(".")
+			.append(table.getTableName())
+			.append(" DROP COLUMN ")
+			.append(pmdColumn.getColumnName())
+			.append(";<br>");
 			break;
 		case 5:
 			System.out.println("5、表和字段都相同，但字段类型不同的内容：" + table.getTableName()
@@ -242,16 +275,30 @@ public class CompareUtil
 			{
 				sb[4].append(table.getTableName()).append("</td><td >").append(pmdColumn.getColumnName())
 						.append("</td><td >")
-						.append(pmdColumn.getDataType()).append("</td><td >");
+						.append(pmdColumn.getDataType()).append("</td><td >").append(table.getTableName());
 			} else
 			{
 				sb[4].append(tmpStr).append("</td><td >").append(pmdColumn.getColumnName())
-				.append("</td><td >").append(pmdColumn.getDataType()).append("</td><td >").append(table.getTableName());
+						.append("</td><td >").append(pmdColumn.getDataType()).append("</td><td >")
+						.append(table.getTableName());
 			}
 
 			sb[4].append("</td><td ></td><td>")
 					.append(descColumn.getDataType()).append("</td></tr>");
 
+			sbAlterSql.append("ALTER TABLE ")
+			.append(DbDomain)
+			.append(".")
+			.append(table.getTableName())
+			.append(" MODIFY ")
+			.append(pmdColumn.getColumnName())
+			.append(" ")
+			.append(pmdColumn.getDataType());
+			if (pmdColumn.getNullable().equalsIgnoreCase("yes"))
+			{
+				sbAlterSql.append(" NOT NULL");
+			}
+			sbAlterSql.append(";<br>");
 			break;
 		case 6:
 			System.out.println("6、表和字段、字段类型都相同，是否为空不同："
@@ -259,23 +306,34 @@ public class CompareUtil
 					+ " | " + pmdColumn.getNullable() + "---" + descColumn.getNullable());
 			sb[5].append("<tr").append(strClassTypeString)
 					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">6").append("</th><td>");
-			
+
 			tmpStr = GetParentTableName(table.getTableName());
 			if (tmpStr.equalsIgnoreCase(table.getTableName()))
 			{
-				sb[5].append(table.getTableName()).append("</td><td >").append(pmdColumn.getColumnName())
-						.append("</td><td >")
-						.append(pmdColumn.getNullable()).append("</td><td >");
+				sb[5].append(table.getTableName());
 			} else
 			{
-				sb[5].append(tmpStr).append("</td><td >").append(pmdColumn.getColumnName())
-				.append("</td><td >").append(pmdColumn.getNullable()).append("</td><td >").append(table.getTableName());
+				sb[5].append(tmpStr);
 			}
 
-			sb[5].append("</td><td ></td><td>")
+			sb[5].append("</td><td >").append(pmdColumn.getColumnName())
+			.append("</td><td >")
+			.append(pmdColumn.getNullable()).append("</td><td >").append(table.getTableName()).append("</td><td ></td><td>")
 					.append(descColumn.getNullable()).append("</td></tr>");
-			
 
+			sbAlterSql.append("ALTER TABLE ")
+			.append(DbDomain)
+			.append(".")
+			.append(table.getTableName())
+			.append(" MODIFY ")
+			.append(pmdColumn.getColumnName())
+			.append(" ")
+			.append(pmdColumn.getDataType());
+			if (pmdColumn.getNullable().equalsIgnoreCase("yes"))
+			{
+				sbAlterSql.append(" NOT NULL");
+			}
+			sbAlterSql.append(";<br>");
 			break;
 
 		}

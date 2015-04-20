@@ -94,14 +94,14 @@ public class JpfDbCompare
 					System.out.println("compare tables...");
 					//logger.debug("conn_product.isClosed()="+conn_product.isClosed());
 					CompareTable cCompareTable = new CompareTable();
-					//cCompareTable.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
+					cCompareTable.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
 					
 					// 比较索引
 					System.out.println(".....................................................................................................................");
 					System.out.println("compare index...");
 					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CompareIndex cCompareIndex = new CompareIndex();
-					//cCompareIndex.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
+					cCompareIndex.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
 
 					// 检查是否母表是否存在
 					//logger.info(".....................................................................................................................");
@@ -122,13 +122,13 @@ public class JpfDbCompare
 					System.out.println("Compare Data...");
 					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CompareData cCompareData = new CompareData();
-					//cCompareData.DoCompare(conn_product, conn_develop, "zd.sys_partition_rule","base_name");
+					//cCompareData.DoCompare(conn_pdm, conn_develop, strConfigFileName);
 					
 					System.out.println(".....................................................................................................................");
 					System.out.println("Check sub table...");
 					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
 					CompareSubTables cCompareSubTables = new CompareSubTables();
-					cCompareSubTables.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
+					//cCompareSubTables.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
 					
 
 				} catch (Exception ex)

@@ -19,11 +19,15 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jpf.utils.JpfFileUtil;
+import org.jpf.xmls.JpfXmlUtil;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * 
  */
-public final class CompareData
+public final class CompareData  extends AbstractDbCompare
 {
 	private static final Logger logger = LogManager.getLogger();
 	/**
@@ -33,11 +37,25 @@ public final class CompareData
 	{
 		// TODO Auto-generated constructor stub
 	}
-	public void DoCompare(Connection conn_product, Connection conn_develop,String strTableName,final String strCond ) throws Exception {
+	private String  GetCompareTableInfo(String strConfigFileName)throws Exception
+	{
+		String strTableInfo=""; 
+		JpfFileUtil.CheckFile(strConfigFileName);
+		NodeList nl = JpfXmlUtil.GetNodeList("comparetables", strConfigFileName);
+		logger.debug(nl.getLength());
 
+		if(1==nl.getLength())
+		{
+			Element el = (Element) nl.item(0);
+			strTableInfo = JpfXmlUtil.GetParStrValue(el, "tableinfo");
+		}
+		return  strTableInfo;
+	}
+	public void DoCompare(Connection conn_pdm, Connection conn_develop,final String strConfigFileName) throws Exception {
 
-	    ResultSet sourceResultSet = getResultSet(conn_product, strTableName,strCond);
-	    ResultSet targetResultSet = getResultSet(conn_develop, strTableName,strCond);
+		String strTableName=GetCompareTableInfo(strConfigFileName);
+	    ResultSet sourceResultSet = getResultSet(conn_pdm, strTableName);
+	    ResultSet targetResultSet = getResultSet(conn_develop, strTableName);
 	    Map<Long, String> sourceIdHash = new HashMap<Long, String>();
 	    Map<Long, String> targetIdHash = new HashMap<Long, String>();
 
@@ -103,8 +121,8 @@ public final class CompareData
 	    System.out.println("In target and not source : " + targetIdHash.size());
 	}
 
-	private ResultSet getResultSet(final Connection connection, final String tableName,final String strCond) {
-	    String query = "select * from " + tableName +" order by "+strCond;
+	private ResultSet getResultSet(final Connection connection, final String tableName) {
+	    String query = "select * from " + tableName ;
 	    logger.debug(query);
 	    return executeQuery(connection, query);
 	}
@@ -184,5 +202,23 @@ public final class CompareData
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
+	}
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#DoWork(java.sql.Connection, java.sql.Connection)
+	 */
+	@Override
+	void DoWork(Connection conn_product, Connection conn_develop) throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetHtmlName()
+	 */
+	@Override
+	String GetHtmlName()
+	{
+		// TODO Auto-generated method stub
+		return  "compare_index.html";
 	}
 }

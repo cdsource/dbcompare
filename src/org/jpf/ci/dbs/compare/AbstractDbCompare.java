@@ -48,11 +48,12 @@ public abstract class AbstractDbCompare
 		// TODO Auto-generated constructor stub
     	try
 		{
+    		CompareUtil.CleanBuf(strDomain);
     		this.strDomain=strDomain;
     		this.strMails=strMails;
     		this.strExcludeTable=strExcludeTable;
     		DoWork( conn_product, conn_develop);    	
-
+    		
     		CompareUtil.SendMail(sb, strMails,strDbUrl,strPdmInfo,GetHtmlName()); 
     		InsertResult(strDbUrl);
 		} catch (Exception ex)
@@ -69,7 +70,10 @@ public abstract class AbstractDbCompare
 		try
 		{
 			conn=WallsDbConn.GetInstance().GetConn();
-			String strSql="insert into dbci values( '"+strMails+"','"+strDbUrl+"',CURRENT_DATE,"+iCount1+","+iCount2+","+iCount3+","+iCount4+","+iCount5+","+iCount6+",'HZ')";
+			String strSql="delete from dbci where dbinfo='"+strDbUrl+"' and diffdate=current_date";
+			logger.info(strSql);
+			JpfDbUtils.ExecUpdateSql(conn, strSql);
+			strSql="insert into dbci values( '"+strMails+"','"+strDbUrl+"',CURRENT_DATE,"+iCount1+","+iCount2+","+iCount3+","+iCount4+","+iCount5+","+iCount6+",'HZ')";
 			logger.info(strSql);
 			JpfDbUtils.ExecUpdateSql(conn, strSql);
 		} catch (Exception ex)
