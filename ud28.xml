@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="GBK"?>
+<dbcompares>
+	<dbsource>
+		<dburl>127.0.0.1:3333</dburl>
+		<dbusr>aaa</dbusr>
+		<dbpwd>bbb</dbpwd>
+		<dbmails>ccc,ddd</dbmails>
+		<envname>生产环境</envname>
+		<excludetable>eee,fff</excludetable>
+	</dbsource>
+	<dbcompare>
+		<dbdomain>gg</dbdomain>
+		<dburl>127.0.0.1:4000</dburl>
+		<dbusr>hhh</dbusr>
+		<dbpwd>iii</dbpwd>
+		<dbmails>jjj,kkk</dbmails>
+		<parent_childen>lll;mmm</parent_childen>
+		<parent_childen>nnn;ooo</parent_childen>
+
+	</dbcompare>
+
+</dbcompares>	
