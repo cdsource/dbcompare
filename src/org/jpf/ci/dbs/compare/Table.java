@@ -7,20 +7,32 @@
 
 package org.jpf.ci.dbs.compare;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Table
 {
 	public String tableName;
 	
 	//字段列
-	public HashMap columns = new HashMap();
+	public LinkedHashMap  columns = new LinkedHashMap();
     //索引，组件
-	public HashMap indexs = new HashMap();
+	public LinkedHashMap indexs = new LinkedHashMap();
 	
-	public Table(String tableName)
+	public String table_type;
+	public String getTable_type()
+	{
+		return table_type;
+	}
+
+	public void setTable_type(String table_type)
+	{
+		this.table_type = table_type;
+	}
+
+	public Table(String tableName,String strTableType)
 	{
 		this.tableName = tableName;
+		this.table_type=strTableType;
 	}
 
 	public String getTableName()
@@ -33,12 +45,12 @@ public class Table
 		this.tableName = tableName;
 	}
 
-	public HashMap getColumns()
+	public LinkedHashMap getColumns()
 	{
 		return columns;
 	}
 
-	public void setColumns(HashMap columns)
+	public void setColumns(LinkedHashMap columns)
 	{
 		this.columns = columns;
 	}

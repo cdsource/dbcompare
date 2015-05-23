@@ -1,9 +1,9 @@
 /** 
-* @author ÎâÆ½¸£ 
-* E-mail:wupf@asiainfo.com 
-* @version ´´½¨Ê±¼ä£º2015Äê2ÔÂ22ÈÕ ÏÂÎç10:15:43 
-* ÀàËµÃ÷ 
-*/ 
+ * @author å´å¹³ç¦ 
+ * E-mail:wupf@asiainfo.com 
+ * @version åˆ›å»ºæ—¶é—´ï¼š2015å¹´2æœˆ8æ—¥ ä¸‹åˆ10:09:38 
+ * ç±»è¯´æ˜ 
+ */
 
 package org.jpf.ci.dbs.compare;
 
@@ -220,5 +220,14 @@ public final class CompareData  extends AbstractDbCompare
 	{
 		// TODO Auto-generated method stub
 		return  "compare_index.html";
+	}
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetMailTitle()
+	 */
+	@Override
+	String GetMailTitle()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

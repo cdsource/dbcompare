@@ -1,11 +1,12 @@
 /** 
-* @author ÎâÆ½¸£ 
+* @author ï¿½ï¿½Æ½ï¿½ï¿½ 
 * E-mail:wupf@asiainfo.com 
-* @version ´´½¨Ê±¼ä£º2015Äê1ÔÂ15ÈÕ ÏÂÎç8:47:45 
-* ÀàËµÃ÷ 
+* @version ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ä£º2015ï¿½ï¿½1ï¿½ï¿½15ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½8:47:45 
+* ï¿½ï¿½Ëµï¿½ï¿½ 
 */ 
 
 package org.jpf.ci.dbs.compare;
+
 
 /**
  * 
@@ -15,7 +16,38 @@ public class TableIndex
 
 	private String indexName;
 	private String colNames="";
+	private int iNON_UNIQUE=0;
+	private String constraint_type="";
 	
+	public String getConstraint_type()
+	{
+		if (constraint_type!=null && constraint_type.equalsIgnoreCase("null"))
+		{	
+			return "";
+		}
+		if (constraint_type==null)
+		{
+			return "";
+		}
+		return constraint_type;
+	}
+
+	public void setConstraint_type(String constraint_type)
+	{
+		this.constraint_type = constraint_type;
+	}
+
+	public int getNON_UNIQUE()
+	{
+		return iNON_UNIQUE;
+	}
+
+	public void setNON_UNIQUE(final int inNON_UNIQUE)
+	{
+		iNON_UNIQUE = inNON_UNIQUE;
+	}
+
+
 	public String getIndexName()
 	{
 		return indexName;
@@ -29,10 +61,11 @@ public class TableIndex
 	/**
 	 * 
 	 */
-	public TableIndex( String indexName)
+	public TableIndex( String indexName,final int inNON_UNIQUE)
 	{
 		// TODO Auto-generated constructor stub
 		this.indexName = indexName;
+		this.iNON_UNIQUE=inNON_UNIQUE;
 	}
 	
 	public void AddColName(String columnName)

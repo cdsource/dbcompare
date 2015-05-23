@@ -19,21 +19,67 @@ public class Column
 	//MYSQL
     private String Nullable;
 	
-    private String comment;
+    private String ColumnDefault="";
     
+    private String Extra="";
+    
+    private int ordinal_position;
+    
+    private String CHARACTER_SET_NAME="";
+    private String COLLATION_NAME="";
+	public String getCOLLATION_NAME()
+	{
+		return COLLATION_NAME;
+	}
+
+	public void setCOLLATION_NAME(String cOLLATION_NAME)
+	{
+		COLLATION_NAME = cOLLATION_NAME;
+	}
+
+	public String getCHARACTER_SET_NAME()
+	{
+		return CHARACTER_SET_NAME;
+	}
+
+	public void setCHARACTER_SET_NAME(String cHARACTER_SET_NAME)
+	{
+		CHARACTER_SET_NAME = cHARACTER_SET_NAME;
+	}
+
+	public int getOrdinal_position()
+	{
+		return ordinal_position;
+	}
+
+	public void setOrdinal_position(int ordinal_position)
+	{
+		this.ordinal_position = ordinal_position;
+	}
+
+	public String getExtra()
+	{
+		return Extra;
+	}
+
+	public void setExtra(String extra)
+	{
+		Extra = extra;
+	}
+
 	public String getNullable()
 	{
 		return Nullable;
 	}
 
-	public String getComment()
+	public String getColumnDefault()
 	{
-		return comment;
+		return ColumnDefault;
 	}
 
-	public void setComment(String comment)
+	public void setColumnDefault(final String ColumnDefault)
 	{
-		this.comment = comment;
+		this.ColumnDefault = ColumnDefault;
 	}
 
 	public void setNullable(String nullable)
@@ -42,12 +88,12 @@ public class Column
 	}
 
 
-	public Column(String columnName, String dataType, String Nullable,String columncomment)
+	public Column(String columnName, String dataType, String Nullable,final String ColumnDefault)
 	{
 		this.columnName = columnName;
 		this.dataType = dataType;
 		this.Nullable = Nullable;
-		this.comment=columncomment;
+		this.ColumnDefault=ColumnDefault;
 	}
 	public String getColumnName()
 	{

@@ -1,13 +1,16 @@
 /** 
- * @author ÎâÆ½¸£ 
+ * @author å´å¹³ç¦ 
  * E-mail:wupf@asiainfo.com 
- * @version ´´½¨Ê±¼ä£º2015Äê2ÔÂ14ÈÕ ÉÏÎç1:26:12 
- * ÀàËµÃ÷ 
+ * @version åˆ›å»ºæ—¶é—´ï¼š2015å¹´2æœˆ14æ—¥ ä¸Šåˆ1:26:12 
+ * ç±»è¯´æ˜ 
  */
 
 package org.jpf.ci.dbs.compare;
 
 import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +19,7 @@ import org.jpf.utils.JpfFileUtil;
 import org.jpf.utils.SvnInfoUtil;
 import org.jpf.xmls.JpfXmlUtil;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -24,7 +28,11 @@ import org.w3c.dom.NodeList;
 public class JpfDbCompare
 {
 	private static final Logger logger = LogManager.getLogger();
-
+	private static  HashMap<String,String> parent_child=new HashMap<String,String>();
+	public static HashMap<String,String> getParentChild()
+	{
+		return parent_child;
+	}
 	/**
 	 * 
 	 */
@@ -37,12 +45,13 @@ public class JpfDbCompare
 			//System.out.println(System.getProperty("user.dir"));
 			//System.out.println(System.getProperty("java.class.path"));
 			DbDescInfo cPdmDbDescInfo = null;
+			CompareInfo cCompareInfo=new CompareInfo();
+			
 			JpfFileUtil.CheckFile(strConfigFileName);
 			NodeList nl = JpfXmlUtil.GetNodeList("dbsource", strConfigFileName);
 			logger.debug(nl.getLength());
 			String strDefaultMail=""; 
 			String strPdmInfo="";
-			String strExcludeTable="";
 			if(1==nl.getLength())
 			{
 				Element el = (Element) nl.item(0);
@@ -51,7 +60,10 @@ public class JpfDbCompare
 				String strDbPwd = JpfXmlUtil.GetParStrValue(el, "dbpwd");
 				strDefaultMail= JpfXmlUtil.GetParStrValue(el, "dbmails");
 				strPdmInfo= JpfXmlUtil.GetParStrValue(el, "svnurl");
-				strExcludeTable= JpfXmlUtil.GetParStrValue(el, "excludetable");
+				cCompareInfo.setStrExcludeTable(JpfXmlUtil.GetParStrValue(el, "excludetable"));
+				cCompareInfo.setStrCondName(JpfXmlUtil.GetParStrValue(el, "envname"));
+				cCompareInfo.setDoExec(JpfXmlUtil.GetParStrValue(el, "doexecsql"));
+				cCompareInfo.setStrPdmInfo(strJdbcUrl);
 				if (strPdmInfo!=null)
 				{
 					strPdmInfo=SvnInfoUtil.GetSvnFileAuthorDate(strPdmInfo);
@@ -74,6 +86,31 @@ public class JpfDbCompare
 				String strDbPwd = JpfXmlUtil.GetParStrValue(el, "dbpwd");
 				String strDomain = JpfXmlUtil.GetParStrValue(el, "dbdomain");
 				String strMails = JpfXmlUtil.GetParStrValue(el, "dbmails")+","+strDefaultMail;
+				NodeList nlParentChild= el.getElementsByTagName("parent_childen");
+				
+				//è·å¾—éœ€è¦è¿›è¡Œç‰¹æ®Šå¤„ç†çš„åˆ†è¡¨â€”â€”æ¯è¡¨å¯¹åº”å…³ç³»
+				parent_child.clear();
+				for (int i=0; i<nlParentChild.getLength(); i++){
+		               Node child = nlParentChild.item(i);
+		               if (child instanceof Element)
+		               {
+		                   String s = child.getFirstChild().getNodeValue().toLowerCase().trim();
+		                   String[]s1=s.split(";");
+		                   if(s1.length==2)
+		                   {
+		                	   parent_child.put(s1[1], s1[0]);   
+		                   }
+		               }
+				 }
+				
+				Iterator mapite=parent_child.entrySet().iterator();
+				 while(mapite.hasNext())
+				 {
+					Map.Entry testDemo=(Map.Entry)mapite.next();
+					Object key=testDemo.getKey();
+					Object value=testDemo.getValue();
+					System.out.println(key+"-------"+value);
+				 }	
 				logger.debug(strDomain);
 				logger.debug(strJdbcUrl);
 				logger.debug(strDbUsr);
@@ -89,21 +126,38 @@ public class JpfDbCompare
 				{
 					conn_pdm =  cPdmDbDescInfo.GetConn();
 					conn_develop = cDbDescInfo2.GetConn();
-					// ±È½Ï±í
-					System.out.println(".....................................................................................................................");
-					System.out.println("compare tables...");
-					//logger.debug("conn_product.isClosed()="+conn_product.isClosed());
-					CompareTable cCompareTable = new CompareTable();
-					cCompareTable.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
 					
-					// ±È½ÏË÷Òı
+					cCompareInfo.setStrJdbcUrl(strJdbcUrl+"/"+strDomain);
+					cCompareInfo.setStrDomain(strDomain);
+					cCompareInfo.setStrMails(strMails);
+					
+			
+					//å¸¦åˆ†è¡¨æ¯”å¯¹
 					System.out.println(".....................................................................................................................");
-					System.out.println("compare index...");
-					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
-					CompareIndex cCompareIndex = new CompareIndex();
-					cCompareIndex.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
+					System.out.println("Check sub table...");
+					CompareSubTables cCompareSubTables = new CompareSubTables();
+					cCompareSubTables.DoCompare(conn_pdm, conn_develop, cCompareInfo);
+					
+					// å¸¦åˆ†è¡¨æ¯”è¾ƒç´¢å¼•
+					System.out.println(".....................................................................................................................");
+					System.out.println("compare sub index...");
+					
+					CompareIndexSub cCompareIndexSub= new CompareIndexSub();
+					cCompareIndexSub.DoCompare(conn_pdm, conn_develop, cCompareInfo);
 
-					// ¼ì²éÊÇ·ñÄ¸±íÊÇ·ñ´æÔÚ
+					// æ¯”è¾ƒè¡¨
+					//System.out.println(".....................................................................................................................");
+					//System.out.println("compare tables...");
+					//CompareTable cCompareTable = new CompareTable();
+					//cCompareTable.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
+					
+					// æ¯”è¾ƒç´¢å¼•
+					//System.out.println(".....................................................................................................................");
+					//System.out.println("compare index...");
+					//CompareIndex cCompareIndex = new CompareIndex();
+					//cCompareIndex.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
+		
+					// æ£€æŸ¥æ˜¯å¦æ¯è¡¨æ˜¯å¦å­˜åœ¨
 					//logger.info(".....................................................................................................................");
 					//logger.info("CheckParentTableExist...");
 					//logger.debug("conn_product.isClosed()="+conn_product.isClosed());
@@ -111,26 +165,19 @@ public class JpfDbCompare
 					//cCheckParentTableExist.DoCheck(conn_product,strDomain);
 					//cCheckParentTableExist.DoCheck(conn_develop,strDomain);
 					
-					System.out.println(".....................................................................................................................");
-					System.out.println("CheckSameTableName...");
-					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
-					CheckSameTableName cCheckSameTableName = new CheckSameTableName();
+					//System.out.println(".....................................................................................................................");
+					//System.out.println("CheckSameTableName...");
+					//CheckSameTableName cCheckSameTableName = new CheckSameTableName();
 					//cCheckSameTableName.DoCheck(conn_product,strDomain);
 					//cCheckSameTableName.DoCheck(conn_develop,strDomain);
 					
-					System.out.println(".....................................................................................................................");
-					System.out.println("Compare Data...");
-					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
-					CompareData cCompareData = new CompareData();
+					//System.out.println(".....................................................................................................................");
+					//System.out.println("Compare Data...");
+					//CompareData cCompareData = new CompareData();
 					//cCompareData.DoCompare(conn_pdm, conn_develop, strConfigFileName);
 					
-					System.out.println(".....................................................................................................................");
-					System.out.println("Check sub table...");
-					logger.debug("conn_product.isClosed()="+conn_pdm.isClosed());
-					CompareSubTables cCompareSubTables = new CompareSubTables();
-					//cCompareSubTables.DoCompare(conn_pdm, conn_develop, strDomain,strMails,strJdbcUrl+"/"+strDomain,strPdmInfo,strExcludeTable);
-					
 
+					
 				} catch (Exception ex)
 				{
 					// TODO: handle exception
@@ -151,8 +198,8 @@ public class JpfDbCompare
 
 	/**
 	 * @param args
-	 *            ±»²âÊÔÀàÃû£ºTODO ±»²âÊÔ½Ó¿ÚÃû:TODO ²âÊÔ³¡¾°£ºTODO Ç°ÖÃ²ÎÊı£ºTODO Èë²Î£º Ğ£ÑéÖµ£º ²âÊÔ±¸×¢£º
-	 *            update 2015Äê2ÔÂ14ÈÕ
+	 *            è¢«æµ‹è¯•ç±»åï¼šTODO è¢«æµ‹è¯•æ¥å£å:TODO æµ‹è¯•åœºæ™¯ï¼šTODO å‰ç½®å‚æ•°ï¼šTODO å…¥å‚ï¼š æ ¡éªŒå€¼ï¼š æµ‹è¯•å¤‡æ³¨ï¼š
+	 *            update 2015å¹´2æœˆ14æ—¥
 	 */
 	public static void main(String[] args)
 	{

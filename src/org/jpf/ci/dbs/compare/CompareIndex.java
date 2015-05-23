@@ -1,8 +1,8 @@
 /** 
- * @author ÎâÆ½¸£ 
+ * @author å´å¹³ç¦ 
  * E-mail:wupf@asiainfo.com 
- * @version ´´½¨Ê±¼ä£º2015Äê1ÔÂ15ÈÕ ÏÂÎç4:00:30 
- * ÀàËµÃ÷ 
+ * @version åˆ›å»ºæ—¶é—´ï¼š2015å¹´1æœˆ15æ—¥ ä¸‹åˆ4:00:30 
+ * ç±»è¯´æ˜ 
  */
 
 package org.jpf.ci.dbs.compare;
@@ -16,6 +16,8 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jpf.utils.JpfDbUtils;
+import org.jpf.visualwall.WallsDbConn;
 
 public class CompareIndex extends AbstractDbCompare
 {
@@ -24,17 +26,17 @@ public class CompareIndex extends AbstractDbCompare
 	public void DoWork(Connection conn_product, Connection conn_develop) throws Exception
 	{
 
-		// Éú²úÊı¾İ¿âÁ¬½Ó
+		// ç”Ÿäº§æ•°æ®åº“è¿æ¥
 		Map<String, Table> map_pdm = GetTableIndexs(conn_product);
-		// ¿ª·¢Êı¾İ¿âÁ¬½Ó
+		// å¼€å‘æ•°æ®åº“è¿æ¥
 		Map<String, Table> map_develop = GetTableIndexs(conn_develop);
-		// ±éÀú¿ª·¢¿âMap
+		// éå†å¼€å‘åº“Map
 		for (Iterator iter_table = map_develop.keySet().iterator(); iter_table.hasNext();)
 		{
 			String key_table = (String) iter_table.next();
-			// »ñµÃ¿ª·¢¿âÖĞµÄ±í
+			// è·å¾—å¼€å‘åº“ä¸­çš„è¡¨
 			Table table_develop = map_develop.get(key_table);
-			// ³¢ÊÔ´ÓÉú²ú¿âÖĞ»ñµÃÍ¬Ãû±í
+			// å°è¯•ä»ç”Ÿäº§åº“ä¸­è·å¾—åŒåè¡¨
 			Table table_pdm = map_pdm.get(key_table);
 			if (table_pdm != null)
 			{
@@ -42,32 +44,44 @@ public class CompareIndex extends AbstractDbCompare
 				{
 					String key_index = (String) iter_column.next();
 					// System.out.println(key_index);
-					// »ñµÃ¿ª·¢¿âÖĞµÄË÷Òı
+					// è·å¾—å¼€å‘åº“ä¸­çš„ç´¢å¼•
 					TableIndex index_develop = (TableIndex) table_develop.indexs.get(key_index);
-					// ³¢ÊÔ´ÓPDM¿âÖĞ»ñµÃÍ¬ÃûË÷Òı
+					// å°è¯•ä»PDMåº“ä¸­è·å¾—åŒåç´¢å¼•
 					TableIndex index_pdm = (TableIndex) table_pdm.indexs.get(key_index);
 					if (index_pdm == null)
-					{// Èç¹ûË÷ÒıÃûÎª¿Õ£¬ËµÃ÷¿ª·¢´æÔÚ£¬pdm²»´æÔÚ
+					{// å¦‚æœç´¢å¼•åä¸ºç©ºï¼Œè¯´æ˜å¼€å‘å­˜åœ¨ï¼Œpdmä¸å­˜åœ¨
 						CompareUtil.appendIndex(table_develop, null,index_develop,  2, sb);
+						iCount2++;
 					} else
-					{// ËµÃ÷Á½Õß¶¼´æÔÚ
+					{// è¯´æ˜ä¸¤è€…éƒ½å­˜åœ¨
 
 						if (!index_develop.getColNames().equalsIgnoreCase(index_pdm.getColNames()))
 						{
 							CompareUtil.appendIndex(table_develop, index_pdm,index_develop,  3, sb);
+							iCount3++;
 						}
+						if (index_develop.getNON_UNIQUE()!=index_pdm.getNON_UNIQUE())
+						{
+							CompareUtil.appendIndex(table_develop, index_pdm,index_develop,  4, sb);
+							iCount4++;
+						}
+						if (!index_develop.getConstraint_type().equalsIgnoreCase(index_pdm.getConstraint_type()))
+						{
+							CompareUtil.appendIndex(table_develop, index_pdm,index_develop,  5, sb);
+							iCount5++;
+						}						
 					}
 				}
 			}
 		}
 
-		// ±éÀúPDMMap
+		// éå†PDMMap
 		for (Iterator iter_table = map_pdm.keySet().iterator(); iter_table.hasNext();)
 		{
 			String key_table = (String) iter_table.next();
-			// »ñµÃ¿ª·¢¿âÖĞµÄ±í
+			// è·å¾—å¼€å‘åº“ä¸­çš„è¡¨
 			Table table_develop = map_develop.get(key_table);
-			// ³¢ÊÔ´ÓÉú²ú¿âÖĞ»ñµÃÍ¬Ãû±í
+			// å°è¯•ä»ç”Ÿäº§åº“ä¸­è·å¾—åŒåè¡¨
 			Table table_pdm = map_pdm.get(key_table);
 			if (table_develop != null)
 			{
@@ -75,21 +89,15 @@ public class CompareIndex extends AbstractDbCompare
 				{
 					String key_index = (String) iter_column.next();
 					// System.out.println(key_index);
-					// »ñµÃ¿ª·¢¿âÖĞµÄË÷Òı
+					// è·å¾—å¼€å‘åº“ä¸­çš„ç´¢å¼•
 					TableIndex index_develop = (TableIndex) table_develop.indexs.get(key_index);
-					// ³¢ÊÔ´ÓPDM¿âÖĞ»ñµÃÍ¬ÃûË÷Òı
+					// å°è¯•ä»PDMåº“ä¸­è·å¾—åŒåç´¢å¼•
 					TableIndex index_pdm = (TableIndex) table_pdm.indexs.get(key_index);
 					if (index_develop == null)
-					{// Èç¹ûË÷ÒıÃûÎª¿Õ£¬ËµÃ÷¿ª·¢´æÔÚ£¬pdm²»´æÔÚ
+					{// å¦‚æœç´¢å¼•åä¸ºç©ºï¼Œè¯´æ˜å¼€å‘å­˜åœ¨ï¼Œpdmä¸å­˜åœ¨
 						CompareUtil.appendIndex(table_pdm, index_pdm, null, 1, sb);
-					} else
-					{// ËµÃ÷Á½Õß¶¼´æÔÚ
-						
-						if (!index_develop.getColNames().equalsIgnoreCase(index_pdm.getColNames()))
-						{
-							CompareUtil.appendIndex(table_develop, index_pdm,index_develop,  3, sb);
-						}
-					}
+						iCount1++;
+					} 
 				}
 			}
 		}
@@ -98,7 +106,12 @@ public class CompareIndex extends AbstractDbCompare
 
 	public Map<String, Table> GetTableIndexs(Connection transaction) throws Exception
 	{
-		String sSql = " select TABLE_NAME,COLUMN_NAME,INDEX_NAME,SEQ_IN_INDEX from information_schema.STATISTICS  where table_schema =?  and table_name not REGEXP '[a-zA-Z]_[0-9]'  ";
+		String sSql = " select t1.TABLE_NAME,t1.COLUMN_NAME,t1.INDEX_NAME,t1.SEQ_IN_INDEX, t1.NON_UNIQUE,t2.constraint_type"
+				+" from information_schema.STATISTICS t1, information_schema.table_constraints t2 "
+				+" where t1.table_name=t2.table_name and t1.index_name=t2.constraint_name and t1.table_schema=t2.table_schema  and t1.table_schema=? and t1.table_name not REGEXP '[a-zA-Z]_[0-9]' "
+				+" union all select TABLE_NAME,COLUMN_NAME,constraint_NAME,1,0,'FOREIGN KEY'  from information_schema.KEY_COLUMN_USAGE "
+				+" where  referenced_table_schema is not null and TABLE_schema=? ";
+
 		if (strExcludeTable != null && strExcludeTable.length() > 0)
 		{
 			sSql += " and table_name not like %'" + strExcludeTable + "%' ";
@@ -107,6 +120,7 @@ public class CompareIndex extends AbstractDbCompare
 
 		PreparedStatement pstmt = transaction.prepareStatement(sSql);
 		pstmt.setString(1, strDomain);
+		pstmt.setString(2, strDomain);
 		logger.debug(sSql);
 		logger.debug("Domain:" + strDomain);
 
@@ -118,24 +132,27 @@ public class CompareIndex extends AbstractDbCompare
 		while (rs.next())
 		{
 			if (!tableName.equals(rs.getString("table_name").toLowerCase().trim()))
-			{// Ò»ÕÅĞÂ±í
+			{// ä¸€å¼ æ–°è¡¨
 				tableName = rs.getString("table_name").toLowerCase().trim();
-				cTable = new Table(tableName);
-				TableIndex cTableIndex = new TableIndex(rs.getString("INDEX_NAME"));
+				cTable = new Table(tableName,"");
+				TableIndex cTableIndex = new TableIndex(rs.getString("INDEX_NAME"),rs.getInt("NON_UNIQUE"));
 				cTableIndex.AddColName(rs.getString("COLUMN_NAME"));
+				cTableIndex.setConstraint_type(rs.getString("constraint_type"));
 				cTable.indexs.put(cTableIndex.getIndexName(), cTableIndex);
 				map.put(tableName, cTable);
 			} else
-			{// ÒÑ´æÔÚµÄ±í£¬Ôö¼Ó×Ö¶Î
+			{// å·²å­˜åœ¨çš„è¡¨ï¼Œå¢åŠ å­—æ®µ
 				TableIndex cTableIndex = (TableIndex) cTable.indexs.get(rs.getString("INDEX_NAME"));
 				if (cTableIndex == null)
 				{
-					TableIndex cTableIndex2 = new TableIndex(rs.getString("INDEX_NAME"));
+					TableIndex cTableIndex2 = new TableIndex(rs.getString("INDEX_NAME"),rs.getInt("NON_UNIQUE"));
 					cTableIndex2.AddColName(rs.getString("COLUMN_NAME"));
+					cTableIndex2.setConstraint_type(rs.getString("constraint_type"));
 					cTable.indexs.put(cTableIndex2.getIndexName(), cTableIndex2);
 				} else
 				{
 					cTableIndex.AddColName(rs.getString("COLUMN_NAME"));
+					cTableIndex.setConstraint_type(rs.getString("constraint_type"));
 					cTable.indexs.put(cTableIndex.getIndexName(), cTableIndex);
 				}
 			}
@@ -155,5 +172,40 @@ public class CompareIndex extends AbstractDbCompare
 		// TODO Auto-generated method stub
 		return "compare_index.html";
 	}
+	protected void InsertResult(String strDbUrl)
+	{
+		Connection conn = null;
+		try
+		{
+			conn = WallsDbConn.GetInstance().GetConn();
+			String strSql = "update dbci set diff10="+iCount1+",diff11="+iCount2+",diff12="+iCount3+",diff13="+iCount4+",diff14="+iCount5 +" where dbinfo='"+strDbUrl + "' and diffdate=current_date";
+			logger.info(strSql);
+			JpfDbUtils.ExecUpdateSql(conn, strSql);
+		} catch (Exception ex)
+		{
+			// TODO: handle exception
+			ex.printStackTrace();
+		} finally
+		{
+			JpfDbUtils.DoClear(conn);
+		}
+	}
+	protected String ShowResult()
+	{
+		return "<tr><td>"+iCount1+"</td><td>"
+				+iCount2+"</td><td>"
+				+iCount3+"</td><td>"
+				+iCount4+"</td><td>"
+				+iCount5+"</td></tr>";
+	}
 
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetMailTitle()
+	 */
+	@Override
+	String GetMailTitle()
+	{
+		// TODO Auto-generated method stub
+		return "æ•°æ®åº“ç´¢å¼•æ¯”å¯¹ç»“æœ(è‡ªåŠ¨å‘å‡º)";
+	}
 }

@@ -1,8 +1,8 @@
 /** 
- * @author ÎâÆ½¸£ 
+ * @author å´å¹³ç¦ 
  * E-mail:wupf@asiainfo.com 
- * @version ´´½¨Ê±¼ä£º2015Äê1ÔÂ16ÈÕ ÏÂÎç4:52:03 
- * ÀàËµÃ÷ 
+ * @version åˆ›å»ºæ—¶é—´ï¼š2015å¹´2æœˆ14æ—¥ ä¸Šåˆ1:26:12 
+ * ç±»è¯´æ˜ 
  */
 
 package org.jpf.ci.dbs.compare;
@@ -10,6 +10,9 @@ package org.jpf.ci.dbs.compare;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
@@ -24,14 +27,13 @@ import org.jpf.utils.JpfFileUtil;
 public class CompareUtil
 {
 	private static final Logger logger = LogManager.getLogger();
-	// ´æ·ÅĞŞ¸ÄSQL
-	private static StringBuffer sbAlterSql = new StringBuffer();
 
-	private static String DbDomain="";
+	private static String DbDomain = "";
+
 	public static void CleanBuf(String strDomain)
 	{
-		DbDomain=strDomain;
-		sbAlterSql.setLength(0);
+		DbDomain = strDomain;
+		// sbAlterSql.setLength(0);
 	}
 
 	public static void SortSb(StringBuffer sb)
@@ -66,12 +68,12 @@ public class CompareUtil
 	public static void writeFile(StringBuffer[] sb) throws Exception
 	{
 		logger.debug("write Result File...");
-		String[] fileName = { "Éú²ú´æÔÚ£¬¿ª·¢²»´æÔÚµÄ±í.txt",
-				"Éú²ú²»´æÔÚ£¬¿ª·¢´æÔÚµÄ±í.txt",
-				"Éú²ú´æÔÚ£¬¿ª·¢²»´æÔÚµÄ×Ö¶Î.txt",
-				"Éú²ú²»´æÔÚ£¬¿ª·¢´æÔÚµÄ×Ö¶Î.txt",
-				"±íºÍ×Ö¶Î¶¼ÏàÍ¬£¬µ«×Ö¶ÎÀàĞÍ²»Í¬µÄÄÚÈİ.txt",
-				"±íºÍ×Ö¶Î¡¢×Ö¶ÎÀàĞÍ¶¼ÏàÍ¬£¬µ«×Ö¶Î³¤¶È²»Í¬µÄÄÚÈİ.txt" };
+		String[] fileName = { "ç”Ÿäº§å­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨çš„è¡¨.txt",
+				"ç”Ÿäº§ä¸å­˜åœ¨ï¼Œå¼€å‘å­˜åœ¨çš„è¡¨.txt",
+				"ç”Ÿäº§å­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨çš„å­—æ®µ.txt",
+				"ç”Ÿäº§ä¸å­˜åœ¨ï¼Œå¼€å‘å­˜åœ¨çš„å­—æ®µ.txt",
+				"è¡¨å’Œå­—æ®µéƒ½ç›¸åŒï¼Œä½†å­—æ®µç±»å‹ä¸åŒçš„å†…å®¹.txt",
+				"è¡¨å’Œå­—æ®µã€å­—æ®µç±»å‹éƒ½ç›¸åŒï¼Œä½†å­—æ®µé•¿åº¦ä¸åŒçš„å†…å®¹.txt" };
 		for (int i = 0; i < fileName.length; i++)
 		{
 			File file = new File(fileName[i]);
@@ -83,29 +85,35 @@ public class CompareUtil
 		}
 	}
 
-	public static void SendMail(StringBuffer[] sb, String strMailers, String strDbInfo, String strPdmInfo,
-			String strHtmlName) throws Exception
+	public static void SendMail(StringBuffer[] sb, String strMailTitle, CompareInfo cCompareInfo, String strHtmlName,
+			String strTotalInfo) throws Exception
 	{
 		logger.debug("write Result File...");
 
 		String strMailText = JpfFileUtil.GetFileTxt(strHtmlName);
-		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDate());
-		strMailText = strMailText.replaceAll("#wupf2", strPdmInfo);
-		strMailText = strMailText.replaceAll("#wupf3", strDbInfo);
+		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDateTime());
+		strMailText = strMailText.replaceAll("#wupf2", cCompareInfo.getStrPdmInfo());
+		strMailText = strMailText.replaceAll("#wupf3", cCompareInfo.getStrJdbcUrl());
 		String tmpStr = sb[0].toString() + sb[1].toString() + sb[2].toString() + sb[3].toString() + sb[4].toString()
-				+ sb[5].toString();
+				+ sb[5].toString() + sb[6].toString() + sb[7].toString() ;
+		
 		tmpStr = java.util.regex.Matcher.quoteReplacement(tmpStr);
 		strMailText = strMailText.replaceAll("#wupf4", tmpStr);
-		
-		strMailText+=sbAlterSql.toString();
-		JpfMail.SendMail(strMailers, strMailText, "GBK", "Êı¾İ¿â±È¶Ô½á¹û(×Ô¶¯·¢³ö) ±È¶Ô¿â" + strDbInfo);
+
+		if (strTotalInfo != null)
+		{
+			strMailText = strMailText.replaceAll("#diffs", strTotalInfo);
+		}
+		// strMailText+=sbAlterSql.toString();
+		JpfMail.SendMail(cCompareInfo.getStrMails(), strMailText, "GBK", cCompareInfo.getStrCondName() + strMailTitle
+				+ " æ¯”å¯¹åº“" + cCompareInfo.getStrJdbcUrl());
 	}
 
 	/*
-	 * Ë÷ÒıÊ¹ÓÃ
+	 * ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½
 	 */
 	public static void appendIndex(Table table, TableIndex cTableIndexPdm, TableIndex cTableIndexDev, int flag,
-			StringBuffer[] sb) throws Exception
+			StringBuffer[] sb, Vector<ExecSqlInfo> vSql) throws Exception
 	{
 		iCount++;
 		String strClassTypeString = "class=\"alt\"";
@@ -113,42 +121,200 @@ public class CompareUtil
 		{
 			strClassTypeString = "";
 		}
+		String strSql = "";
 		switch (flag)
 		{
-		case 1:
-			System.out.println("1¡¢PDM´æÔÚ£¬¿ª·¢²»´æÔÚµÄË÷Òı£º" + table.getTableName());
+		case 10:
+			System.out.println("11ã€PDMå­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨çš„ç´¢å¼•ï¼š" + table.getTableName() + "." + cTableIndexPdm.getIndexName());
 			sb[0].append("<tr").append(strClassTypeString)
-					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">7")
-					.append(table.getTableName())
-					.append("</th><td >").append(cTableIndexPdm.getIndexName()).append("</td><td ></td><td >")
-					.append("</td><td >")
-					.append("</td><td ></td></tr>");
-			break;
-		case 2:
-			System.out.println("2¡¢PDM²»´æÔÚ£¬¿ª·¢´æÔÚµÄË÷Òı£º" + table.getTableName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
-			sb[1].append("<tr").append(strClassTypeString)
-					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">8")
-					.append("</th><td ></td><td ></td><td >")
-					.append(table.getTableName()).append("</td><td >")
-					.append(cTableIndexDev.getIndexName()).append("</td><td ></td></tr>");
-			break;
-		case 3:
-			System.out.println("3¡¢ Ë÷ÒıÄÚÈİ²»Í¬£º" + table.getTableName()
-					+ " | " + cTableIndexPdm.getIndexName());// ĞèÈË¹¤ÅĞ¶ÏÈçºÎ´¦Àí
-			sb[2].append("<tr").append(strClassTypeString)
-					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">9")
-					.append(table.getTableName())
-					.append("</th><td >").append(cTableIndexPdm.getIndexName()).append("</td><td >")
-					.append(cTableIndexPdm.getColNames())
-					.append("</td><td >")
-					.append("</td><td >")
-					.append("</td><td >")
-					.append(cTableIndexDev.getColNames())
-					.append("</td></tr>");
-			break;
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">11")
+					.append("</th><td>").append(table.getTableName())
+					.append("</td><td >").append(cTableIndexPdm.getIndexName())
+					.append("</td><td >").append(cTableIndexPdm.getColNames())
+					.append("</td><td >").append(cTableIndexPdm.getConstraint_type())
+					.append("</td><td ></td><td ></td><td ></td><td ></td><td >");
+			strSql = "alter table " + DbDomain + "." + table.getTableName() + " add ";
+			if (cTableIndexPdm.getConstraint_type() != null
+					&& cTableIndexPdm.getConstraint_type().equals("PRIMARY KEY"))
+			{
+				strSql += " PRIMARY key("
+						+ cTableIndexPdm.getColNames().substring(0, cTableIndexPdm.getColNames().length() - 1) + ");";
+			} else
+			{
+				if (cTableIndexPdm.getNON_UNIQUE() == 0)
+				{
+					strSql += " unique ";
+				}
+				strSql += " index " + cTableIndexPdm.getIndexName() + "("
+						+ cTableIndexPdm.getColNames().substring(0, cTableIndexPdm.getColNames().length() - 1) + ");";
 
+			}
+			AddSqlVector(vSql,strSql,10,table.getTableName());
+			sb[0].append(strSql).append("</td></tr>");
+			break;
+		case 11:
+			System.out.println("12ã€PDMä¸å­˜åœ¨ï¼Œå¼€å‘å­˜åœ¨çš„ç´¢å¼•ï¼š" + table.getTableName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
+			sb[1].append("<tr").append(strClassTypeString)
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">12").append("</th><td>")
+					.append(GetParentTableName(table.getTableName()))
+					.append("</td><td ></td><td ></td><td ></td><td >")
+					.append(table.getTableName()).append("</td><td >")
+					.append(cTableIndexDev.getIndexName()).append("</td><td >")
+					.append(cTableIndexDev.getColNames())
+					.append("</td><td>")
+					.append(cTableIndexDev.getConstraint_type())
+					.append("</td><td >");
+			strSql = "alter table " + DbDomain + "." + table.getTableName() + " drop ";
+			if (null != cTableIndexDev.getConstraint_type())
+			{
+				if (cTableIndexDev.getConstraint_type().equals("PRIMARY KEY"))
+				{
+					strSql += "  PRIMARY key ";
+				} else if (cTableIndexDev.getConstraint_type().equals("FOREIGN KEY"))
+				{
+					strSql += "  foreign key " + cTableIndexDev.getIndexName();
+				} else
+				{
+					strSql += "  index " + cTableIndexDev.getIndexName();
+				}
+			} else
+			{
+				strSql += "  index " + cTableIndexDev.getIndexName();
+			}
+			strSql +=";";
+			AddSqlVector(vSql,strSql,11,table.getTableName());
+			sb[1].append(strSql).append("</td></tr>");
+
+			break;
+		case 12:
+			System.out.println("13ã€ ç´¢å¼•å†…å®¹ä¸åŒï¼š" + table.getTableName()
+					+ " | " + cTableIndexPdm.getIndexName());// éœ€äººå·¥åˆ¤æ–­å¦‚ä½•å¤„ç†
+			sb[2].append("<tr").append(strClassTypeString)
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">13")
+					.append("</th><td>").append(GetParentTableName(table.getTableName()))
+					.append("</td><td >").append(cTableIndexPdm.getIndexName())
+					.append("</td><td >").append(cTableIndexPdm.getColNames())
+					.append("</td><td >").append(cTableIndexPdm.getNON_UNIQUE())
+					.append("</td><td>").append(table.getTableName())
+					.append("</td><td >").append(cTableIndexDev.getIndexName())
+					.append("</td><td >").append(cTableIndexDev.getColNames())
+					.append("</td><td>")
+					.append("</td><td>");
+
+			MakeAlterSql(sb[2], table, cTableIndexPdm, cTableIndexDev, vSql,12);
+			sb[2].append("</td></tr>");
+			break;
+		case 13:
+			System.out.println("14ã€ ç´¢å¼•å†…å®¹ä¸åŒï¼š" + table.getTableName()
+					+ " | " + cTableIndexPdm.getIndexName());// éœ€äººå·¥åˆ¤æ–­å¦‚ä½•å¤„ç†
+			sb[3].append("<tr").append(strClassTypeString)
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">14")
+					.append("</th><td>").append(GetParentTableName(table.getTableName()))
+					.append("</td><td >").append(cTableIndexPdm.getIndexName())
+					.append("</td><td >").append(cTableIndexPdm.getColNames())
+					.append("</td><td >").append(cTableIndexPdm.getNON_UNIQUE())
+					.append("</td><td>").append(table.getTableName())
+					.append("</td><td >").append(cTableIndexDev.getIndexName())
+					.append("</td><td >").append(cTableIndexDev.getColNames())
+					.append("</td><td>").append(cTableIndexDev.getNON_UNIQUE())
+					.append("</td><td>");
+
+			MakeAlterSql(sb[3], table, cTableIndexPdm, cTableIndexDev, vSql,13);
+			sb[3].append("</td></tr>");
+			break;
+		case 14:
+			System.out.println("15ã€ ç´¢å¼•å†…å®¹ä¸åŒï¼š" + table.getTableName()
+					+ " | " + cTableIndexPdm.getIndexName());// éœ€äººå·¥åˆ¤æ–­å¦‚ä½•å¤„ç†
+			sb[4].append("<tr").append(strClassTypeString)
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">15")
+					.append("</th><td>").append(GetParentTableName(table.getTableName()))
+					.append("</td><td >").append(cTableIndexPdm.getIndexName())
+					.append("</td><td >").append(cTableIndexPdm.getColNames())
+					.append("</td><td >").append(cTableIndexPdm.getConstraint_type())
+					.append("</td><td>").append(table.getTableName())
+					.append("</td><td >").append(cTableIndexDev.getIndexName())
+					.append("</td><td >").append(cTableIndexDev.getColNames())
+					.append("</td><td>").append(cTableIndexDev.getConstraint_type())
+					.append("</td><td>");
+
+			MakeAlterSql(sb[4], table, cTableIndexPdm, cTableIndexDev, vSql,14);
+			sb[4].append("</td></tr>");
+			break;
+		case 15:
+			System.out.println("11ã€PDMå­˜åœ¨ï¼Œå¼€å‘ä¸å­˜åœ¨çš„ç´¢å¼•ï¼š" + table.getTableName());
+			sb[0].append("<tr").append(strClassTypeString)
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">11")
+					.append("</th><td>").append(GetParentTableName(table.getTableName()))
+					.append("</td><td >").append(cTableIndexPdm.getIndexName())
+					.append("</td><td >").append(cTableIndexPdm.getColNames())
+					.append("</td><td >").append(cTableIndexPdm.getConstraint_type())
+					.append("</td><td >").append(table.getTableName())
+					.append("</td><td ></td><td ></td><td ></td><td >");
+			strSql = "alter table " + DbDomain + "." + table.getTableName() + " add ";
+			if (cTableIndexPdm.getConstraint_type() != null
+					&& cTableIndexPdm.getConstraint_type().equals("PRIMARY KEY"))
+			{
+				strSql += "PRIMARY key("
+						+ cTableIndexPdm.getColNames().substring(0, cTableIndexPdm.getColNames().length() - 1) + ");";
+			}
+			else
+			{
+				if (cTableIndexPdm.getNON_UNIQUE() == 0)
+				{
+					strSql += "unique ";
+				}
+				strSql += "index " + cTableIndexPdm.getIndexName() + "("
+						+ cTableIndexPdm.getColNames().substring(0, cTableIndexPdm.getColNames().length() - 1) + ");";
+
+			}
+			AddSqlVector(vSql,strSql,10,table.getTableName());
+			sb[0].append(strSql).append("</td></tr>");
+			break;
 		}
 
+	}
+
+	private static void MakeAlterSql(StringBuffer sb, Table table, TableIndex cTableIndexPdm,
+			TableIndex cTableIndexDev, Vector<ExecSqlInfo> vSql,int iSqlType)
+	{
+		String strSql = "alter table " + DbDomain + "." + table.getTableName();
+		if (cTableIndexDev.getConstraint_type() != null)
+		{
+			if (cTableIndexDev.getConstraint_type().equals("PRIMARY KEY"))
+			{
+				strSql += " drop PRIMARY key;";
+			} else if (cTableIndexDev.getConstraint_type().equals("FOREIGN KEY"))
+			{
+				strSql += " drop foreign key " + cTableIndexDev.getIndexName() + ";";
+
+			} else
+			{
+				strSql += "drop  index " + cTableIndexDev.getIndexName() + ";";
+			}
+		} else
+		{
+			strSql += " drop index " + cTableIndexDev.getIndexName() + ";";
+		}
+		AddSqlVector(vSql,strSql,iSqlType,table.getTableName());
+		sb.append(strSql);
+		strSql += "alter table " + DbDomain + "." + table.getTableName() + " add ";
+		if (cTableIndexPdm.getConstraint_type() != null
+				&& cTableIndexPdm.getConstraint_type().equalsIgnoreCase("PRIMARY KEY"))
+		{
+			strSql += "PRIMARY key("
+					+ cTableIndexPdm.getColNames().substring(0, cTableIndexPdm.getColNames().length() - 1) + ");";
+		}
+		else
+		{
+			if (cTableIndexPdm.getNON_UNIQUE() == 0)
+			{
+				strSql += "unique ";
+			}
+			strSql += "index " + cTableIndexPdm.getIndexName() + "("
+					+ cTableIndexPdm.getColNames().substring(0, cTableIndexPdm.getColNames().length() - 1) + ");";
+		}
+		AddSqlVector(vSql,strSql,iSqlType,table.getTableName());
+		sb.append(strSql);
 	}
 
 	private static int iCount = 0;
@@ -159,7 +325,25 @@ public class CompareUtil
 		return key_table.matches(regex);
 	}
 
-	public static String GetParentTableName(String strTableName)
+	// åˆ¤æ–­æ˜¯å¦æ˜¯åˆ†è¡¨:å…ˆåˆ¤æ–­æ˜¯å¦æœ‰ç‰¹å®šè§„åˆ™ï¼ŒåæŒ‰ç…§ åˆ†è¡¨=æ¯è¡¨+_[0-9].*,è¿›è¡ŒåŒ¹é…åˆ¤æ–­
+	public static boolean IsSubTable(String key_table, String strTableName)
+	{
+		HashMap<String, String> pc = JpfDbCompare.getParentChild();
+		String ParentTabelName = GetParentTableNameConven(strTableName);
+		if (pc.containsKey(ParentTabelName))
+		{
+			if (pc.get(ParentTabelName).equals(key_table))
+			{
+				return true;
+			}
+			else
+				return false;
+		}
+		String regex = key_table + "_[0-9].*";
+		return strTableName.matches(regex);
+	}
+
+	public static String GetParentTableNameConven(String strTableName)
 	{
 		String regex = "_[0-9]";
 		Pattern pat = Pattern.compile(regex);
@@ -167,10 +351,72 @@ public class CompareUtil
 		return str[0];
 	}
 
+	// è·å¾—æ¯è¡¨
+	public static String GetParentTableName(String strTableName)
+	{
+
+		HashMap<String, String> pc = JpfDbCompare.getParentChild();
+		String ParentTabelName = GetParentTableNameConven(strTableName);
+		if (pc.containsKey(ParentTabelName))
+		{
+			return pc.get(ParentTabelName);
+		}
+		else
+		{
+			return ParentTabelName;
+		}
+	}
+
+	private static String AddDefault(Column pmdColumn)
+	{
+		String tmpStr = "";
+		if (pmdColumn.getNullable().equalsIgnoreCase("no"))
+		{
+			tmpStr = " NOT NULL";
+		}
+		if (null != pmdColumn.getColumnDefault() && pmdColumn.getColumnDefault().length() > 0)
+		{
+			tmpStr += " DEFAULT " + pmdColumn.getColumnDefault();
+		}
+		if (null != pmdColumn.getExtra() && pmdColumn.getExtra().length() > 0)
+		{
+			tmpStr += " " + pmdColumn.getExtra();
+		}
+		return tmpStr;
+	}
+
+	private static String GetPreColName(Table table_pdm, Column pmdColumn)
+	{
+		int iPos = pmdColumn.getOrdinal_position();
+		if (1 == iPos)
+		{
+			return " first";
+		} else
+		{
+			iPos = iPos - 1;
+		}
+		for (Iterator  iter_column = table_pdm.columns.keySet().iterator(); iter_column.hasNext();)
+		{
+			String key_column = (String) iter_column.next();
+			Column column_pdm = (Column) table_pdm.columns.get(key_column);
+			if (iPos == column_pdm.getOrdinal_position())
+			{
+				return " after " + column_pdm.getColumnName();
+			}
+		}
+		return "";
+	}
+	private static void AddSqlVector(Vector<ExecSqlInfo> vSql,String strSql,int iType,String strTableName)
+	{
+		ExecSqlInfo cExecSqlInfo=new ExecSqlInfo();
+		cExecSqlInfo.setiType(iType);
+		cExecSqlInfo.setStrSql(strSql);
+		vSql.add(cExecSqlInfo);
+	}
 	/*
-	 * Êä³ö
+	 * ï¿½ï¿½ï¿½
 	 */
-	public static void append(Table table, Column pmdColumn, Column descColumn, int flag, StringBuffer[] sb)
+	public static void append(Table tablePdm,Table tableDev, Column pmdColumn, Column developColumn, int flag, StringBuffer[] sb, Vector<ExecSqlInfo> vSql)
 			throws Exception
 	{
 		iCount++;
@@ -179,163 +425,207 @@ public class CompareUtil
 		{
 			strClassTypeString = "";
 		}
-		String tmpStr = "";
+		String strSql = "";
 		switch (flag)
 		{
 		case 1:
-			System.out.println("1¡¢PDM´æÔÚ£¬±È¶Ô¿â²»´æÔÚµÄ±í£º" + table.getTableName());// Ìø¹ı
+			System.out.println("1ã€PDMå­˜åœ¨ï¼Œæ¯”å¯¹åº“ä¸å­˜åœ¨çš„è¡¨ï¼š" + tablePdm.getTableName());// è·³è¿‡
 			// sb[0].append(table.getTableName() + "\n");
 			sb[0].append("<tr").append(strClassTypeString)
 					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">1")
 					.append("</th><td>")
-					.append(table.getTableName())
-					.append("</td><td></td><td ></td><td ></td><td ></td><td ></td></tr>");
-			//sbAlterSql.append("create table ").append("\n");
-			// System.out.println(sb[0]);// Ìø¹ı
+					.append(tablePdm.getTableName())
+					.append("</td><td></td><td ></td><td ></td><td ></td><td ></td><td ></td><td ></td><td></td></tr>");
 			break;
 		case 2:
-			System.out.println("2¡¢PDM²»´æÔÚ£¬±È¶Ô¿â´æÔÚµÄ±í£º" + table.getTableName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
+			System.out.println("2ã€PDMä¸å­˜åœ¨ï¼Œæ¯”å¯¹åº“å­˜åœ¨çš„è¡¨ï¼š" + tableDev.getTableName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
 			// sb[1].append(table.getTableName() + "\n");
-			sb[1].append("<tr ").append(strClassTypeString).append("><th scope=\"row\"  class=\"specalt\">2")
-					.append("</th><td>")
-					.append("</td><td></td><td ></td><td ></td>").append(table.getTableName())
-					.append("<td ></td><td ></td></tr>");
+			sb[1].append("<tr ").append(strClassTypeString)
+					.append("><th scope=\"row\"  abbr=\"L2 Cache\" class=\"specalt\">2")
+					.append("</th><td>(").append(GetParentTableName(tableDev.getTableName()))
+					.append(")</td><td></td><td ></td><td ></td><td >").append(tableDev.getTableName())
+					.append("</td><td ></td><td ></td><td >");
+			if (tableDev.getTable_type().equalsIgnoreCase("view"))
+			{
+				sb[1].append("view");
+				strSql = "drop view ";
+			} else
+			{
+				strSql = "drop table ";
+			}
 
-			sbAlterSql.append("drop table ").append(DbDomain).append(".").append(table.getTableName()).append(";<br>");
+			strSql += " if exists " + DbDomain + "." + tableDev.getTableName() + ";";
+			AddSqlVector(vSql,strSql,2,tableDev.getTableName());
+			sb[1].append("</td><td>").append(strSql).append("</td></tr>");
+
 			// System.out.println(sb[1]);
 			break;
 		case 3:
-			System.out.println("3¡¢PDM´æÔÚ£¬±È¶Ô¿â²»´æÔÚµÄ×Ö¶Î£º" + table.getTableName()
-					+ " | " + pmdColumn.getColumnName());// ĞèÈË¹¤ÅĞ¶ÏÈçºÎ´¦Àí
+			System.out.println("3ã€PDMå­˜åœ¨ï¼Œæ¯”å¯¹åº“ä¸å­˜åœ¨çš„å­—æ®µï¼š" + tablePdm.getTableName()
+					+ " | " + pmdColumn.getColumnName());// éœ€äººå·¥åˆ¤æ–­å¦‚ä½•å¤„ç†
 			sb[2].append("<tr").append(strClassTypeString)
-					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">3").append("</th><td>");
-			tmpStr = GetParentTableName(table.getTableName());
-			if (tmpStr.equalsIgnoreCase(table.getTableName()))
-			{
-				sb[2].append(table.getTableName());
-			} else
-			{
-				sb[2].append(tmpStr);
-			}
-			
-			sb[2].append("</td><td >").append(pmdColumn.getColumnName()).append("</td><td >")
-			.append(pmdColumn.getDataType()).append("</td><td >").append(table.getTableName()).append("</td><td ></td><td ></td></tr>");
-			// System.out.println(sb[2]);
-			sbAlterSql.append("ALTER TABLE ")
-			.append(DbDomain)
-			.append(".")
-			.append(table.getTableName())
-			.append(" ADD COLUMN ")
-			.append(pmdColumn.getColumnName())
-			.append(" ")
-			.append(pmdColumn.getDataType());
-			if (pmdColumn.getNullable().equalsIgnoreCase("yes"))
-			{
-				sbAlterSql.append(" NOT NULL");
-			}
-			sbAlterSql.append(";<br>");
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">3").append("</th><td>")
+					.append(GetParentTableName(tableDev.getTableName()))
+					.append("</td><td >").append(pmdColumn.getColumnName()).append("</td><td >")
+					.append(pmdColumn.getDataType()).append("</td><td ></td><td >").append(tableDev.getTableName())
+					.append("</td><td ></td><td ></td><td ></td><td >");
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " ADD COLUMN "
+					+ pmdColumn.getColumnName() + " "
+					+ pmdColumn.getDataType() + AddDefault(pmdColumn) + GetPreColName(tablePdm, pmdColumn) + ";";
+			AddSqlVector(vSql,strSql,3,tableDev.getTableName());
+			sb[2].append(strSql).append("</td></tr>");
 			break;
 		case 4:
-			System.out.println("4¡¢PDM²»´æÔÚ£¬±È¶Ô¿â´æÔÚµÄ×Ö¶Î£º" + table.getTableName()
-					+ " | " + pmdColumn.getColumnName());// ĞèÒªÈË¹¤ÅĞ¶Ï½Å±¾
+			System.out.println("4ã€PDMä¸å­˜åœ¨ï¼Œæ¯”å¯¹åº“å­˜åœ¨çš„å­—æ®µï¼š" + tableDev.getTableName()
+					+ " | " + pmdColumn.getColumnName());// éœ€è¦äººå·¥åˆ¤æ–­è„šæœ¬
 
 			sb[3].append("<tr").append(strClassTypeString)
-					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">4").append("</th><td>");
-			tmpStr = GetParentTableName(table.getTableName());
-			if (tmpStr.equalsIgnoreCase(table.getTableName()))
-			{
-				sb[3].append(table.getTableName()).append("</td><td ></td><td ></td><td >").append(table.getTableName());
-			} else
-			{
-				sb[3].append(tmpStr).append("</td><td ></td><td ></td><td >").append(table.getTableName());
-			}
-
-			sb[3].append("</td><td >")
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">4").append("</th><td>")
+					.append(GetParentTableName(tableDev.getTableName()))
+					.append("</td><td ></td><td ></td><td ></td><td >")
+					.append(tableDev.getTableName()).append("</td><td >")
 					.append(pmdColumn.getColumnName()).append("</td><td >")
-					.append(pmdColumn.getDataType()).append("</td></tr>");
-			sb[2].append("</td><td >").append(pmdColumn.getColumnName()).append("</td><td >")
-			.append(pmdColumn.getDataType()).append("</td><td >").append(table.getTableName()).append("</td><td ></td><td ></td></tr>");
-			// System.out.println(sb[2]);
-			sbAlterSql.append("ALTER TABLE ")
-			.append(DbDomain)
-			.append(".")
-			.append(table.getTableName())
-			.append(" DROP COLUMN ")
-			.append(pmdColumn.getColumnName())
-			.append(";<br>");
+					.append(pmdColumn.getDataType()).append("</td><td ></td><td >");
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " DROP COLUMN "
+					+ pmdColumn.getColumnName() + ";";
+			AddSqlVector(vSql,strSql,4,tableDev.getTableName());
+			sb[3].append(strSql).append("</td></tr>");
 			break;
 		case 5:
-			System.out.println("5¡¢±íºÍ×Ö¶Î¶¼ÏàÍ¬£¬µ«×Ö¶ÎÀàĞÍ²»Í¬µÄÄÚÈİ£º" + table.getTableName()
+			System.out.println("5ã€è¡¨å’Œå­—æ®µéƒ½ç›¸åŒï¼Œä½†å­—æ®µç±»å‹ä¸åŒçš„å†…å®¹ï¼š" + tableDev.getTableName()
 					+ " | " + pmdColumn.getColumnName() + " | "
-					+ pmdColumn.getDataType() + "---" + descColumn.getDataType());
+					+ pmdColumn.getDataType() + "---" + developColumn.getDataType());
 			sb[4].append("<tr").append(strClassTypeString)
-					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">5").append("</th><td>");
-			tmpStr = GetParentTableName(table.getTableName());
-			if (tmpStr.equalsIgnoreCase(table.getTableName()))
-			{
-				sb[4].append(table.getTableName()).append("</td><td >").append(pmdColumn.getColumnName())
-						.append("</td><td >")
-						.append(pmdColumn.getDataType()).append("</td><td >").append(table.getTableName());
-			} else
-			{
-				sb[4].append(tmpStr).append("</td><td >").append(pmdColumn.getColumnName())
-						.append("</td><td >").append(pmdColumn.getDataType()).append("</td><td >")
-						.append(table.getTableName());
-			}
-
-			sb[4].append("</td><td ></td><td>")
-					.append(descColumn.getDataType()).append("</td></tr>");
-
-			sbAlterSql.append("ALTER TABLE ")
-			.append(DbDomain)
-			.append(".")
-			.append(table.getTableName())
-			.append(" MODIFY ")
-			.append(pmdColumn.getColumnName())
-			.append(" ")
-			.append(pmdColumn.getDataType());
-			if (pmdColumn.getNullable().equalsIgnoreCase("yes"))
-			{
-				sbAlterSql.append(" NOT NULL");
-			}
-			sbAlterSql.append(";<br>");
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">5").append("</th><td>")
+					.append(GetParentTableName(tableDev.getTableName()))
+					.append("</td><td >").append(pmdColumn.getColumnName())
+					.append("</td><td >").append(pmdColumn.getDataType()).append("</td><td >")
+					.append(ShowDefaultValue(pmdColumn.getColumnDefault())).append("</td><td>")
+					.append(tableDev.getTableName()).append("</td><td ></td><td>")
+					.append(developColumn.getDataType()).append("</td><td>")
+					.append(ShowDefaultValue(developColumn.getColumnDefault())).append("</td><td>");
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " MODIFY " + pmdColumn.getColumnName()
+					+ " " + pmdColumn.getDataType()
+					+ AddDefault(pmdColumn) + ";";
+			AddSqlVector(vSql,strSql,5,tableDev.getTableName());
+			sb[4].append(strSql).append("</td></tr>");
 			break;
 		case 6:
-			System.out.println("6¡¢±íºÍ×Ö¶Î¡¢×Ö¶ÎÀàĞÍ¶¼ÏàÍ¬£¬ÊÇ·ñÎª¿Õ²»Í¬£º"
-					+ table.getTableName() + " | " + pmdColumn.getColumnName()
-					+ " | " + pmdColumn.getNullable() + "---" + descColumn.getNullable());
+			System.out.println("6ã€è¡¨å’Œå­—æ®µã€å­—æ®µç±»å‹éƒ½ç›¸åŒï¼Œæ˜¯å¦ä¸ºç©ºä¸åŒï¼š"
+					+ tableDev.getTableName() + " | " + pmdColumn.getColumnName()
+					+ " | " + pmdColumn.getNullable() + "---" + developColumn.getNullable());
 			sb[5].append("<tr").append(strClassTypeString)
-					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">6").append("</th><td>");
-
-			tmpStr = GetParentTableName(table.getTableName());
-			if (tmpStr.equalsIgnoreCase(table.getTableName()))
-			{
-				sb[5].append(table.getTableName());
-			} else
-			{
-				sb[5].append(tmpStr);
-			}
-
-			sb[5].append("</td><td >").append(pmdColumn.getColumnName())
-			.append("</td><td >")
-			.append(pmdColumn.getNullable()).append("</td><td >").append(table.getTableName()).append("</td><td ></td><td>")
-					.append(descColumn.getNullable()).append("</td></tr>");
-
-			sbAlterSql.append("ALTER TABLE ")
-			.append(DbDomain)
-			.append(".")
-			.append(table.getTableName())
-			.append(" MODIFY ")
-			.append(pmdColumn.getColumnName())
-			.append(" ")
-			.append(pmdColumn.getDataType());
-			if (pmdColumn.getNullable().equalsIgnoreCase("yes"))
-			{
-				sbAlterSql.append(" NOT NULL");
-			}
-			sbAlterSql.append(";<br>");
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">6").append("</th><td>")
+					.append(GetParentTableName(tableDev.getTableName()))
+					.append("</td><td >").append(pmdColumn.getColumnName())
+					.append("</td><td >")
+					.append(pmdColumn.getNullable()).append("</td><td ></td>")
+					.append(ShowDefaultValue(pmdColumn.getColumnDefault())).append("<td>").append(tableDev.getTableName())
+					.append("</td><td ></td><td>")
+					.append(developColumn.getNullable()).append("</td><td>")
+					.append(ShowDefaultValue(developColumn.getColumnDefault())).append("</td><td>");
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " MODIFY " + pmdColumn.getColumnName()
+					+ " "
+					+ pmdColumn.getDataType() + AddDefault(pmdColumn) + ";";
+			AddSqlVector(vSql,strSql,6,tableDev.getTableName());
+			sb[5].append(strSql).append(";</td></tr>");
 			break;
-
+		case 7:
+			System.out.println("7ã€è¡¨å’Œå­—æ®µã€å­—æ®µç±»å‹éƒ½ç›¸åŒï¼Œé»˜è®¤å€¼ä¸åŒï¼š"
+					+ tableDev.getTableName() + " | " + pmdColumn.getColumnName()
+					+ " | " + pmdColumn.getNullable() + "---" + developColumn.getNullable());
+			sb[6].append("<tr").append(strClassTypeString)
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">7").append("</th><td>")
+					.append(GetParentTableName(tableDev.getTableName()))
+					.append("</td><td >").append(pmdColumn.getColumnName())
+					.append("</td><td >")
+					.append(pmdColumn.getNullable()).append("</td><td >")
+					.append(pmdColumn.getColumnDefault())
+					.append("</td><td >").append(tableDev.getTableName())
+					.append("</td><td ></td><td>")
+					.append(developColumn.getNullable()).append("</td><td >")
+					.append(developColumn.getColumnDefault()).append("</td><td>");
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " MODIFY " + pmdColumn.getColumnName()
+					+ " "
+					+ pmdColumn.getDataType() + AddDefault(pmdColumn) + ";";
+			AddSqlVector(vSql,strSql,7,tableDev.getTableName());
+			sb[6].append(strSql).append(";</td></tr>");
+			break;
+		case 8:
+			System.out.println("8ã€è¡¨å’Œå­—æ®µã€å­—æ®µç±»å‹éƒ½ç›¸åŒï¼Œé»˜è®¤å€¼ä¸åŒï¼š"
+					+ tableDev.getTableName() + " | " + pmdColumn.getColumnName()
+					+ " | " + pmdColumn.getNullable() + "---" + developColumn.getNullable());
+			sb[7].append("<tr").append(strClassTypeString)
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">8").append("</th><td>")
+					.append(GetParentTableName(tableDev.getTableName()))
+					.append("</td><td >").append(pmdColumn.getColumnName())
+					.append("</td><td >")
+					.append(pmdColumn.getNullable()).append("</td><td >")
+					.append(pmdColumn.getExtra())
+					.append("</td><td >").append(tableDev.getTableName())
+					.append("</td><td ></td><td>")
+					.append(developColumn.getNullable()).append("</td><td >")
+					.append(developColumn.getExtra()).append("</td><td>");
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " MODIFY " + pmdColumn.getColumnName()
+					+ " "
+					+ pmdColumn.getDataType() + AddDefault(pmdColumn) + ";";
+			AddSqlVector(vSql,strSql,8,tableDev.getTableName());
+			sb[7].append(strSql).append(";</td></tr>");
+			break;
+		case 9:
+			System.out.println("9ã€è¡¨å’Œå­—æ®µã€å­—æ®µç±»å‹éƒ½ç›¸åŒï¼Œå­—æ®µé¡ºåºä¸åŒï¼š"
+					+ tableDev.getTableName() + " | " + pmdColumn.getColumnName()
+					+ " | " + pmdColumn.getOrdinal_position() + "---" + developColumn.getOrdinal_position());
+			sb[8].append("<tr").append(strClassTypeString)
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">9").append("</th><td>")
+					.append(GetParentTableName(tableDev.getTableName()))
+					.append("</td><td >").append(pmdColumn.getColumnName())
+					.append("</td><td >")
+					.append(pmdColumn.getOrdinal_position()).append("</td><td >")
+					.append(pmdColumn.getExtra())
+					.append("</td><td >").append(tableDev.getTableName())
+					.append("</td><td ></td><td>")
+					.append(developColumn.getOrdinal_position()).append("</td><td >")
+					.append(developColumn.getExtra()).append("</td><td>");
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " change " + pmdColumn.getColumnName()
+					+ " "
+					+ pmdColumn.getColumnName() + " " + pmdColumn.getDataType() + AddDefault(pmdColumn)
+					+ GetPreColName(tablePdm, pmdColumn) + ";";
+			AddSqlVector(vSql,strSql,9,tableDev.getTableName());
+			sb[8].append(strSql).append("</td></tr>");
+			break;
+		case 10:
+			System.out.println("10ã€è¡¨å’Œå­—æ®µã€å­—æ®µç±»å‹éƒ½ç›¸åŒï¼Œå­—ç¬¦é›†ä¸åŒï¼š"
+					+ tableDev.getTableName() + " | " + pmdColumn.getColumnName()
+					+ " | " + pmdColumn.getCHARACTER_SET_NAME() + "---" + developColumn.getCHARACTER_SET_NAME());
+			sb[9].append("<tr").append(strClassTypeString)
+					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">10").append("</th><td>")
+					.append(GetParentTableName(tableDev.getTableName()))
+					.append("</td><td >").append(pmdColumn.getColumnName())
+					.append("</td><td >")
+					.append(pmdColumn.getCHARACTER_SET_NAME()).append("</td><td >")
+					.append(pmdColumn.getDataType())
+					.append("</td><td >").append(tableDev.getTableName())
+					.append("</td><td ></td><td>")
+					.append(developColumn.getCHARACTER_SET_NAME()).append("</td><td >")
+					.append(pmdColumn.getDataType())	.append("</td><td>");
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " change " + pmdColumn.getColumnName()
+					+ " "
+					+ pmdColumn.getColumnName() + " " + pmdColumn.getDataType() + AddDefault(pmdColumn)
+					+ " CHARACTER SET " +pmdColumn.getCHARACTER_SET_NAME()+ " "+pmdColumn.getCOLLATION_NAME()+";";
+			//COLLATE
+			AddSqlVector(vSql,strSql,10,tableDev.getTableName());
+			sb[9].append(strSql).append("</td></tr>");
+			break;
+		
 		}
+		
+	}
+
+	public static String ShowDefaultValue(String strInput)
+	{
+		if (strInput == null)
+			return "";
+		return strInput;
 	}
 }
