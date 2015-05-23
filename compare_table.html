@@ -79,24 +79,52 @@ html>body td{ font-size:11px;}
 <body>
 <b>比对结果：</b></p>
 <p>比对时间：#wupf1；</p>
+<p>PDM来源说明：</p>
 <p>1、PDM存在，比对库不存在的表</p>
-<p>2、PDM不存在，比对库存在的表</p>
+<p>2、PDM不存在，比对库存在的表，括号中的表是根据分表在PDM中查找的母表参考</p>
 <p>3、PDM存在，比对库不存在的字段</p>
 <p>4、PDM不存在，比对库存在的字段</p>
 <p>5、表和字段都相同，但字段类型不同的内容</p>
 <p>6、表和字段、字段类型都相同，是否为空不同</p>
-<table id="mytable" cellspacing="0" summary="The technical specifications of the Apple PowerMac G5 series">
+<p>7、表和字段、字段类型都相同，默认值不同</p>
+<p>8、表和字段、字段类型都相同，是否自增长不同</p>
+<p>9、表和字段、字段类型都相同，字段顺序不同</p>
+<p>10、表和字段、字段类型都相同，字符集不同</p>
+<p>差异总表</p>
+<table border="1" width="490" cellspacing="1">
+	<tr>
+		<td width="70">DIFF1</td>
+		<td width="70">DIFF2</td>
+		<td width="70">DIFF3</td>
+		<td width="70">DIFF4</td>
+		<td width="70">DIFF5</td>
+		<td width="70">DIFF6</td>
+		<td width="70">DIFF7</td>
+		<td width="70">DIFF8</td>
+		<td width="70">DIFF9</td>
+		<td width="70">DIFF10</td>
+	</tr>
+#diffs
+</table>
+<p>差异明细表</p>
+<table id="mytable" cellspacing="0" >
   <tr>
-    <th scope="row" abbr="Model" class="spec" colspan="3">pdm(#wupf2)</th>
-    <td colspan="3">比对库(#wupf3)</td>
+    <th scope="row" abbr="Model" class="spec" ></th>
+    <td colspan="4">pdm(#wupf2)</td>
+    <td colspan="4">比对库(#wupf3)</td>
+    <td >SQL参考</td>
   </tr>
   <tr>
-    <th scope="row" class="specalt">表</th>
-    <td class="alt">字段</td>
-    <td class="alt">类型</td>
+    <th scope="row" class="specalt">差异类型</th>
     <td class="alt">表</td>
     <td class="alt">字段</td>
     <td class="alt">类型</td>
+    <td class="alt">默认值</td>
+    <td class="alt">表</td>
+    <td class="alt">字段</td>
+    <td class="alt">类型</td>
+    <td class="alt">默认值</td>
+    <td class="alt"></td>
   </tr>
 
 
