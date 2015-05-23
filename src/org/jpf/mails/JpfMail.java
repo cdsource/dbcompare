@@ -1,8 +1,8 @@
 /** 
- * @author ÎâÆ½¸£ 
+ * @author å´å¹³ç¦ 
  * E-mail:wupf@asiainfo-linkage.com 
- * @version ´´½¨Ê±¼ä£º2013-4-7 ÏÂÎç3:43:23 
- * ÀàËµÃ÷ 
+ * @version åˆ›å»ºæ—¶é—´ï¼š2013-4-7 ä¸‹åˆ3:43:23 
+ * ç±»è¯´æ˜Ž 
  */
 
 package org.jpf.mails;
@@ -27,11 +27,10 @@ import org.jpf.utils.conf.ConfigProp;
 public class JpfMail
 {
 	private static final Logger logger = LogManager.getLogger();
-
-	private static String host = ""; // smtp·þÎñÆ÷
-	private static final String username = ""; // ÓÃ»§Ãû
-	private static final String password = ""; // ÃÜÂë
-	private static final String MailFrom = ""; // ·¢¼þÈËµØÖ·
+	private static final String host = "1.1.1.1"; // smtpæœåŠ¡å™¨
+	private static final String username = "aaa"; // ç”¨æˆ·å
+	private static final String password = "bbb"; // å¯†ç 
+	private static final String MailFrom = "ccc@ddd.com"; // å‘ä»¶äººåœ°å€
 
 	public static void SendMail(String login, String sMailText, String strMailEncode, String strTitle)
 	{
@@ -93,7 +92,7 @@ public class JpfMail
 			 * newMessage.setRecipients(Message.RecipientType.CC,
 			 * InternetAddress.parse(sCcMail)); }
 			 */
-			newMessage.setSubject(strTitle);// Ö÷Ìâ
+			newMessage.setSubject(strTitle);// ä¸»é¢˜
 			newMessage.setSentDate(new java.util.Date());
 			if (strMailEncode == null || 0==strMailEncode.length() )
 			{
@@ -106,7 +105,7 @@ public class JpfMail
 			transport.sendMessage(newMessage, newMessage.getAllRecipients());
 			transport.close();
 
-			logger.info("·¢ËÍÓÊ¼þ³É¹¦£¡");
+			logger.info("å‘é€é‚®ä»¶æˆåŠŸï¼");
 
 			// transport = sendMailSession.getTransport("smtp");
 			// transport.send(newMessage);
@@ -136,101 +135,6 @@ public class JpfMail
 
 	}
 
-	public static void SendMail(String login, String sMailText, String strMailEncode, String strTitle,
-			String strFileName)
-	{
-		try
-		{
-			Properties props = new Properties();
-			Session sendMailSession;
-			String[] strMailTos = login.split(",");
-			String strMailTo = "";
-			if (strMailTos.length > 0)
-			{
-				for (int i = 0; i < strMailTos.length; i++)
-				{
-					if (strMailTos[i].length() > 0)
-					{
-						strMailTo += strMailTos[i] + "@asiainfo.com,";
-					}
-				}
-				strMailTo += MailFrom;
-			} else
-			{
-				strMailTo += login + "@asiainfo.com";
-			}
-			logger.info("send mail to:" + strMailTo);
-			sendMailSession = Session.getInstance(props, null);
 
-			String strLIMIT_MAIL = ConfigProp.GetStrFromConfig("sonar_hz.properties", "LIMIT_MAIL");
-			if (!strLIMIT_MAIL.equalsIgnoreCase("1"))
-			{
-				strMailTo = "wupf@asiainfo.com";
-			}
-
-			props.put("mail.smtp.host", host);
-			props.put("mail.smtp.auth", "true");
-			Message newMessage = new MimeMessage(sendMailSession);
-			newMessage.setFrom(new InternetAddress(MailFrom));
-			newMessage.setRecipients(Message.RecipientType.TO,
-					InternetAddress.parse(strMailTo));
-			/*
-			 * if(sCcMail!=null && !"".equals(sCcMail)){
-			 * newMessage.setRecipients(Message.RecipientType.CC,
-			 * InternetAddress.parse(sCcMail)); }
-			 */
-			newMessage.setSubject(strTitle);// Ö÷Ìâ
-			newMessage.setSentDate(new java.util.Date());
-			if (strMailEncode == null)
-			{
-				strMailEncode = "UTF-8";
-			}
-			newMessage.setDataHandler(new DataHandler(sMailText, "text/html;charset=" + strMailEncode));
-			Multipart mp = new MimeMultipart();
-			MimeBodyPart mbp = new MimeBodyPart();
-
-			mbp = new MimeBodyPart();
-
-			FileDataSource fds = new FileDataSource(strFileName); // µÃµ½Êý¾ÝÔ´
-			mbp.setDataHandler(new DataHandler(fds)); // µÃµ½¸½¼þ±¾Éí²¢ÖÁÈëBodyPart
-			mbp.setFileName(fds.getName()); // µÃµ½ÎÄ¼þÃûÍ¬ÑùÖÁÈëBodyPart
-			mp.addBodyPart(mbp);
-			newMessage.setContent(mp); // Multipart¼ÓÈëµ½ÐÅ¼þ
-			newMessage.saveChanges();
-
-			Transport transport = sendMailSession.getTransport("smtp");
-			transport.connect(host, username, password);
-			transport.sendMessage(newMessage, newMessage.getAllRecipients());
-			transport.close();
-
-			logger.info("·¢ËÍÓÊ¼þ³É¹¦£¡");
-			transport.close();
-
-			// transport = sendMailSession.getTransport("smtp");
-			// transport.send(newMessage);
-		} catch (javax.mail.SendFailedException ex)
-		{
-			String strMail = ex.getMessage();
-			if (strMail.indexOf("550") > 0)
-			{
-				if (strMail.indexOf("<") > 0)
-				{
-					strMail = strMail.substring(strMail.indexOf("<") + 1);
-					strMail = strMail.substring(0, strMail.indexOf(">"));
-					logger.info(strMail);
-					logger.info(login);
-					login = login.replaceAll(strMail, "");
-					SendMail(login, sMailText, strMailEncode, strTitle, strFileName);
-				}
-			}
-			logger.error(ex);
-
-		} catch (Exception ex)
-		{
-			// TODO: handle exception
-			ex.printStackTrace();
-		}
-
-	}
 
 }
