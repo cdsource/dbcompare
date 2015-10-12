@@ -1,8 +1,8 @@
 /** 
-* @author ÎâÆ½¸£ 
+* @author ï¿½ï¿½Æ½ï¿½ï¿½ 
 * E-mail:wupf@asiainfo.com 
-* @version ´´½¨Ê±¼ä£º2015Äê4ÔÂ7ÈÕ ÏÂÎç10:45:47 
-* ÀàËµÃ÷ 
+* @version ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ä£º2015ï¿½ï¿½4ï¿½ï¿½7ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½10:45:47 
+* ï¿½ï¿½Ëµï¿½ï¿½ 
 */ 
 
 package org.jpf.ci.dbs.compare;
@@ -40,7 +40,7 @@ public class LoadSqlToDB
 		try
 		{
 			DbDescInfo cDbDescInfo=null;
-			JpfFileUtil.CheckFile(DBINFOFILE);
+			JpfFileUtil.checkFile(DBINFOFILE);
 			NodeList nl = JpfXmlUtil.GetNodeList("dbsource", DBINFOFILE);
 			logger.debug(nl.getLength());
 			if(1==nl.getLength())
@@ -58,7 +58,7 @@ public class LoadSqlToDB
 			}
 			conn=cDbDescInfo.GetConn();
 			Vector<String> v_File=new Vector<String>();
-			JpfFileUtil.GetFiles(strSqlFilePath, v_File);
+			JpfFileUtil.getFiles(strSqlFilePath, v_File);
 			for(String strSqlFile : v_File )
 			{
 				readSQLFile(conn,strSqlFile);
@@ -75,14 +75,14 @@ public class LoadSqlToDB
 
 	/**
 	 * @param args
-	 * ±»²âÊÔÀàÃû£ºTODO
-	 * ±»²âÊÔ½Ó¿ÚÃû:TODO
-	 * ²âÊÔ³¡¾°£ºTODO
-	 * Ç°ÖÃ²ÎÊý£ºTODO
-	 * Èë²Î£º
-	 * Ð£ÑéÖµ£º
-	 * ²âÊÔ±¸×¢£º
-	 * update 2015Äê4ÔÂ7ÈÕ
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½TODO
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½Ô½Ó¿ï¿½ï¿½ï¿½:TODO
+	 * ï¿½ï¿½ï¿½Ô³ï¿½ï¿½ï¿½ï¿½ï¿½TODO
+	 * Ç°ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½TODO
+	 * ï¿½ï¿½Î£ï¿½
+	 * Ð£ï¿½ï¿½Öµï¿½ï¿½
+	 * ï¿½ï¿½ï¿½Ô±ï¿½×¢ï¿½ï¿½
+	 * update 2015ï¿½ï¿½4ï¿½ï¿½7ï¿½ï¿½
 	 */
 	public static void main(String[] args)
 	{
@@ -102,9 +102,9 @@ public class LoadSqlToDB
             StringBuilder sBuilder = new StringBuilder("");  
             String str = bufferedReader.readLine();  
             while (str != null) {  
-                // È¥µôÒ»Ð©×¢ÊÍ£¬ºÍÒ»Ð©Ã»ÓÃµÄ×Ö·û  
+                // È¥ï¿½ï¿½Ò»Ð©×¢ï¿½Í£ï¿½ï¿½ï¿½Ò»Ð©Ã»ï¿½Ãµï¿½ï¿½Ö·ï¿½  
                 if (!str.startsWith("#") && !str.startsWith("/*")  
-                        && !str.startsWith("¨C") && !str.startsWith("\n"))  
+                        && !str.startsWith("ï¿½C") && !str.startsWith("\n"))  
                     sBuilder.append(str);  
                 str = bufferedReader.readLine();  
             }  
@@ -115,7 +115,7 @@ public class LoadSqlToDB
                 System.out.println(strSql);  
                 JpfDbUtils.ExecUpdateSql(conn, strSql);
             }  
-            // ´´½¨Êý¾ÝÁ¬½Ó¶ÔÏó£¬ÏÂÃæµÄDBConnectionÊÇÎÒµÄÒ»¸öJDBCÀà  
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½DBConnectionï¿½ï¿½ï¿½Òµï¿½Ò»ï¿½ï¿½JDBCï¿½ï¿½  
 
         } catch (Exception e) {  
             e.printStackTrace();  

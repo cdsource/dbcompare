@@ -1,8 +1,8 @@
 /** 
-* @author ÎâÆ½¸£ 
+* @author ï¿½ï¿½Æ½ï¿½ï¿½ 
 * E-mail:wupf@asiainfo.com 
-* @version ´´½¨Ê±¼ä£º2015Äê2ÔÂ13ÈÕ ÏÂÎç3:50:47 
-* ÀàËµÃ÷ 
+* @version ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ä£º2015ï¿½ï¿½2ï¿½ï¿½13ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½3:50:47 
+* ï¿½ï¿½Ëµï¿½ï¿½ 
 */ 
 
 package org.jpf.ci.dbs.compare;
@@ -35,7 +35,6 @@ public class DbDescInfo
 	public Connection GetConn() throws Exception
 	{
 		logger.debug(this.Url);
-		System.out.println(this.Url);
 		String driver = "com.mysql.jdbc.Driver";
 		Class.forName(driver).newInstance();
 		return DriverManager.getConnection(Url, Usr, Pwd);

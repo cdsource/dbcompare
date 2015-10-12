@@ -18,8 +18,16 @@ public class Column
 	//private int length;
 	//MYSQL
     private String Nullable;
-	
-    private String ColumnDefault="";
+	private int dataLength=0;
+    public int getDataLength() {
+		return dataLength;
+	}
+
+	public void setDataLength(int dataLength) {
+		this.dataLength = dataLength;
+	}
+
+	private String ColumnDefault="";
     
     private String Extra="";
     

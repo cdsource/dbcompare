@@ -40,7 +40,7 @@ public final class CompareData  extends AbstractDbCompare
 	private String  GetCompareTableInfo(String strConfigFileName)throws Exception
 	{
 		String strTableInfo=""; 
-		JpfFileUtil.CheckFile(strConfigFileName);
+		JpfFileUtil.checkFile(strConfigFileName);
 		NodeList nl = JpfXmlUtil.GetNodeList("comparetables", strConfigFileName);
 		logger.debug(nl.getLength());
 
@@ -204,15 +204,6 @@ public final class CompareData  extends AbstractDbCompare
 	    }
 	}
 	/* (non-Javadoc)
-	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#DoWork(java.sql.Connection, java.sql.Connection)
-	 */
-	@Override
-	void DoWork(Connection conn_product, Connection conn_develop) throws Exception
-	{
-		// TODO Auto-generated method stub
-		
-	}
-	/* (non-Javadoc)
 	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetHtmlName()
 	 */
 	@Override
@@ -226,6 +217,42 @@ public final class CompareData  extends AbstractDbCompare
 	 */
 	@Override
 	String GetMailTitle()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#DoWork(java.sql.Connection, java.sql.Connection, org.jpf.ci.dbs.compare.CompareInfo)
+	 */
+	@Override
+	void DoWork(Connection conn_product, Connection conn_develop, CompareInfo cCompareInfo) throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#DoWork(java.sql.Connection, org.jpf.ci.dbs.compare.CompareInfo)
+	 */
+	@Override
+	void DoWork(Connection conn_develop, CompareInfo cCompareInfo) throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#DoWork(org.jpf.ci.dbs.compare.CompareInfo)
+	 */
+	@Override
+	void DoWork(CompareInfo cCompareInfo) throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetExecSqlHtmlName()
+	 */
+	@Override
+	String GetExecSqlHtmlName()
 	{
 		// TODO Auto-generated method stub
 		return null;

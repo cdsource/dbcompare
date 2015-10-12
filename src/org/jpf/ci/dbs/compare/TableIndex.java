@@ -70,7 +70,11 @@ public class TableIndex
 	
 	public void AddColName(String columnName)
 	{
-		colNames+=columnName+",";
+		if(columnName!=null&&columnName!="")
+		{
+			colNames+=columnName+",";
+		}
+		
 
 	}
 

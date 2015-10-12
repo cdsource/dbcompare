@@ -118,7 +118,7 @@ public class DbChecks
 			StringBuffer sbTotal=new StringBuffer();
 			StringBuffer sbDetail=new StringBuffer();
 			
-			JpfFileUtil.CheckFile(strConfigFileName);
+			JpfFileUtil.checkFile(strConfigFileName);
 			NodeList nl = JpfXmlUtil.GetNodeList("dbsource", strConfigFileName);
 			String strDefaultMail=""; 
 
@@ -157,13 +157,13 @@ public class DbChecks
 	{
 		logger.debug("write Result File...");
 
-		String strMailText = JpfFileUtil.GetFileTxt("compare_check.html");
+		String strMailText = JpfFileUtil.getFileTxt("compare_check.html");
 		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDate());
 		strMailText = strMailText.replaceAll("#wupf3", strDbInfo);
 		strMailText = strMailText.replaceAll("#wupf4", sbDetail.toString());
 		strMailText = strMailText.replaceAll("#diffs", sbTotal.toString());
 		// strMailText+=sbAlterSql.toString();
-		JpfMail.SendMail(strMailers, strMailText, "GBK", "数据库非法的内容： 比对库" + strDbInfo);
+		JpfMail.sendMail(strMailers, strMailText, "GBK", "数据库非法的内容： 比对库" + strDbInfo);
 	}
 	/**
 	 * @param args

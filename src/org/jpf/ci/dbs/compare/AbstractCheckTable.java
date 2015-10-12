@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.jpf.utils.JpfDateTimeUtil;
 
 /**
- * 
+ * @category 基础类
  */
 public abstract class AbstractCheckTable
 {
@@ -35,13 +35,13 @@ public abstract class AbstractCheckTable
 	{
 	}
 
-	public void DoCheck(Connection conn, String strSqlParam)
+	public void doCheck(Connection conn, String strSqlParam)
 	{
 		// TODO Auto-generated constructor stub
 		try
 		{
-			DoWork(conn, strSqlParam); // �Ƚ����ݿ�
-			CompareUtil.writeFile(GetCheckTitle(), sb); // д���ļ�
+			doWork(conn, strSqlParam); 
+			//CompareUtil.writeFile(GetCheckTitle(), sb); 
 		} catch (Exception ex)
 		{
 			// TODO: handle exception
@@ -50,7 +50,7 @@ public abstract class AbstractCheckTable
 
 	}
 
-	private void DoWork(Connection conn, String strSqlParam) throws Exception
+	private void doWork(Connection conn, String strSqlParam) throws Exception
 	{
 		String sSql = GetCheckSql();
 		logger.debug(sSql);
