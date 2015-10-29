@@ -25,12 +25,33 @@ public class CompareInfo
     private String DevJdbcUrl;
     private String PdmInfo;
     private String strExcludeTable;
+<<<<<<< HEAD
 
 	private String strMails;
     
 	//输出类型
     private int sendResulType;
     
+=======
+    /**
+	 * @return the sendresulttype
+	 */
+	public int getSendresulttype()
+	{
+		return sendresulttype;
+	}
+	/**
+	 * @param sendresulttype the sendresulttype to set
+	 */
+	public void setSendresulttype(int sendresulttype)
+	{
+		this.sendresulttype = sendresulttype;
+	}
+
+	private String strMails;
+    
+    private int sendresulttype;
+>>>>>>> origin/master
     private String AllMail;
     //比较类型
     private int CompareType;
@@ -41,6 +62,7 @@ public class CompareInfo
 	private int DoExec;
     //比较类型 表：1--10，索引 11-15
     private String ResultTypes;
+<<<<<<< HEAD
     //版本信息或日期信息
     private String pdmDtVers;
     
@@ -63,6 +85,9 @@ public class CompareInfo
 		this.sendResulType = sendResulType;
 	}
 
+=======
+    private String pdmDtVers;//版本信息或日期信息
+>>>>>>> origin/master
     public String getPdmDtVers() {
 		return pdmDtVers;
 	}
@@ -87,6 +112,10 @@ public class CompareInfo
 		AllMail = allMail;
 	}
 
+<<<<<<< HEAD
+=======
+	private String PdmJdbcUrl;
+>>>>>>> origin/master
     
     public String getPdmJdbcUrl()
 	{

@@ -27,7 +27,11 @@ public class Column
 		this.dataLength = dataLength;
 	}
 
+<<<<<<< HEAD
 	private String columnDefault="";
+=======
+	private String ColumnDefault="";
+>>>>>>> origin/master
     
     private String Extra="";
     

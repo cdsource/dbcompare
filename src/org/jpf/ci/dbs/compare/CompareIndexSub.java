@@ -30,7 +30,11 @@ public class CompareIndexSub extends AbstractDbCompare {
 	 * .CompareInfo)
 	 */
 	//pdm与pdm比对
+<<<<<<< HEAD
 	public void doWork(CompareInfo cCompareInfo) throws Exception {
+=======
+	public void DoWork(CompareInfo cCompareInfo) throws Exception {
+>>>>>>> origin/master
 		String strPdmDomain = cCompareInfo.getDbDomain();
 		TreeMap<String, Table> map_pdm = new TreeMap<String, Table>();
 		TreeMap<String, Table> map_develop = new TreeMap<String, Table>();
@@ -55,7 +59,11 @@ public class CompareIndexSub extends AbstractDbCompare {
 
 			// 尝试从PDM库中获得同名表
 			logger.info("dev_table=" + key_table);
+<<<<<<< HEAD
 			key_table = CompareUtil.getParentTableName(key_table);
+=======
+			key_table = CompareUtil.GetParentTableName(key_table);
+>>>>>>> origin/master
 			// logger.info("parent_table=" + key_table);
 			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
 
@@ -70,7 +78,11 @@ public class CompareIndexSub extends AbstractDbCompare {
 								.get(key_index);
 						logger.debug("dev_index={}", key_index);
 						// 尝试从PDM库中获得同名索引
+<<<<<<< HEAD
 						key_index = CompareUtil.getParentTableName(key_index);
+=======
+						key_index = CompareUtil.GetParentTableName(key_index);
+>>>>>>> origin/master
 						logger.debug("pdm_index={}", key_index);
 						TableIndex index_pdm = (TableIndex) table_pdm.indexs
 								.get(key_index);
@@ -164,7 +176,12 @@ public class CompareIndexSub extends AbstractDbCompare {
 					TableIndex index_pdm = (TableIndex) table_pdm.indexs
 							.get(key_index);
 
+<<<<<<< HEAD
 					CompareUtil.appendIndex(table_pdm, index_pdm, null, 10, sb, vSql);
+=======
+					CompareUtil.appendIndex(table_pdm, index_pdm, null, 10, sb,
+							vSql);
+>>>>>>> origin/master
 					iCount1++;
 				}
 			}
@@ -173,11 +190,174 @@ public class CompareIndexSub extends AbstractDbCompare {
 		map_develop = null;
 	}
 	//pdm与数据库比对
+<<<<<<< HEAD
 	public void doWork(Connection conn_develop, CompareInfo cCompareInfo)
 			throws Exception {
 		String strPdmDomain = cCompareInfo.getDbDomain();
 
 		/*if (strPdmDomain.startsWith("ud")) {
+=======
+	public void DoWork(Connection conn_develop, CompareInfo cCompareInfo)
+			throws Exception {
+		String strPdmDomain = cCompareInfo.getDbDomain();
+
+		if (strPdmDomain.startsWith("ud")) {
+			strPdmDomain = "ud";
+		}
+		if (strPdmDomain.startsWith("id")) {
+			strPdmDomain = "id";
+		}		
+		if (strPdmDomain.startsWith("zd")) {
+			strPdmDomain = "zd";
+		}
+		if (strPdmDomain.startsWith("md")) {
+			strPdmDomain = "md";
+		}
+		TreeMap<String, Table> map_pdm = new TreeMap<String, Table>();
+		if (domain_table.containsKey(strPdmDomain)) {
+			map_pdm = domain_table.get(strPdmDomain);
+
+		}
+		// 开发数据库连接
+		LinkedHashMap<String, Table> map_develop = GetTableIndexs(conn_develop,
+				cCompareInfo.getDbDomain(), cCompareInfo);
+
+		logger.info("begin compare index ");
+		// 遍历开发库Map
+		for (Iterator iter_table = map_develop.keySet().iterator(); iter_table
+				.hasNext();) {
+			String key_table = (String) iter_table.next();
+			// 获得开发库中的表
+			Table table_develop = map_develop.get(key_table);
+
+			// 尝试从PDM库中获得同名表
+			logger.info("dev_table=" + key_table);
+			key_table = CompareUtil.GetParentTableName(key_table);
+			// logger.info("parent_table=" + key_table);
+			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
+
+			if (table_pdm != null) {
+
+				for (Iterator iter_column = table_develop.indexs.keySet()
+						.iterator(); iter_column.hasNext();) {
+					String key_index = (String) iter_column.next();
+					if (key_index != null) {
+						// 获得开发库中的索引
+						TableIndex index_develop = (TableIndex) table_develop.indexs
+								.get(key_index);
+						logger.debug("dev_index={}", key_index);
+						// 尝试从PDM库中获得同名索引
+						key_index = CompareUtil.GetParentTableName(key_index);
+						logger.debug("pdm_index={}", key_index);
+						TableIndex index_pdm = (TableIndex) table_pdm.indexs
+								.get(key_index);
+						if (index_pdm == null) {// 如果索引名为空，说明开发存在，pdm不存在
+							CompareUtil.appendIndex(table_develop, null,
+									index_develop, 11, sb, vSql);
+							iCount2++;
+						} else {// 说明两者都存在
+
+							if (!index_develop.getColNames().equalsIgnoreCase(
+									index_pdm.getColNames())) {
+								CompareUtil.appendIndex(table_develop,
+										index_pdm, index_develop, 12, sb, vSql);
+								iCount3++;
+							}
+							if (index_develop.getNON_UNIQUE() != index_pdm
+									.getNON_UNIQUE()) {
+								CompareUtil.appendIndex(table_develop,
+										index_pdm, index_develop, 13, sb, vSql);
+								iCount4++;
+							}
+							if (index_develop.getConstraint_type() != null) {
+								if (index_pdm.getConstraint_type() == null) {
+									CompareUtil.appendIndex(table_develop,
+											index_pdm, index_develop, 14, sb,
+											vSql);
+									iCount5++;
+								} else if (!index_develop.getConstraint_type()
+										.equalsIgnoreCase(
+												index_pdm.getConstraint_type())) {
+									CompareUtil.appendIndex(table_develop,
+											index_pdm, index_develop, 14, sb,
+											vSql);
+									iCount5++;
+								}
+							} else if (index_pdm.getConstraint_type() != null) {
+								CompareUtil.appendIndex(table_develop,
+										index_pdm, index_develop, 14, sb, vSql);
+								iCount5++;
+							}
+						}
+					}
+				}
+				// add
+				for (Iterator iter_column = table_pdm.indexs.keySet()
+						.iterator(); iter_column.hasNext();) {
+					String key_index = (String) iter_column.next();
+
+					// 尝试从PDM库中获得同名索引
+					TableIndex index_pdm = (TableIndex) table_pdm.indexs
+							.get(key_index);
+					TableIndex index_develop = (TableIndex) table_develop.indexs
+							.get(key_index);
+					if (index_develop == null) {
+						CompareUtil.appendIndex(table_develop, index_pdm, null,
+								15, sb, vSql);
+						iCount1++;
+					}
+				}
+			} else {
+				// PDM找不到对应的表
+				// logger.info(table_develop.indexs.size());
+				for (Iterator iter_column = table_develop.indexs.keySet()
+						.iterator(); iter_column.hasNext();) {
+					String key_index = (String) iter_column.next();
+					if (key_index != null) {
+						// 获得开发库中的索引
+						TableIndex index_develop = (TableIndex) table_develop.indexs
+								.get(key_index);
+						CompareUtil.appendIndex(table_develop, null,
+								index_develop, 11, sb, vSql);
+						iCount2++;
+					}
+				}
+			}
+		}
+
+		// 遍历PDMMap
+		for (Iterator iter_table = map_pdm.keySet().iterator(); iter_table
+				.hasNext();) {
+			String key_table = (String) iter_table.next();
+			// 获得开发库中的表
+			Table table_develop = map_develop.get(key_table);
+			// 尝试从生产库中获得同名表
+			Table table_pdm = map_pdm.get(key_table);
+			if (table_develop == null) {
+				for (Iterator iter_column = table_pdm.indexs.keySet()
+						.iterator(); iter_column.hasNext();) {
+					String key_index = (String) iter_column.next();
+					// 尝试从PDM库中获得同名索引
+					TableIndex index_pdm = (TableIndex) table_pdm.indexs
+							.get(key_index);
+
+					CompareUtil.appendIndex(table_pdm, index_pdm, null, 10, sb,
+							vSql);
+					iCount1++;
+				}
+			}
+		}
+		map_pdm = null;
+		map_develop = null;
+
+
+	}
+	//数据库与数据库比对
+	public void DoWork(Connection conn_product, Connection conn_develop,
+			CompareInfo cCompareInfo) throws Exception {
+		String strPdmDomain = cCompareInfo.getDbDomain();
+		if (strPdmDomain.startsWith("ud")) {
+>>>>>>> origin/master
 			strPdmDomain = "ud";
 		}*/
 		if(cCompareInfo.getPdmDbName() != null && cCompareInfo.getPdmDbName().length() > 0){
@@ -334,10 +514,17 @@ public class CompareIndexSub extends AbstractDbCompare {
 			strPdmDomain = cCompareInfo.getPdmDbName();
 		} 
 		// 生产数据库连接
+<<<<<<< HEAD
 		LinkedHashMap<String, Table> map_pdm = getTableIndexs(conn_product,
 				strPdmDomain, cCompareInfo);
 		// 开发数据库连接
 		LinkedHashMap<String, Table> map_develop = getTableIndexs(conn_develop,
+=======
+		LinkedHashMap<String, Table> map_pdm = GetTableIndexs(conn_product,
+				strPdmDomain, cCompareInfo);
+		// 开发数据库连接
+		LinkedHashMap<String, Table> map_develop = GetTableIndexs(conn_develop,
+>>>>>>> origin/master
 				cCompareInfo.getDbDomain(), cCompareInfo);
 
 		logger.info("begin compare index ");
@@ -350,7 +537,11 @@ public class CompareIndexSub extends AbstractDbCompare {
 
 			// 尝试从PDM库中获得同名表
 			logger.info("dev_table=" + key_table);
+<<<<<<< HEAD
 			key_table = CompareUtil.getParentTableName(key_table);
+=======
+			key_table = CompareUtil.GetParentTableName(key_table);
+>>>>>>> origin/master
 			// logger.info("parent_table=" + key_table);
 			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
 
@@ -365,7 +556,11 @@ public class CompareIndexSub extends AbstractDbCompare {
 								.get(key_index);
 						logger.debug("dev_index={}", key_index);
 						// 尝试从PDM库中获得同名索引
+<<<<<<< HEAD
 						key_index = CompareUtil.getParentTableName(key_index);
+=======
+						key_index = CompareUtil.GetParentTableName(key_index);
+>>>>>>> origin/master
 						logger.debug("pdm_index={}", key_index);
 						TableIndex index_pdm = (TableIndex) table_pdm.indexs
 								.get(key_index);
@@ -468,7 +663,11 @@ public class CompareIndexSub extends AbstractDbCompare {
 
 	}
 
+<<<<<<< HEAD
 	public LinkedHashMap<String, Table> getTableIndexs(Connection transaction,
+=======
+	public LinkedHashMap<String, Table> GetTableIndexs(Connection transaction,
+>>>>>>> origin/master
 			String inDomain, CompareInfo cCompareInfo) throws Exception {
 		logger.info("GetTableIndexs:" + inDomain);
 		String sSql = " select * from (select t1.TABLE_NAME,t1.COLUMN_NAME,t1.INDEX_NAME,t1.SEQ_IN_INDEX, t1.NON_UNIQUE,t2.constraint_type"
@@ -534,7 +733,11 @@ public class CompareIndexSub extends AbstractDbCompare {
 				cTable = new Table(tableName, "");
 				TableIndex cTableIndex = new TableIndex(
 						indexName, rs.getInt("NON_UNIQUE"));
+<<<<<<< HEAD
 				cTableIndex.addColName(columnName);
+=======
+				cTableIndex.AddColName(columnName);
+>>>>>>> origin/master
 				cTableIndex.setConstraint_type(rs.getString("constraint_type"));
 				cTable.indexs.put(cTableIndex.getIndexName(), cTableIndex);
 				
@@ -553,22 +756,38 @@ public class CompareIndexSub extends AbstractDbCompare {
 				}
 				
 				if(rs.getString("COLUMN_NAME")==null||rs.getString("COLUMN_NAME").equalsIgnoreCase("null"))
+<<<<<<< HEAD
 				{
 					columnName="";
 				}
 				else
 				{
+=======
+				{
+					columnName="";
+				}
+				else
+				{
+>>>>>>> origin/master
 					columnName=rs.getString("COLUMN_NAME");
 				}
 				TableIndex cTableIndex = (TableIndex) cTable.indexs.get(indexName);
 				if (cTableIndex == null) {
 					
 					TableIndex cTableIndex2 = new TableIndex(indexName, rs.getInt("NON_UNIQUE"));
+<<<<<<< HEAD
 					cTableIndex2.addColName(columnName);
 					cTableIndex2.setConstraint_type(rs.getString("constraint_type"));
 					cTable.indexs.put(cTableIndex2.getIndexName(), cTableIndex2);
 				} else {
 					cTableIndex.addColName(columnName);
+=======
+					cTableIndex2.AddColName(columnName);
+					cTableIndex2.setConstraint_type(rs.getString("constraint_type"));
+					cTable.indexs.put(cTableIndex2.getIndexName(), cTableIndex2);
+				} else {
+					cTableIndex.AddColName(columnName);
+>>>>>>> origin/master
 					cTableIndex.setConstraint_type(rs
 							.getString("constraint_type"));
 					cTable.indexs.put(cTableIndex.getIndexName(), cTableIndex);
@@ -587,32 +806,56 @@ public class CompareIndexSub extends AbstractDbCompare {
 	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetHtmlName()
 	 */
 	@Override
+<<<<<<< HEAD
 	String getHtmlName() {
+=======
+	String GetHtmlName() {
+>>>>>>> origin/master
 		// TODO Auto-generated method stub
 		return "compare_index.html";
 	}
 
+<<<<<<< HEAD
 	protected void insertResult(CompareInfo cCompareInfo) {
 		Connection conn = null;
 		try {
 			conn = WallsDbConn.getInstance().getConn();
+=======
+	protected void InsertResult(CompareInfo cCompareInfo) {
+		Connection conn = null;
+		try {
+			conn = WallsDbConn.GetInstance().GetConn();
+>>>>>>> origin/master
 			String strSql = "update dbci set diff11=" + iCount1 + ",diff12="
 					+ iCount2 + ",diff13=" + iCount3 + ",diff14=" + iCount4
 					+ ",diff15=" + iCount5 + " where dbinfo='"
 					+ cCompareInfo.getDevJdbcUrl() + "/"
 					+ cCompareInfo.getDbDomain()
 					+ "' and diffdate=current_date";
+<<<<<<< HEAD
 			// logger.info(strSql);
 			JpfDbUtils.execUpdateSql(conn, strSql);
+=======
+			logger.info(strSql);
+			JpfDbUtils.ExecUpdateSql(conn, strSql);
+>>>>>>> origin/master
 		} catch (Exception ex) {
 			// TODO: handle exception
 			ex.printStackTrace();
 		} finally {
+<<<<<<< HEAD
 			JpfDbUtils.doClear(conn);
 		}
 	}
 
 	protected String showResult() {
+=======
+			JpfDbUtils.DoClear(conn);
+		}
+	}
+
+	protected String ShowResult() {
+>>>>>>> origin/master
 		return "<tr><td>" + iCount1 + "</td><td>" + iCount2 + "</td><td>"
 				+ iCount3 + "</td><td>" + iCount4 + "</td><td>" + iCount5
 				+ "</td></tr>";
@@ -624,7 +867,11 @@ public class CompareIndexSub extends AbstractDbCompare {
 	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetMailTitle()
 	 */
 	@Override
+<<<<<<< HEAD
 	String getMailTitle() {
+=======
+	String GetMailTitle() {
+>>>>>>> origin/master
 		// TODO Auto-generated method stub
 		return "数据库索引比对带分表结果(自动发出)";
 	}
@@ -635,6 +882,7 @@ public class CompareIndexSub extends AbstractDbCompare {
 	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetExecSqlHtmlName()
 	 */
 	@Override
+<<<<<<< HEAD
 	String getExecSqlHtmlName() {
 		// TODO Auto-generated method stub
 		return "compare_index2.html";
@@ -644,4 +892,10 @@ public class CompareIndexSub extends AbstractDbCompare {
 		// TODO Auto-generated method stub
 		return "ErrorInformation.html";
 	}
+=======
+	String GetExecSqlHtmlName() {
+		// TODO Auto-generated method stub
+		return "compare_index2.html";
+	}
+>>>>>>> origin/master
 }

@@ -41,7 +41,11 @@ public final class CompareData  extends AbstractDbCompare
 	{
 		String strTableInfo=""; 
 		JpfFileUtil.checkFile(strConfigFileName);
+<<<<<<< HEAD
 		NodeList nl = JpfXmlUtil.getNodeList("comparetables", strConfigFileName);
+=======
+		NodeList nl = JpfXmlUtil.GetNodeList("comparetables", strConfigFileName);
+>>>>>>> origin/master
 		logger.debug(nl.getLength());
 
 		if(1==nl.getLength())
@@ -203,12 +207,14 @@ public final class CompareData  extends AbstractDbCompare
 	        e.printStackTrace();
 	    }
 	}
+<<<<<<< HEAD
 
+=======
 	/* (non-Javadoc)
 	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetHtmlName()
 	 */
 	@Override
-	String getHtmlName()
+	String GetHtmlName()
 	{
 		// TODO Auto-generated method stub
 		return  "compare_index.html";
@@ -217,7 +223,52 @@ public final class CompareData  extends AbstractDbCompare
 	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetMailTitle()
 	 */
 	@Override
+	String GetMailTitle()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#DoWork(java.sql.Connection, java.sql.Connection, org.jpf.ci.dbs.compare.CompareInfo)
+	 */
+	@Override
+	void DoWork(Connection conn_product, Connection conn_develop, CompareInfo cCompareInfo) throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
+>>>>>>> origin/master
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#DoWork(java.sql.Connection, org.jpf.ci.dbs.compare.CompareInfo)
+	 */
+	@Override
+<<<<<<< HEAD
+	String getHtmlName()
+=======
+	void DoWork(Connection conn_develop, CompareInfo cCompareInfo) throws Exception
+>>>>>>> origin/master
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#DoWork(org.jpf.ci.dbs.compare.CompareInfo)
+	 */
+	@Override
+<<<<<<< HEAD
 	String getMailTitle()
+=======
+	void DoWork(CompareInfo cCompareInfo) throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetExecSqlHtmlName()
+	 */
+	@Override
+	String GetExecSqlHtmlName()
+>>>>>>> origin/master
 	{
 		// TODO Auto-generated method stub
 		return null;

@@ -119,7 +119,11 @@ public class DbChecks
 			StringBuffer sbDetail=new StringBuffer();
 			
 			JpfFileUtil.checkFile(strConfigFileName);
+<<<<<<< HEAD
 			NodeList nl = JpfXmlUtil.getNodeList("dbsource", strConfigFileName);
+=======
+			NodeList nl = JpfXmlUtil.GetNodeList("dbsource", strConfigFileName);
+>>>>>>> origin/master
 			String strDefaultMail=""; 
 
 
@@ -158,7 +162,11 @@ public class DbChecks
 		logger.debug("write Result File...");
 
 		String strMailText = JpfFileUtil.getFileTxt("compare_check.html");
+<<<<<<< HEAD
 		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.getCurrDate());
+=======
+		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDate());
+>>>>>>> origin/master
 		strMailText = strMailText.replaceAll("#wupf3", strDbInfo);
 		strMailText = strMailText.replaceAll("#wupf4", sbDetail.toString());
 		strMailText = strMailText.replaceAll("#diffs", sbTotal.toString());

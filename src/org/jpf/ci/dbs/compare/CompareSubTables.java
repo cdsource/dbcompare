@@ -12,7 +12,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+<<<<<<< HEAD
 import java.util.Map;
+=======
+>>>>>>> origin/master
 import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +48,309 @@ public class CompareSubTables extends AbstractDbCompare
 	}
 
 	//用于PDM与PDM比对
+<<<<<<< HEAD
 	public void  doWork( CompareInfo cCompareInfo) throws Exception
+=======
+	public void  DoWork( CompareInfo cCompareInfo) throws Exception
+	{
+		// PDM数据库连接
+		String strPdmDomain = cCompareInfo.getDbDomain();
+		TreeMap<String ,Table> map_pdm=new TreeMap<String,Table>();
+		TreeMap<String ,Table> map_develop=new TreeMap<String,Table>();
+		if(domain_table.containsKey(strPdmDomain))
+		{
+			map_pdm=domain_table.get(strPdmDomain);
+		}
+		 if(domain_table2.containsKey(strPdmDomain))
+		    {
+		    	map_develop=domain_table2.get(strPdmDomain);
+		    }
+
+	//	LinkedHashMap<String, Table> map_develop = GetTables(conn_develop, cCompareInfo.getDbDomain(), cCompareInfo);
+		// logger.info(map_develop.size());
+		// CheckSubTables(map_develop);
+		// logger.info(map_develop.size());
+
+		// 遍历开发库Map
+		logger.info("begin compare tables... ");
+		for (Iterator iter_table = map_develop.keySet().iterator(); iter_table.hasNext();)
+		{
+			String key_table = (String) iter_table.next();
+
+			Table table_develop = map_develop.get(key_table);// 获得PDM中的表
+
+			if (table_develop.getTable_type().equalsIgnoreCase("view"))
+			{
+				CompareUtil.append(null, table_develop, null, null, 2, sb, vSql);
+				iCount2++;
+				continue;
+			}
+			logger.debug("key_table=" + key_table);
+			key_table = CompareUtil.GetParentTableName(key_table);
+			logger.debug("parent_table=" + key_table);
+			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
+			if (table_pdm == null)
+			{ // 如果获得表为空，说明PDM不存在，比对库存在
+				CompareUtil.append(table_pdm, table_develop, null, null, 2, sb, vSql);
+				iCount2++;
+			} else
+			{ // 表相同，判断字段、字段类型、字段长度
+				for (Iterator iter_column = table_develop.columns.keySet().iterator(); iter_column.hasNext();)
+				{
+					String key_column = (String) iter_column.next();
+					Column column_develop = (Column) table_develop.columns.get(key_column);// 获得开发库中的列
+					Column column_pdm = (Column) table_pdm.columns.get(key_column);// 尝试从生产库中获得同名列
+					if (column_pdm == null)
+					{// 如果列名为空，说明PDM不存在，比对库存在
+						CompareUtil.append(table_pdm, table_develop, column_develop, null, 4, sb, vSql);
+						iCount4++;
+					} else
+					{// 说明两者都存在
+						/*
+						 * if (!column_develop.getDataType().equalsIgnoreCase(
+						 * column_pdm.getDataType()))// 字段类型不一致 {
+						 * CompareUtil.append(table_develop, column_pdm,
+						 * column_develop, 5, sb); iCount5++; } if
+						 * (!column_develop
+						 * .getNullable().equalsIgnoreCase(column_pdm
+						 * .getNullable()))// 是否为空不一致 {
+						 * CompareUtil.append(table_develop, column_pdm,
+						 * column_develop, 6, sb); iCount6++; }
+						 */
+					}
+				}
+			}
+		}
+		// 遍历生产库Map
+		for (Iterator iter_table = map_pdm.keySet().iterator(); iter_table.hasNext();)
+		{
+			String key_table = (String) iter_table.next();
+
+			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
+			Table table_develop = map_develop.get(key_table);// 获得PDM中的表
+			if (table_develop == null)
+			{ // 如果获得表为空，说明PDM存在，比对库不存在
+			
+				//String mStrSql=CreateTables.GetCreateTableSql(conn_pdm, strPdmDomain,key_table);rin
+				String mStrSql=CreateTableSql(strPdmDomain,table_pdm);
+				ExecSqlInfo cExecSqlInfo=new ExecSqlInfo();
+				cExecSqlInfo.setiType(1);
+				cExecSqlInfo.setStrSql(mStrSql);
+				cExecSqlInfo.setStrTable(key_table);
+				vSql.add(cExecSqlInfo);
+				CompareUtil.append(table_pdm, table_develop, null, null, 1, sb, vSql);
+				
+				iCount1++;
+			} else
+			{
+				CompareFromPdm(table_pdm, table_develop);
+			}
+
+			for (Iterator iter_table2 = map_develop.keySet().iterator(); iter_table2.hasNext();)
+			{
+				String key_table2 = (String) iter_table2.next();
+
+				if (CompareUtil.IsSubTable(key_table, key_table2))
+				{
+					// 进入分表
+					table_develop = map_develop.get(key_table2);
+					// 比较
+					CompareFromPdm(table_pdm, table_develop);
+				}
+			}
+
+		}
+		map_pdm=null;
+		map_develop=null;
+		   
+}
+	public String  CreateTableSql(String strPdmDomain,Table table_pdm)
+	{
+		StringBuffer msql  = new StringBuffer();
+		msql.append("create table "+strPdmDomain+"."+table_pdm.getTableName()+"(");
+		msql.append("\r\n");
+		for (Iterator iter_column = table_pdm.columns.keySet().iterator(); iter_column.hasNext();)
+		{
+			
+			String key_column = (String) iter_column.next();
+			Column column_pdm = (Column) table_pdm.columns.get(key_column);
+			String isnull=column_pdm.getNullable();
+			String columnDefault=column_pdm.getColumnDefault();
+			if(isnull.equalsIgnoreCase("no"))
+			{
+				isnull="not null";
+			}
+			else
+			{
+				isnull="";
+			}
+			if(columnDefault==null)
+			{
+				columnDefault="";
+			}
+			if(columnDefault!="")
+			{
+				if(isNumberic(column_pdm.getDataType(),columnDefault))
+				{
+					columnDefault="default "+columnDefault;
+				}
+				else
+				{
+					columnDefault="default "+'\''+columnDefault+'\'';
+				}
+			}
+			
+			msql.append(column_pdm.getColumnName()+"  "+column_pdm.getDataType()+
+					" "+column_pdm.getExtra()+"  "+isnull+
+					" "+columnDefault+" ,");
+			msql.append("\r\n");
+		}
+		String msqlt=msql.toString().substring(0,msql.lastIndexOf(","));
+		msqlt+="\r\n"+")ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+		return msqlt;
+	}
+	 //判断一个字符串是否数字
+	 public  boolean  isNumberic(String Type,String defaultType)
+	    {
+		 	String[] types=Type.split("\\(");
+		 	String dataType=types[0];
+	    	dataType=dataType.trim();
+	    	 if (dataType.equalsIgnoreCase("numeric") || dataType.equalsIgnoreCase("int") || dataType .equalsIgnoreCase("tinyint") 
+	                 || dataType.equalsIgnoreCase("smallint") || dataType.equalsIgnoreCase("bigint")
+	                 || dataType.equalsIgnoreCase("decimal") || dataType.equalsIgnoreCase( "number") || defaultType.equalsIgnoreCase("null")
+	                 || (dataType.equalsIgnoreCase( "date") && defaultType != "0000-00-00 00:00:00")
+	                 || (dataType.equalsIgnoreCase( "datetime") && defaultType !="0000-00-00 00:00:00")
+	                 || (dataType.equalsIgnoreCase("timestamp") && defaultType !="0000-00-00 00:00:00")
+	                 || (defaultType.equalsIgnoreCase("0")))
+	             {
+	                 return true;
+	             } 
+	             else
+	                 return false;
+	    }
+	 //用于PDM与数据库比对
+	public void  DoWork(Connection conn_develop, CompareInfo cCompareInfo) throws Exception
+	{
+		// PDM数据库连接
+		String strPdmDomain = cCompareInfo.getDbDomain();
+		if (strPdmDomain.startsWith("ud"))
+		{
+			strPdmDomain = "ud";
+		}
+		if (strPdmDomain.startsWith("id")) {
+			strPdmDomain = "id";
+		}		
+		if (strPdmDomain.startsWith("zd")) {
+			strPdmDomain = "zd";
+		}
+		if (strPdmDomain.startsWith("md")) {
+			strPdmDomain = "md";
+		}
+		TreeMap<String ,Table> map_pdm=new TreeMap<String,Table>();
+		if(domain_table.containsKey(strPdmDomain))
+		{
+			map_pdm=domain_table.get(strPdmDomain);
+			
+		}
+		LinkedHashMap<String, Table> map_develop = GetTables(conn_develop, cCompareInfo.getDbDomain(), cCompareInfo);
+		// logger.info(map_develop.size());
+		// CheckSubTables(map_develop);
+		// logger.info(map_develop.size());
+
+		// 遍历开发库Map
+		logger.info("begin compare tables... ");
+		for (Iterator iter_table = map_develop.keySet().iterator(); iter_table.hasNext();)
+		{
+			String key_table = (String) iter_table.next();
+
+			Table table_develop = map_develop.get(key_table);// 获得PDM中的表
+
+			if (table_develop.getTable_type().equalsIgnoreCase("view"))
+			{
+				CompareUtil.append(null, table_develop, null, null, 2, sb, vSql);
+				iCount2++;
+				continue;
+			}
+			logger.debug("key_table=" + key_table);
+			key_table = CompareUtil.GetParentTableName(key_table);
+			logger.debug("parent_table=" + key_table);
+			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
+			if (table_pdm == null)
+			{ // 如果获得表为空，说明PDM不存在，比对库存在
+				CompareUtil.append(table_pdm, table_develop, null, null, 2, sb, vSql);
+				iCount2++;
+			} else
+			{ // 表相同，判断字段、字段类型、字段长度
+				for (Iterator iter_column = table_develop.columns.keySet().iterator(); iter_column.hasNext();)
+				{
+					String key_column = (String) iter_column.next();
+					Column column_develop = (Column) table_develop.columns.get(key_column);// 获得开发库中的列
+					Column column_pdm = (Column) table_pdm.columns.get(key_column);// 尝试从生产库中获得同名列
+					if (column_pdm == null)
+					{// 如果列名为空，说明PDM不存在，比对库存在
+						CompareUtil.append(table_pdm, table_develop, column_develop, null, 4, sb, vSql);
+						iCount4++;
+					} else
+					{// 说明两者都存在
+						/*
+						 * if (!column_develop.getDataType().equalsIgnoreCase(
+						 * column_pdm.getDataType()))// 字段类型不一致 {
+						 * CompareUtil.append(table_develop, column_pdm,
+						 * column_develop, 5, sb); iCount5++; } if
+						 * (!column_develop
+						 * .getNullable().equalsIgnoreCase(column_pdm
+						 * .getNullable()))// 是否为空不一致 {
+						 * CompareUtil.append(table_develop, column_pdm,
+						 * column_develop, 6, sb); iCount6++; }
+						 */
+					}
+				}
+			}
+		}
+		// 遍历生产库Map
+		for (Iterator iter_table = map_pdm.keySet().iterator(); iter_table.hasNext();)
+		{
+			String key_table = (String) iter_table.next();
+
+			Table table_pdm = map_pdm.get(key_table);// 尝试从比对库中获得同名表
+			Table table_develop = map_develop.get(key_table);// 获得PDM中的表
+			if (table_develop == null)
+			{ // 如果获得表为空，说明PDM存在，比对库不存在			
+				//String mStrSql=CreateTables.GetCreateTableSql(conn_pdm, strPdmDomain,key_table);rin
+				String mStrSql=CreateTableSql(strPdmDomain,table_pdm);
+				ExecSqlInfo cExecSqlInfo=new ExecSqlInfo();
+				cExecSqlInfo.setiType(1);
+				cExecSqlInfo.setStrSql(mStrSql);
+				cExecSqlInfo.setStrTable(key_table);
+				vSql.add(cExecSqlInfo);
+				CompareUtil.append(table_pdm, table_develop, null, null, 1, sb, vSql);
+				
+				iCount1++;
+			} else
+			{
+				CompareFromPdm(table_pdm, table_develop);
+			}
+
+			for (Iterator iter_table2 = map_develop.keySet().iterator(); iter_table2.hasNext();)
+			{
+				String key_table2 = (String) iter_table2.next();
+
+				if (CompareUtil.IsSubTable(key_table, key_table2))
+				{
+					// 进入分表
+					table_develop = map_develop.get(key_table2);
+					// 比较
+					CompareFromPdm(table_pdm, table_develop);
+				}
+			}
+
+		}
+		map_pdm=null;
+		map_develop=null;
+	}
+	//数据库与数据库比对
+	public void DoWork(Connection conn_pdm, Connection conn_develop, CompareInfo cCompareInfo) throws Exception
+>>>>>>> origin/master
 	{
 		// PDM数据库连接
 		String strPdmDomain = cCompareInfo.getDbDomain();
@@ -222,7 +527,11 @@ public class CompareSubTables extends AbstractDbCompare
 	{
 		// PDM数据库连接
 		String strPdmDomain = cCompareInfo.getDbDomain();
+<<<<<<< HEAD
 		/*if (strPdmDomain.startsWith("ud"))
+=======
+		if (strPdmDomain.startsWith("ud"))
+>>>>>>> origin/master
 		{
 			strPdmDomain = "ud";
 		}*/
@@ -349,7 +658,11 @@ public class CompareSubTables extends AbstractDbCompare
 		LinkedHashMap<String, Table> map_pdm = getTables(conn_pdm, strPdmDomain, cCompareInfo);
 		// 开发数据库连接
 
+<<<<<<< HEAD
 		LinkedHashMap<String, Table> map_develop = getTables(conn_develop, cCompareInfo.getDbDomain(), cCompareInfo);
+=======
+		LinkedHashMap<String, Table> map_develop = GetTables(conn_develop, cCompareInfo.getDbDomain(), cCompareInfo);
+>>>>>>> origin/master
 		// logger.info(map_develop.size());
 		// CheckSubTables(map_develop);
 		// logger.info(map_develop.size());
@@ -413,7 +726,11 @@ public class CompareSubTables extends AbstractDbCompare
 			Table table_develop = map_develop.get(key_table);// 获得PDM中的表
 			if (table_develop == null)
 			{ // 如果获得表为空，说明PDM存在，比对库不存在
+<<<<<<< HEAD
 				String mStrSql=CreateTables.getCreateTableSql(conn_pdm, strPdmDomain,key_table);
+=======
+				String mStrSql=CreateTables.GetCreateTableSql(conn_pdm, strPdmDomain,key_table);
+>>>>>>> origin/master
 				ExecSqlInfo cExecSqlInfo=new ExecSqlInfo();
 				cExecSqlInfo.setiType(1);
 				cExecSqlInfo.setStrSql(mStrSql);
@@ -622,7 +939,11 @@ public class CompareSubTables extends AbstractDbCompare
 
 				Column column = new Column(rs.getString("Column_Name").toLowerCase().trim(),
 						columnType, rs.getString("IS_NULLABLE").toLowerCase()
+<<<<<<< HEAD
 								.trim(), CompareUtil.showDefaultValue(rs.getString("Column_Default")));
+=======
+								.trim(), CompareUtil.ShowDefaultValue(rs.getString("Column_Default")));
+>>>>>>> origin/master
 				column.setExtra(rs.getString("extra"));
 				column.setOrdinal_position(rs.getInt("ordinal_position"));
 				column.setCHARACTER_SET_NAME(rs.getString("CHARACTER_SET_NAME"));
@@ -639,7 +960,11 @@ public class CompareSubTables extends AbstractDbCompare
 					columnType=columnType.toLowerCase().trim();
 				}
 				Column column = new Column(rs.getString("Column_Name").toLowerCase().trim(),
+<<<<<<< HEAD
 						columnType, rs.getString("IS_NULLABLE").toLowerCase().trim(), CompareUtil.showDefaultValue(rs.getString("Column_Default")));
+=======
+						columnType, rs.getString("IS_NULLABLE").toLowerCase().trim(), CompareUtil.ShowDefaultValue(rs.getString("Column_Default")));
+>>>>>>> origin/master
 				column.setExtra(rs.getString("extra"));
 				column.setOrdinal_position(rs.getInt("ordinal_position"));
 				column.setCHARACTER_SET_NAME(rs.getString("CHARACTER_SET_NAME"));
@@ -670,11 +995,19 @@ public class CompareSubTables extends AbstractDbCompare
 		Connection conn = null;
 		try
 		{
+<<<<<<< HEAD
 			conn = WallsDbConn.getInstance().getConn();
 			String strSql = "delete from dbci where dbinfo='" + cCompareInfo.getDevJdbcUrl()
 					+ "' and diffdate=current_date";
 			//logger.info(strSql);
 			JpfDbUtils.execUpdateSql(conn, strSql);
+=======
+			conn = WallsDbConn.GetInstance().GetConn();
+			String strSql = "delete from dbci where dbinfo='" + cCompareInfo.getDevJdbcUrl()
+					+ "' and diffdate=current_date";
+			//logger.info(strSql);
+			JpfDbUtils.ExecUpdateSql(conn, strSql);
+>>>>>>> origin/master
 			strSql = "insert into dbci(dbmail,dbinfo,diffdate,diff1,diff2,diff3,diff4,diff5,diff6,diff7,diff8,diff9,diff10,referdbinfo) values( '"
 					+ cCompareInfo.getStrMails()
 					+ "','"
@@ -690,8 +1023,13 @@ public class CompareSubTables extends AbstractDbCompare
 					+ iCount8 + "," 
 					+ iCount9 + "," 
 					+ iCount10 + ",'"+cCompareInfo.getPdmJdbcUrl()+"')";
+<<<<<<< HEAD
 			//logger.info(strSql);
 			JpfDbUtils.execUpdateSql(conn, strSql);
+=======
+			logger.info(strSql);
+			JpfDbUtils.ExecUpdateSql(conn, strSql);
+>>>>>>> origin/master
 		} catch (Exception ex)
 		{
 			// TODO: handle exception
@@ -731,15 +1069,22 @@ public class CompareSubTables extends AbstractDbCompare
 	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetExecSqlHtmlName()
 	 */
 	@Override
+<<<<<<< HEAD
 	String getExecSqlHtmlName()
+=======
+	String GetExecSqlHtmlName()
+>>>>>>> origin/master
 	{
 		// TODO Auto-generated method stub
 		return "compare_table2.html";
 	}
+<<<<<<< HEAD
 
 	@Override
 	String getErrorHtmlName() {
 		// TODO Auto-generated method stub
 		return "ErrorInformation.html";
 	}
+=======
+>>>>>>> origin/master
 }

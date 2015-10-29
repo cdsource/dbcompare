@@ -1,8 +1,15 @@
 /** 
+<<<<<<< HEAD
 * @author 吴平福
 * E-mail:wupf@asiainfo.com 
 * @version 创建时间：2015年4月7日 下午10:45:47 
 * 类说明 
+=======
+* @author ��ƽ�� 
+* E-mail:wupf@asiainfo.com 
+* @version ����ʱ�䣺2015��4��7�� ����10:45:47 
+* ��˵�� 
+>>>>>>> origin/master
 */ 
 
 package org.jpf.ci.dbs.compare;
@@ -41,7 +48,11 @@ public class LoadSqlToDB
 		{
 			DbDescInfo cDbDescInfo=null;
 			JpfFileUtil.checkFile(DBINFOFILE);
+<<<<<<< HEAD
 			NodeList nl = JpfXmlUtil.getNodeList("dbsource", DBINFOFILE);
+=======
+			NodeList nl = JpfXmlUtil.GetNodeList("dbsource", DBINFOFILE);
+>>>>>>> origin/master
 			logger.debug(nl.getLength());
 			if(1==nl.getLength())
 			{
@@ -75,6 +86,7 @@ public class LoadSqlToDB
 
 		/**
 	 * @param args
+<<<<<<< HEAD
 	 * 被测试类名：TODO
 	 * 被测试接口名:TODO
 	 * 测试场景：TODO
@@ -83,6 +95,16 @@ public class LoadSqlToDB
 	 * 校验值：
 	 * 测试备注：
 	 * update 2015年4月7日
+=======
+	 * ������������TODO
+	 * �����Խӿ���:TODO
+	 * ���Գ�����TODO
+	 * ǰ�ò�����TODO
+	 * ��Σ�
+	 * У��ֵ��
+	 * ���Ա�ע��
+	 * update 2015��4��7��
+>>>>>>> origin/master
 	 */
 	public static void main(String[] args)
 	{
@@ -102,9 +124,15 @@ public class LoadSqlToDB
             StringBuilder sBuilder = new StringBuilder("");  
             String str = bufferedReader.readLine();  
             while (str != null) {  
+<<<<<<< HEAD
                 // 去掉一些注释，和一些没用的字符  
                 if (!str.startsWith("#") && !str.startsWith("/*")  
                         && !str.startsWith("–") && !str.startsWith("\n"))  
+=======
+                // ȥ��һЩע�ͣ���һЩû�õ��ַ�  
+                if (!str.startsWith("#") && !str.startsWith("/*")  
+                        && !str.startsWith("�C") && !str.startsWith("\n"))  
+>>>>>>> origin/master
                     sBuilder.append(str);  
                 str = bufferedReader.readLine();  
             }  
@@ -115,7 +143,11 @@ public class LoadSqlToDB
                 logger.debug(strSql);
                 JpfDbUtils.execUpdateSql(conn, strSql);
             }  
+<<<<<<< HEAD
             // 创建数据连接对象，下面的DBConnection是我的一个JDBC类  
+=======
+            // �����������Ӷ��������DBConnection���ҵ�һ��JDBC��  
+>>>>>>> origin/master
 
         } catch (Exception e) {  
             e.printStackTrace();  

@@ -24,7 +24,11 @@ public class CreateTables
 	{
 		// TODO Auto-generated constructor stub
 	}
+<<<<<<< HEAD
 	public static String getCreateTableSql(Connection conn_pdm,String strDomainName,String strTableName)
+=======
+	public static String GetCreateTableSql(Connection conn_pdm,String strDomainName,String strTableName)
+>>>>>>> origin/master
 	{
 		String strSql="";
 		try
@@ -35,7 +39,11 @@ public class CreateTables
 			}
 			String mStrSql="show create table "+strDomainName+"."+strTableName;
 
+<<<<<<< HEAD
 	        ResultSet rs=JpfDbUtils.execSqlQuery(conn_pdm, mStrSql);
+=======
+	        ResultSet rs=JpfDbUtils.ExecSqlQuery(conn_pdm, mStrSql);
+>>>>>>> origin/master
 	        if (rs.next())
 	        {
 	        	strSql=rs.getString("Create Table").toUpperCase()+";";

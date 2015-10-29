@@ -2,7 +2,10 @@ package org.jpf.ci.dbs.compare;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+<<<<<<< HEAD
 import java.sql.Connection;
+=======
+>>>>>>> origin/master
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,7 +23,11 @@ import org.dom4j.Element;
 import org.dom4j.XPath;
 import org.jpf.utils.OpenPdm;
 
+<<<<<<< HEAD
 public class GetTablefmPdm extends AbstractDbCompare{
+=======
+public class GetTablefmPdm {
+>>>>>>> origin/master
 	private static final Logger logger = LogManager.getLogger();
 	private boolean isConver = false;//是否要进行数据类型转换
 	private Map<String, String> converData = new HashMap<String, String>();// oracle到mysql映射
@@ -39,12 +46,19 @@ public class GetTablefmPdm extends AbstractDbCompare{
 	// 域名-索引
 	private LinkedHashMap<String, TreeMap<String, Table>> domainIndex = new LinkedHashMap<String, TreeMap<String, Table>>();
 	private LinkedList<String> userlist = new LinkedList<String>();
+<<<<<<< HEAD
 	
 	String getErrorMailTitle()
 	{
 		return "比对错误(自动发出)";
 	}
 
+=======
+
+	//收集解析错误信息，并发送邮件
+	StringBuffer sbErrMsg=new StringBuffer();
+	
+>>>>>>> origin/master
 	public LinkedList<String> getUserlist() {
 		return userlist;
 	}
@@ -91,7 +105,12 @@ public class GetTablefmPdm extends AbstractDbCompare{
 			 */
 			if (tableMap.containsKey(table)) {
 				// 表名字对应一个列map
+<<<<<<< HEAD
 				HashMap<String, String> columnMap = (HashMap<String, String>) tableMap.get(table);
+=======
+				HashMap<String, String> columnMap = (HashMap<String, String>) tableMap
+						.get(table);
+>>>>>>> origin/master
 				columnMap.put(column, type);
 			} else {
 				HashMap<String, String> columnMap = new HashMap<String, String>();
@@ -104,7 +123,11 @@ public class GetTablefmPdm extends AbstractDbCompare{
 			 */
 			HashMap<String, String> columnMap = new HashMap<String, String>();
 			HashMap<String, HashMap<String, String>> tableMap = new HashMap<String, HashMap<String, String>>();
+<<<<<<< HEAD
 			columnMap.put(column, type);
+=======
+			columnMap.put(column, type);//
+>>>>>>> origin/master
 			tableMap.put(table, columnMap);
 			map.put(domain, tableMap);
 		}
@@ -115,7 +138,12 @@ public class GetTablefmPdm extends AbstractDbCompare{
 		return defmap;
 	}
 
+<<<<<<< HEAD
 	public void setDefMap(String domain, String table, String column, String dtype) {
+=======
+	public void setDefMap(String domain, String table, String column,
+			String dtype) {
+>>>>>>> origin/master
 
 		if (defmap.containsKey(domain)) {// 第一步，判断对应的数据库是否在schemeMap当中，如果存在判断tableMap是存在
 			HashMap tableMap = defmap.get(domain);
@@ -125,7 +153,12 @@ public class GetTablefmPdm extends AbstractDbCompare{
 			 */
 			if (tableMap.containsKey(table)) {
 				// 表名字对应一个列map
+<<<<<<< HEAD
 				HashMap<String, String> columnMap = (HashMap<String, String>) tableMap.get(table);
+=======
+				HashMap<String, String> columnMap = (HashMap<String, String>) tableMap
+						.get(table);
+>>>>>>> origin/master
 				columnMap.put(column, dtype);
 			} else {
 				HashMap<String, String> columnMap = new HashMap<String, String>();
@@ -414,6 +447,7 @@ public class GetTablefmPdm extends AbstractDbCompare{
 			LinkedHashMap columnmap) {
 		Element columns = table_s.element(s);
 		if (columns == null) {
+<<<<<<< HEAD
 			logger.error("ERROR: table_name "
 					+ table_s.elementText("Code")
 					+ " :Exists the table name, but the fields do not exist");
@@ -423,6 +457,11 @@ public class GetTablefmPdm extends AbstractDbCompare{
 					+ " :Exists the table name, but the fields do not exist");
 			
 			
+=======
+			logger.error("ERRO: table_name "
+					+ table_s.elementText("Code")
+					+ " :Exists the table name, but the fields do not exist");
+>>>>>>> origin/master
 		} else {
 			List<Column> columnList = new ArrayList<Column>();
 			int i = 0;
@@ -501,6 +540,7 @@ public class GetTablefmPdm extends AbstractDbCompare{
 			LinkedHashMap columnmap) {
 		Element columns = table_s.element(s);
 		if (columns == null) {
+<<<<<<< HEAD
 			logger.error("ERROR: table_name "
 					+ table_s.elementText("Code")
 					+ ":Exists the table name, but the fields do not exist");
@@ -513,6 +553,16 @@ public class GetTablefmPdm extends AbstractDbCompare{
 			List<Column> columnList = new ArrayList<Column>();
 			int i = 0;
 			for (Iterator<Element> cols = columns.elementIterator("Column"); cols.hasNext();) {
+=======
+			logger.error("ERRO: table_name "
+					+ table_s.elementText("Code")
+					+ ":Exists the table name, but the fields do not exist");
+		} else {
+			List<Column> columnList = new ArrayList<Column>();
+			int i = 0;
+			for (Iterator<Element> cols = columns.elementIterator("Column"); cols
+					.hasNext();) {
+>>>>>>> origin/master
 				Element column = cols.next();
 				i++;
 				String type, def, columnName, nullable = null;
@@ -583,12 +633,22 @@ public class GetTablefmPdm extends AbstractDbCompare{
 	}
 
 	// 获得索引
+<<<<<<< HEAD
 	public void getIndex(Element table_s, Map<String, Column> tableColumn, LinkedHashMap indexmap) {
+=======
+	public void getIndex(Element table_s, Map<String, Column> tableColumn,
+			LinkedHashMap indexmap) {
+>>>>>>> origin/master
 		Element indexe = table_s.element("Indexes");
 
 		if (indexe != null) {
 
+<<<<<<< HEAD
 			for (Iterator<Element> index = indexe.elementIterator("Index"); index.hasNext();) {
+=======
+			for (Iterator<Element> index = indexe.elementIterator("Index"); index
+					.hasNext();) {
+>>>>>>> origin/master
 				String indexName, constraint_type = null;
 				int isUnique;
 				Element Eachindex = index.next();
@@ -619,16 +679,25 @@ public class GetTablefmPdm extends AbstractDbCompare{
 								
 								if (tableColumn.containsKey(attribute.getText())) {
 									Column column2 = tableColumn.get(attribute.getText());
+<<<<<<< HEAD
 									cTableIndex.addColName(column2.getColumnName());
+=======
+									cTableIndex.AddColName(column2.getColumnName());
+>>>>>>> origin/master
 									
 									indexmap.put(cTableIndex.getIndexName(),cTableIndex);
 								}
 							} else {
+<<<<<<< HEAD
 										logger.error("ERROR: table_name "
+=======
+										logger.error("ERRO: table_name "
+>>>>>>> origin/master
 												+ table_s.elementText("Code")
 												+ "index_name "
 												+ cTableIndex.getIndexName()
 												+ " :Exists index name, but index fields  do not exist");
+<<<<<<< HEAD
 										
 										errInfoSb[3].append("ERROR: table_name "
 												+ table_s.elementText("Code")
@@ -636,6 +705,8 @@ public class GetTablefmPdm extends AbstractDbCompare{
 												+ cTableIndex.getIndexName()
 												+ " :Exists index name, but index fields  do not exist");
 										
+=======
+>>>>>>> origin/master
 							}
 
 						}
@@ -712,6 +783,7 @@ public class GetTablefmPdm extends AbstractDbCompare{
 									+ " key_name "
 									+ cTableIndex.getIndexName()
 									+ " :keep index and remove key");
+<<<<<<< HEAD
 							
 							errInfoSb[4].append("ERROR: Exists same name of index and key: table_name "
 									+ table_s.elementText("Code")
@@ -720,6 +792,14 @@ public class GetTablefmPdm extends AbstractDbCompare{
 									+ " :keep index and remove key");
 							
 							
+=======
+							sbErrMsg.append("ERROR: Exists same name of index and key: table_name "
+									+ table_s.elementText("Code")
+									+ " key_name "
+									+ cTableIndex.getIndexName()
+									+ " :keep index and remove key\n");
+
+>>>>>>> origin/master
 				}
 
 				Element keyColumn = Eachkey.element("Key.Columns");
@@ -729,7 +809,11 @@ public class GetTablefmPdm extends AbstractDbCompare{
 						Attribute attribute = column.attribute("Ref");
 						if (tableColumn.containsKey(attribute.getText())) {
 							Column column2 = tableColumn.get(attribute.getText());
+<<<<<<< HEAD
 							cTableIndex.addColName(column2.getColumnName());
+=======
+							cTableIndex.AddColName(column2.getColumnName());
+>>>>>>> origin/master
 							indexmap.put(cTableIndex.getIndexName(),cTableIndex);
 						}
 					}
@@ -740,6 +824,7 @@ public class GetTablefmPdm extends AbstractDbCompare{
 									+ " key_name "
 									+ cTableIndex.getIndexName()
 									+ " :Exists key name, but key fields  do not exist");
+<<<<<<< HEAD
 							
 							errInfoSb[5].append("ERROR: table_name "
 									+ table_s.elementText("Code")
@@ -747,13 +832,20 @@ public class GetTablefmPdm extends AbstractDbCompare{
 									+ cTableIndex.getIndexName()
 									+ " :Exists key name, but key fields  do not exist");
 							
+=======
+>>>>>>> origin/master
 				}
 			}
 		}
 	}
 	
 	//将获得的表结构信息及索引名存入map中
+<<<<<<< HEAD
 	public void getTableAndIndex( Element table_s,String owner,Map<String, Column> tableColumn,boolean isMysql)
+=======
+	public void getTableAndIndex( Element table_s,String owner,Map<String, 
+			Column> tableColumn,boolean isMysql)
+>>>>>>> origin/master
 	{
 		// 表名
 		String tableName = table_s.elementText("Code");
@@ -870,10 +962,13 @@ public class GetTablefmPdm extends AbstractDbCompare{
 
 				if (owner == null) {
 					logger.error("ERROR: table_name "+ table_s.elementText("Code")+ ":do not add Owner");
+<<<<<<< HEAD
 					
 					errInfoSb[6].append("ERROR: table_name "+ table_s.elementText("Code")+ ":do not add Owner");
 					
 					CompareUtil.errorSendMail(errInfoSb, getErrorMailTitle(), getErrorHtmlName());
+=======
+>>>>>>> origin/master
 					owner = "";
 				}
 				owner = owner.toLowerCase();
@@ -1005,6 +1100,7 @@ public class GetTablefmPdm extends AbstractDbCompare{
 
 	}
 
+<<<<<<< HEAD
 	@Override
 	void doWork(Connection conn_product, Connection conn_develop,
 			CompareInfo cCompareInfo) throws Exception {
@@ -1049,4 +1145,6 @@ public class GetTablefmPdm extends AbstractDbCompare{
 		return null;
 	}
 	
+=======
+>>>>>>> origin/master
 }

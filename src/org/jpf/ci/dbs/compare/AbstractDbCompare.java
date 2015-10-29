@@ -31,9 +31,12 @@ public abstract class AbstractDbCompare
 			new StringBuffer(), new StringBuffer(), new StringBuffer(),
 			new StringBuffer(), new StringBuffer(), new StringBuffer(), new StringBuffer(), new StringBuffer(),
 			new StringBuffer() };
+<<<<<<< HEAD
 	
 	protected StringBuffer[] errInfoSb = { new StringBuffer(), new StringBuffer(), new StringBuffer(),
 			new StringBuffer(), new StringBuffer(), new StringBuffer() };
+=======
+>>>>>>> origin/master
 
 	//域名-表1或域名-索引1
 	protected  LinkedHashMap<String, TreeMap<String ,Table>> domain_table=new  LinkedHashMap<String, TreeMap<String ,Table>>();
@@ -46,6 +49,7 @@ public abstract class AbstractDbCompare
 	// 保存执行错误的SQL
 	protected Vector<ErrExecSqlInfo> vErrSql = new Vector<ErrExecSqlInfo>();
 
+<<<<<<< HEAD
 	//数据库与数据库比对
 	abstract void doWork(Connection conn_product, Connection conn_develop, CompareInfo cCompareInfo) throws Exception;
 	//pdm与数据库比对
@@ -58,10 +62,23 @@ public abstract class AbstractDbCompare
 	abstract String getHtmlName();
 	
 	abstract String getErrorHtmlName(); 
+=======
+	abstract void DoWork(Connection conn_product, Connection conn_develop, CompareInfo cCompareInfo) throws Exception;
+	abstract void DoWork(Connection conn_develop, CompareInfo cCompareInfo) throws Exception;
+	abstract void DoWork(CompareInfo cCompareInfo)throws Exception;
+	// abstract void DoWork(Map<String,Table> map, Connection conn_develop,
+	// CompareInfo cCompareInfo) throws Exception;
+>>>>>>> origin/master
 
 	abstract String getExecSqlHtmlName();
 
+<<<<<<< HEAD
 	abstract String getMailTitle();
+=======
+	abstract String GetExecSqlHtmlName();
+
+	abstract String GetMailTitle();
+>>>>>>> origin/master
 
 	protected int iCount1 = 0;
 	protected int iCount2 = 0;
@@ -74,7 +91,11 @@ public abstract class AbstractDbCompare
 	protected int iCount9 = 0;
 	protected int iCount10 = 0;
 
+<<<<<<< HEAD
 	private String strSaveDate = JpfDateTimeUtil.getCurrDateTime();
+=======
+	private String strSaveDate = JpfDateTimeUtil.GetCurrDateTime();
+>>>>>>> origin/master
 	
 	public LinkedHashMap<String, TreeMap<String, Table>> getDomain_table2() {
 		return domain_table2;
@@ -90,7 +111,11 @@ public abstract class AbstractDbCompare
 			LinkedHashMap<String, TreeMap<String, Table>> domain_table) {
 		this.domain_table = domain_table;
 	}
+<<<<<<< HEAD
 	protected void insertResult(CompareInfo cCompareInfo)
+=======
+	protected void InsertResult(CompareInfo cCompareInfo)
+>>>>>>> origin/master
 	{
 
 	}
@@ -99,17 +124,28 @@ public abstract class AbstractDbCompare
 	{
 		return "";
 	}
+<<<<<<< HEAD
 	String getMailTitle_pdm()
 	{
 		return "PDM与PDM比对(自动发出)";
 	}
 	
 	
+=======
+	String GetMailTitle_pdm()
+	{
+		return "PDM与PDM比对(自动发出)";
+	}
+>>>>>>> origin/master
 
 	/**
 	 * @todo: 保存变更记录
 	 */
+<<<<<<< HEAD
 	private void saveExecSql(ExecSqlInfo cExecSqlInfo, Connection conn_develop, CompareInfo cCompareInfo, String strMsg)
+=======
+	private void SaveExecSql(ExecSqlInfo cExecSqlInfo, Connection conn_develop, CompareInfo cCompareInfo, String strMsg)
+>>>>>>> origin/master
 	{
 		String strSql="";
 		try
@@ -127,7 +163,11 @@ public abstract class AbstractDbCompare
 					+ ",'"
 					+ cCompareInfo.getDbDomain()
 					+ "','" + cExecSqlInfo.getStrSql() + "',now(),'','" + strMsg + "')";
+<<<<<<< HEAD
 			JpfDbUtils.execUpdateSql(conn_develop, strSql,0);
+=======
+			JpfDbUtils.ExecUpdateSql(conn_develop, strSql,0);
+>>>>>>> origin/master
 
 		} catch (Exception ex)
 		{
@@ -140,13 +180,23 @@ public abstract class AbstractDbCompare
 	/**
 	 * @todo: 执行差异的SQL
 	 */
+<<<<<<< HEAD
 	private void execDiffSql(Connection conn_develop, CompareInfo cCompareInfo)
+=======
+	private void ExecDiffSql(Connection conn_develop, CompareInfo cCompareInfo)
+>>>>>>> origin/master
 	{
 		if (cCompareInfo.getDoExec() == 1)
 		{
 
+<<<<<<< HEAD
 			CompareSelfCheck.checkSaveSqlDb(conn_develop);
 
+=======
+			CompareSelfCheck.CheckSaveSqlDb(conn_develop);
+
+			// for (int i = 0; i < vSql.size(); i++)
+>>>>>>> origin/master
 			long sTime = System.currentTimeMillis();
 			String strMsg = "";
 			for (int i = 0; i < vSql.size(); i++)
@@ -168,7 +218,11 @@ public abstract class AbstractDbCompare
 						vErrSql.add(cErrExecSqlInfo);
 					} else
 					{
+<<<<<<< HEAD
 						JpfDbUtils.execUpdateSql(conn_develop, cExecSqlInfo.getStrSql());
+=======
+						JpfDbUtils.ExecUpdateSql(conn_develop, cExecSqlInfo.getStrSql());
+>>>>>>> origin/master
 					}
 
 				} catch (Exception ex)
@@ -181,7 +235,11 @@ public abstract class AbstractDbCompare
 				}
 				try
 				{
+<<<<<<< HEAD
 					saveExecSql(vSql.get(i), conn_develop, cCompareInfo, strMsg);
+=======
+					SaveExecSql(vSql.get(i), conn_develop, cCompareInfo, strMsg);
+>>>>>>> origin/master
 				} catch (Exception ex2)
 				{
 					// TODO: handle exception
@@ -202,6 +260,7 @@ public abstract class AbstractDbCompare
 			long sTime = System.currentTimeMillis();
 			if(conn_product==null&&conn_develop==null)
 			{
+<<<<<<< HEAD
 				doWork(cCompareInfo);
 				CompareUtil.pdmComSendMail(sb, getMailTitle_pdm(), cCompareInfo, getHtmlName(), showResult());
 			}
@@ -216,11 +275,28 @@ public abstract class AbstractDbCompare
 				} else
 				{
 					CompareUtil.sendMail(sb, getMailTitle(), cCompareInfo, getHtmlName(), showResult());
+=======
+				DoWork(cCompareInfo);
+				CompareUtil.PdmComSendMail(sb, GetMailTitle_pdm(), cCompareInfo, GetHtmlName(), ShowResult());
+			}
+			else if(conn_product==null)
+			{
+				CompareUtil.CleanBuf(cCompareInfo.getDbDomain());
+				DoWork(conn_develop, cCompareInfo);
+				ExecDiffSql(conn_develop, cCompareInfo);
+				if (cCompareInfo.getDoExec() == 1)
+				{
+					CompareUtil.SendExecSqlMail(vErrSql, GetMailTitle(), cCompareInfo, GetExecSqlHtmlName(), ShowResult());
+				} else
+				{
+					CompareUtil.SendMail(sb, GetMailTitle(), cCompareInfo, GetHtmlName(), ShowResult());
+>>>>>>> origin/master
 				}
 
 			}
 			else
 			{
+<<<<<<< HEAD
 				CompareUtil.cleanBuf(cCompareInfo.getDbDomain());
 				doWork(conn_product, conn_develop, cCompareInfo);
 				execDiffSql(conn_develop, cCompareInfo);
@@ -230,16 +306,35 @@ public abstract class AbstractDbCompare
 				} else
 				{
 					CompareUtil.sendMail(sb, getMailTitle(), cCompareInfo, getHtmlName(), showResult());
+=======
+				CompareUtil.CleanBuf(cCompareInfo.getDbDomain());
+				DoWork(conn_product, conn_develop, cCompareInfo);
+				ExecDiffSql(conn_develop, cCompareInfo);
+				if (cCompareInfo.getDoExec() == 1)
+				{
+					CompareUtil.SendExecSqlMail(vErrSql, GetMailTitle(), cCompareInfo, GetExecSqlHtmlName(), ShowResult());
+				} else
+				{
+					CompareUtil.SendMail(sb, GetMailTitle(), cCompareInfo, GetHtmlName(), ShowResult());
+>>>>>>> origin/master
 				}
 
 				
 			}
 			
+<<<<<<< HEAD
+=======
+			
+>>>>>>> origin/master
 			sb=null;
 			domain_table=null;
 			domain_table2=null;
 
+<<<<<<< HEAD
 			insertResult(cCompareInfo);
+=======
+			//InsertResult(cCompareInfo);
+>>>>>>> origin/master
 			long eTime = System.currentTimeMillis();
 			logger.info("处理用时(单位MS):" + (eTime - sTime));
 		} catch (SQLException ex)

@@ -69,14 +69,57 @@ public class CompareUtil
 		strMailText = strMailText.replaceAll("#wupf4", tmpStr);
 		JpfMail.sendMail("liujr", strMailText, "GBK", strMailTitle);
 	}
+<<<<<<< HEAD
 	
 	public static void pdmComSendMail(StringBuffer[] sb, String strMailTitle, CompareInfo cCompareInfo, String strHtmlName,
+=======
+
+	public static void PdmComSendMail(StringBuffer[] sb, String strMailTitle, CompareInfo cCompareInfo,
+			String strHtmlName,
+>>>>>>> origin/master
 			String strTotalInfo) throws Exception
 	{
 		logger.debug("write Result File...");
 
 		String strMailText = JpfFileUtil.getFileTxt(strHtmlName);
+<<<<<<< HEAD
 		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.getCurrDateTime());
+=======
+		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDateTime());
+>>>>>>> origin/master
+		strMailText = strMailText.replaceAll("#wupf2", cCompareInfo.getPdmJdbcUrl());
+		strMailText = strMailText.replaceAll("#wupf3", cCompareInfo.getDevJdbcUrl() + "/" + cCompareInfo.getDbDomain());
+		String tmpStr = sb[0].toString() + sb[1].toString() + sb[2].toString() + sb[3].toString() + sb[4].toString()
+				+ sb[5].toString() + sb[6].toString() + sb[7].toString();
+
+		tmpStr = java.util.regex.Matcher.quoteReplacement(tmpStr);
+		strMailText = strMailText.replaceAll("#wupf4", tmpStr);
+<<<<<<< HEAD
+
+		if (strTotalInfo != null)
+		{
+			strMailText = strMailText.replaceAll("#diffs", strTotalInfo);
+=======
+
+		if (strTotalInfo != null)
+		{
+			strMailText = strMailText.replaceAll("#diffs", strTotalInfo);
+		}
+		// strMailText+=sbAlterSql.toString();
+		logger.info(strMailText);
+		JpfMail.sendMail(cCompareInfo.getStrMails(), strMailText, "GBK", cCompareInfo.getStrCondName() + strMailTitle
+				+ cCompareInfo.getPdmDtVers() + "/" + cCompareInfo.getDbDomain());
+	}
+
+	private static int iFileCount = 0;
+
+	public static void SendMail(StringBuffer[] sb, String strMailTitle, CompareInfo cCompareInfo, String strHtmlName,
+			String strTotalInfo) throws Exception
+	{
+		logger.debug("write Result File...");
+
+		String strMailText = JpfFileUtil.getFileTxt(strHtmlName);
+		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDateTime());
 		strMailText = strMailText.replaceAll("#wupf2", cCompareInfo.getPdmJdbcUrl());
 		strMailText = strMailText.replaceAll("#wupf3", cCompareInfo.getDevJdbcUrl() + "/" + cCompareInfo.getDbDomain());
 		String tmpStr = sb[0].toString() + sb[1].toString() + sb[2].toString() + sb[3].toString() + sb[4].toString()
@@ -90,9 +133,33 @@ public class CompareUtil
 			strMailText = strMailText.replaceAll("#diffs", strTotalInfo);
 		}
 		// strMailText+=sbAlterSql.toString();
+		//console output
+		if (cCompareInfo.getSendresulttype() == 0 || cCompareInfo.getSendresulttype() == 1)
+		{
+			logger.info(strMailText);
+		}
+		//ouput html
+		if (cCompareInfo.getSendresulttype() == 0 || cCompareInfo.getSendresulttype() == 2)
+		{
+			
+			iFileCount++;
+			JpfFileUtil.saveFile(cCompareInfo.getDbDomain() + iFileCount + "html", strMailText);
+			logger.info(strMailText);
+		}
+		//send mail
+		if (cCompareInfo.getSendresulttype() == 0 || cCompareInfo.getSendresulttype() == 3)
+		{
+
+			JpfMail.sendMail(cCompareInfo.getStrMails(), strMailText, "GBK",
+					cCompareInfo.getStrCondName() + strMailTitle
+							+ " 比对库" + cCompareInfo.getDevJdbcUrl() + "/" + cCompareInfo.getDbDomain());
+>>>>>>> origin/master
+		}
+		// strMailText+=sbAlterSql.toString();
 		JpfMail.sendMail(cCompareInfo.getStrMails(), strMailText, "GBK", cCompareInfo.getStrCondName() + strMailTitle
 				+ cCompareInfo.getPdmDtVers() + "/" + cCompareInfo.getDbDomain());
 	}
+<<<<<<< HEAD
     //HTML方式保存，文件名称递增数变量
     private static int iFileCount = 0;
 	
@@ -114,17 +181,44 @@ public class CompareUtil
      * update 2015年10月14日
      */
     public static void sendMail(StringBuffer[] sb, String strMailTitle, CompareInfo cCompareInfo, String strHtmlName,
+=======
+
+	/*
+	 * 
+	 */
+	public static void SendExecSqlMail(Vector<ErrExecSqlInfo> v, String strMailTitle, CompareInfo cCompareInfo,
+			String strHtmlName,
+>>>>>>> origin/master
 			String strTotalInfo) throws Exception
 	{
-		logger.debug("write Result File...");
+		if (v.size() == 0)
+		{
+			return;
+		}
+		logger.debug("send mails...");
 
 		String strMailText = JpfFileUtil.getFileTxt(strHtmlName);
+<<<<<<< HEAD
 		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.getCurrDateTime());
 		strMailText = strMailText.replaceAll("#wupf2", cCompareInfo.getPdmJdbcUrl());
 		strMailText = strMailText.replaceAll("#wupf3", cCompareInfo.getDevJdbcUrl() + "/" + cCompareInfo.getDbDomain());
 		String tmpStr = sb[0].toString() + sb[1].toString() + sb[2].toString() + sb[3].toString() + sb[4].toString()
 				+ sb[5].toString() + sb[6].toString() + sb[7].toString();
 
+=======
+		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDateTime());
+		strMailText = strMailText.replaceAll("#wupf2", cCompareInfo.getPdmJdbcUrl());
+		strMailText = strMailText.replaceAll("#wupf3", cCompareInfo.getDevJdbcUrl() + "/" + cCompareInfo.getDbDomain());
+
+		String tmpStr = "";
+		for (int i = 0; i < v.size(); i++)
+		{
+			ErrExecSqlInfo cErrExecSqlInfo = (ErrExecSqlInfo) v.get(i);
+			tmpStr += "<tr><td>" + (i + 1) + "</td><td>" + cErrExecSqlInfo.getExecSql() + "</td><td>"
+					+ cErrExecSqlInfo.getErrMsg() + "</td></tr>";
+
+		}
+>>>>>>> origin/master
 		tmpStr = java.util.regex.Matcher.quoteReplacement(tmpStr);
 		strMailText = strMailText.replaceAll("#wupf4", tmpStr);
 
@@ -133,6 +227,7 @@ public class CompareUtil
 			strMailText = strMailText.replaceAll("#diffs", strTotalInfo);
 		}
 		// strMailText+=sbAlterSql.toString();
+<<<<<<< HEAD
 		
 		//console output
 		if (cCompareInfo.getSendresulttype() == 0 || cCompareInfo.getSendresulttype() == 1)
@@ -155,6 +250,11 @@ public class CompareUtil
 					cCompareInfo.getStrCondName() + strMailTitle
 							+ " 比对库" + cCompareInfo.getDevJdbcUrl() + "/" + cCompareInfo.getDbDomain());
 		}
+=======
+		logger.info(strMailText);
+		JpfMail.sendMail(cCompareInfo.getStrMails(), strMailText, "GBK", cCompareInfo.getStrCondName() + strMailTitle
+				+ " 比对库" + cCompareInfo.getDevJdbcUrl() + "/" + cCompareInfo.getDbDomain());
+>>>>>>> origin/master
 	}
 
 	/*
@@ -231,7 +331,11 @@ public class CompareUtil
 
 			}
 			strSql = strSql.toUpperCase();
+<<<<<<< HEAD
 			addSqlVector(vSql, strSql, 10, table.getTableName());
+=======
+			AddSqlVector(vSql, strSql, 10, table.getTableName());
+>>>>>>> origin/master
 			sb[0].append(strSql).append("</td></tr>");
 			break;
 		case 11:
@@ -265,7 +369,11 @@ public class CompareUtil
 			}
 			strSql += ";";
 			strSql = strSql.toUpperCase();
+<<<<<<< HEAD
 			addSqlVector(vSql, strSql, 11, table.getTableName());
+=======
+			AddSqlVector(vSql, strSql, 11, table.getTableName());
+>>>>>>> origin/master
 			sb[1].append(strSql).append("</td></tr>");
 
 			break;
@@ -284,7 +392,11 @@ public class CompareUtil
 					.append("</td><td>")
 					.append("</td><td>");
 
+<<<<<<< HEAD
 			makeAlterSql(sb[2], table, cTableIndexPdm, cTableIndexDev, vSql, 12);
+=======
+			MakeAlterSql(sb[2], table, cTableIndexPdm, cTableIndexDev, vSql, 12);
+>>>>>>> origin/master
 			sb[2].append("</td></tr>");
 			break;
 		case 13:
@@ -302,7 +414,11 @@ public class CompareUtil
 					.append("</td><td>").append(cTableIndexDev.getNON_UNIQUE())
 					.append("</td><td>");
 
+<<<<<<< HEAD
 			makeAlterSql(sb[3], table, cTableIndexPdm, cTableIndexDev, vSql, 13);
+=======
+			MakeAlterSql(sb[3], table, cTableIndexPdm, cTableIndexDev, vSql, 13);
+>>>>>>> origin/master
 			sb[3].append("</td></tr>");
 			break;
 		case 14:
@@ -320,7 +436,11 @@ public class CompareUtil
 					.append("</td><td>").append(cTableIndexDev.getConstraint_type())
 					.append("</td><td>");
 
+<<<<<<< HEAD
 			makeAlterSql(sb[4], table, cTableIndexPdm, cTableIndexDev, vSql, 14);
+=======
+			MakeAlterSql(sb[4], table, cTableIndexPdm, cTableIndexDev, vSql, 14);
+>>>>>>> origin/master
 			sb[4].append("</td></tr>");
 			break;
 		case 15:
@@ -339,8 +459,7 @@ public class CompareUtil
 			{
 				strSql += "PRIMARY key("
 						+ cTableIndexPdm.getColNames().substring(0, cTableIndexPdm.getColNames().length() - 1) + ");";
-			}
-			else
+			} else
 			{
 				if (cTableIndexPdm.getNON_UNIQUE() == 0)
 				{
@@ -351,14 +470,22 @@ public class CompareUtil
 
 			}
 			strSql = strSql.toUpperCase();
+<<<<<<< HEAD
 			addSqlVector(vSql, strSql, 10, table.getTableName());
+=======
+			AddSqlVector(vSql, strSql, 10, table.getTableName());
+>>>>>>> origin/master
 			sb[0].append(strSql).append("</td></tr>");
 			break;
 		}
 
 	}
 
+<<<<<<< HEAD
 	private static void makeAlterSql(StringBuffer sb, Table table, TableIndex cTableIndexPdm,
+=======
+	private static void MakeAlterSql(StringBuffer sb, Table table, TableIndex cTableIndexPdm,
+>>>>>>> origin/master
 			TableIndex cTableIndexDev, Vector<ExecSqlInfo> vSql, int iSqlType)
 	{
 		String strSql = "alter table " + dbDomain + "." + table.getTableName();
@@ -380,16 +507,21 @@ public class CompareUtil
 			strSql += " drop index " + cTableIndexDev.getIndexName() + ";";
 		}
 		strSql = strSql.toUpperCase();
+<<<<<<< HEAD
 		addSqlVector(vSql, strSql, iSqlType, table.getTableName());
 		sb.append(strSql);
 		strSql = "alter table " + dbDomain + "." + table.getTableName() + " add ";
+=======
+		AddSqlVector(vSql, strSql, iSqlType, table.getTableName());
+		sb.append(strSql);
+		strSql = "alter table " + DbDomain + "." + table.getTableName() + " add ";
+>>>>>>> origin/master
 		if (cTableIndexPdm.getConstraint_type() != null
 				&& cTableIndexPdm.getConstraint_type().equalsIgnoreCase("PRIMARY KEY"))
 		{
 			strSql += "PRIMARY key("
 					+ cTableIndexPdm.getColNames().substring(0, cTableIndexPdm.getColNames().length() - 1) + ");";
-		}
-		else
+		} else
 		{
 			if (cTableIndexPdm.getNON_UNIQUE() == 0)
 			{
@@ -399,7 +531,11 @@ public class CompareUtil
 					+ cTableIndexPdm.getColNames().substring(0, cTableIndexPdm.getColNames().length() - 1) + ");";
 		}
 		strSql = strSql.toUpperCase();
+<<<<<<< HEAD
 		addSqlVector(vSql, strSql, iSqlType, table.getTableName());
+=======
+		AddSqlVector(vSql, strSql, iSqlType, table.getTableName());
+>>>>>>> origin/master
 		sb.append(strSql);
 	}
 
@@ -421,8 +557,7 @@ public class CompareUtil
 			if (pc.get(ParentTabelName).equals(key_table))
 			{
 				return true;
-			}
-			else
+			} else
 				return false;
 		}
 		String regex = key_table + "_[0-9].*";
@@ -446,8 +581,7 @@ public class CompareUtil
 		if (pc.containsKey(ParentTabelName))
 		{
 			return pc.get(ParentTabelName);
-		}
-		else
+		} else
 		{
 			return ParentTabelName;
 		}
@@ -456,7 +590,11 @@ public class CompareUtil
 	/*
 	 * 获取默认值
 	 */
+<<<<<<< HEAD
 	private static String getDefalut(Column pmdColumn)
+=======
+	private static String GetDefalut(Column pmdColumn)
+>>>>>>> origin/master
 	{
 
 		if (null != pmdColumn.getColumnDefault() && pmdColumn.getColumnDefault().length() > 0)
@@ -482,7 +620,11 @@ public class CompareUtil
 			{
 				return " DEFAULT '" + pmdColumn.getColumnDefault() + "'";
 			}
+<<<<<<< HEAD
 			 
+=======
+
+>>>>>>> origin/master
 			if (pmdColumn.getDataType().toLowerCase().startsWith("longtext"))
 			{
 				return " DEFAULT '" + pmdColumn.getColumnDefault() + "'";
@@ -532,14 +674,22 @@ public class CompareUtil
 		return "";
 	}
 
+<<<<<<< HEAD
 	private static String addDefault(Column pmdColumn)
+=======
+	private static String AddDefault(Column pmdColumn)
+>>>>>>> origin/master
 	{
 		String tmpStr = "";
 		if (pmdColumn.getNullable().equalsIgnoreCase("no"))
 		{
 			tmpStr = " NOT NULL";
 		}
+<<<<<<< HEAD
 		tmpStr += getDefalut(pmdColumn);
+=======
+		tmpStr += GetDefalut(pmdColumn);
+>>>>>>> origin/master
 		if (null != pmdColumn.getExtra() && pmdColumn.getExtra().length() > 0)
 		{
 			tmpStr += " " + pmdColumn.getExtra();
@@ -561,7 +711,11 @@ public class CompareUtil
 		return "";
 	}
 
+<<<<<<< HEAD
 	private static void addSqlVector(Vector<ExecSqlInfo> vSql, String strSql, int iType, String strTableName)
+=======
+	private static void AddSqlVector(Vector<ExecSqlInfo> vSql, String strSql, int iType, String strTableName)
+>>>>>>> origin/master
 	{
 		ExecSqlInfo cExecSqlInfo = new ExecSqlInfo();
 		cExecSqlInfo.setiType(iType);
@@ -570,16 +724,29 @@ public class CompareUtil
 		vSql.add(cExecSqlInfo);
 	}
 
+<<<<<<< HEAD
 	private static String getLastVectorValue(Vector<ExecSqlInfo> vSql)
+=======
+	private static String GetLastVectorValue(Vector<ExecSqlInfo> vSql)
+>>>>>>> origin/master
 	{
 		ExecSqlInfo cExecSqlInfo = vSql.lastElement();
 		return cExecSqlInfo.getStrSql();
 	}
 
+<<<<<<< HEAD
 	
 	public static void append(Table tablePdm, Table tableDev, Column pmdColumn, Column developColumn, int flag,
 			StringBuffer[] sb, Vector<ExecSqlInfo> vSql)
 			throws Exception
+=======
+	/*
+	 * ���
+	 */
+	public static void append(Table tablePdm, Table tableDev, Column pmdColumn, Column developColumn, int flag,
+			StringBuffer[] sb, Vector<ExecSqlInfo> vSql)
+					throws Exception
+>>>>>>> origin/master
 	{
 		iCount++;
 		String strClassTypeString = "class=\"alt\"";
@@ -592,16 +759,28 @@ public class CompareUtil
 		{
 		case 1:
 			logger.info("1、PDM存在，比对库不存在的表：" + tablePdm.getTableName());// 跳过
+<<<<<<< HEAD
+=======
+			// sb[0].append(table.getTableName() + "\n");
+>>>>>>> origin/master
 			sb[0].append("<tr").append(strClassTypeString)
 					.append("><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">1")
 					.append("</th><td>")
 					.append(tablePdm.getTableName())
 					.append("</td><td></td><td ></td><td ></td><td ></td><td ></td><td ></td><td ></td><td>")
+<<<<<<< HEAD
 					.append(getLastVectorValue(vSql)).append("</td></tr>");
+=======
+					.append(GetLastVectorValue(vSql)).append("</td></tr>");
+>>>>>>> origin/master
 
 			break;
 		case 2:
 			logger.info("2、PDM不存在，比对库存在的表：" + tableDev.getTableName());// 需要人工判断脚本
+<<<<<<< HEAD
+=======
+			// sb[1].append(table.getTableName() + "\n");
+>>>>>>> origin/master
 			sb[1].append("<tr ").append(strClassTypeString)
 					.append("><th scope=\"row\"  abbr=\"L2 Cache\" class=\"specalt\">2")
 					.append("</th><td>(").append(getParentTableName(tableDev.getTableName()))
@@ -616,6 +795,7 @@ public class CompareUtil
 				strSql = "drop table ";
 			}
 
+<<<<<<< HEAD
 			strSql += " if exists " + dbDomain + ".`" + tableDev.getTableName() + "`;";
 			strSql = strSql.toUpperCase();
 
@@ -623,6 +803,15 @@ public class CompareUtil
 			sb[1].append("</td><td>").append(strSql).append("</td></tr>");
 
 
+=======
+			strSql += " if exists " + DbDomain + ".`" + tableDev.getTableName() + "`;";
+			strSql = strSql.toUpperCase();
+
+			AddSqlVector(vSql, strSql, 2, tableDev.getTableName());
+			sb[1].append("</td><td>").append(strSql).append("</td></tr>");
+
+			// logger.info(sb[1]);
+>>>>>>> origin/master
 			break;
 		case 3:
 			logger.info("3、PDM存在，比对库不存在的字段：" + tablePdm.getTableName()
@@ -635,9 +824,15 @@ public class CompareUtil
 					.append("</td><td ></td><td ></td><td ></td><td >");
 			strSql = "ALTER TABLE " + dbDomain + "." + tableDev.getTableName() + " ADD COLUMN "
 					+ pmdColumn.getColumnName() + " "
+<<<<<<< HEAD
 					+ pmdColumn.getDataType() + addDefault(pmdColumn) + getPreColName(tablePdm, pmdColumn) + ";";
 			strSql = strSql.toUpperCase();
 			addSqlVector(vSql, strSql, 3, tableDev.getTableName());
+=======
+					+ pmdColumn.getDataType() + AddDefault(pmdColumn) + GetPreColName(tablePdm, pmdColumn) + ";";
+			strSql = strSql.toUpperCase();
+			AddSqlVector(vSql, strSql, 3, tableDev.getTableName());
+>>>>>>> origin/master
 			sb[2].append(strSql).append("</td></tr>");
 			break;
 		case 4:
@@ -651,10 +846,17 @@ public class CompareUtil
 					.append(tableDev.getTableName()).append("</td><td >")
 					.append(pmdColumn.getColumnName()).append("</td><td >")
 					.append(pmdColumn.getDataType()).append("</td><td ></td><td >");
+<<<<<<< HEAD
 			strSql = "ALTER TABLE " + dbDomain + "." + tableDev.getTableName() + " DROP COLUMN `"
 					+ pmdColumn.getColumnName() + "`;";
 			strSql = strSql.toUpperCase();
 			addSqlVector(vSql, strSql, 4, tableDev.getTableName());
+=======
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " DROP COLUMN `"
+					+ pmdColumn.getColumnName() + "`;";
+			strSql = strSql.toUpperCase();
+			AddSqlVector(vSql, strSql, 4, tableDev.getTableName());
+>>>>>>> origin/master
 			sb[3].append(strSql).append("</td></tr>");
 			break;
 		case 5:
@@ -672,9 +874,15 @@ public class CompareUtil
 					.append(showDefaultValue(developColumn.getColumnDefault())).append("</td><td>");
 			strSql = "ALTER TABLE " + dbDomain + "." + tableDev.getTableName() + " MODIFY " + pmdColumn.getColumnName()
 					+ " " + pmdColumn.getDataType()
+<<<<<<< HEAD
 					+ addDefault(pmdColumn) + ";";
 			strSql = strSql.toUpperCase();
 			addSqlVector(vSql, strSql, 5, tableDev.getTableName());
+=======
+					+ AddDefault(pmdColumn) + ";";
+			strSql = strSql.toUpperCase();
+			AddSqlVector(vSql, strSql, 5, tableDev.getTableName());
+>>>>>>> origin/master
 			sb[4].append(strSql).append("</td></tr>");
 			break;
 		case 6:
@@ -686,6 +894,7 @@ public class CompareUtil
 					.append(getParentTableName(tableDev.getTableName()))
 					.append("</td><td >").append(pmdColumn.getColumnName())
 					.append("</td><td >").append(pmdColumn.getNullable())
+<<<<<<< HEAD
 					.append("</td><td >").append(showDefaultValue(pmdColumn.getColumnDefault()))
 					.append("</td><td>").append(tableDev.getTableName())
 					.append("</td><td >")
@@ -697,6 +906,19 @@ public class CompareUtil
 					+ pmdColumn.getDataType() + addDefault(pmdColumn) + ";";
 			strSql = strSql.toUpperCase();
 			addSqlVector(vSql, strSql, 6, tableDev.getTableName());
+=======
+					.append("</td><td >").append(ShowDefaultValue(pmdColumn.getColumnDefault()))
+					.append("</td><td>").append(tableDev.getTableName())
+					.append("</td><td >")
+					.append("</td><td>").append(developColumn.getNullable())
+					.append("</td><td>").append(ShowDefaultValue(developColumn.getColumnDefault()))
+					.append("</td><td>");
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " MODIFY " + pmdColumn.getColumnName()
+					+ " "
+					+ pmdColumn.getDataType() + AddDefault(pmdColumn) + ";";
+			strSql = strSql.toUpperCase();
+			AddSqlVector(vSql, strSql, 6, tableDev.getTableName());
+>>>>>>> origin/master
 			sb[5].append(strSql).append("</td></tr>");
 			break;
 		case 7:
@@ -715,9 +937,15 @@ public class CompareUtil
 					.append(developColumn.getColumnDefault()).append("</td><td>");
 			strSql = "ALTER TABLE " + dbDomain + "." + tableDev.getTableName() + " MODIFY " + pmdColumn.getColumnName()
 					+ " "
+<<<<<<< HEAD
 					+ pmdColumn.getDataType() + addDefault(pmdColumn) + ";";
 			strSql = strSql.toUpperCase();
 			addSqlVector(vSql, strSql, 7, tableDev.getTableName());
+=======
+					+ pmdColumn.getDataType() + AddDefault(pmdColumn) + ";";
+			strSql = strSql.toUpperCase();
+			AddSqlVector(vSql, strSql, 7, tableDev.getTableName());
+>>>>>>> origin/master
 			sb[6].append(strSql).append("</td></tr>");
 			break;
 		case 8:
@@ -734,12 +962,68 @@ public class CompareUtil
 					.append("</td><td ></td><td>")
 					.append(developColumn.getNullable()).append("</td><td >")
 					.append(developColumn.getExtra()).append("</td><td>");
+<<<<<<< HEAD
 			strSql = "ALTER TABLE " + dbDomain + "." + tableDev.getTableName() + " MODIFY " + pmdColumn.getColumnName()
 					+ " " + pmdColumn.getDataType() + addDefault(pmdColumn) + ";";
 			strSql = strSql.toUpperCase();
 			addSqlVector(vSql, strSql, 8, tableDev.getTableName());
 			sb[7].append(strSql).append("</td></tr>");
 			break;
+=======
+			strSql = "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() + " MODIFY " + pmdColumn.getColumnName()
+					+ " " + pmdColumn.getDataType() + AddDefault(pmdColumn) + ";";
+			strSql = strSql.toUpperCase();
+			AddSqlVector(vSql, strSql, 8, tableDev.getTableName());
+			sb[7].append(strSql).append("</td></tr>");
+			break;
+		/*
+		 * case 9: logger.info("9、表和字段、字段类型都相同，字段顺序不同：" +
+		 * tableDev.getTableName() + " | " + pmdColumn.getColumnName() + " | " +
+		 * pmdColumn.getOrdinal_position() + "---" +
+		 * developColumn.getOrdinal_position());
+		 * sb[8].append("<tr").append(strClassTypeString) .append(
+		 * "><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">9"
+		 * ).append("</th><td>")
+		 * .append(GetParentTableName(tableDev.getTableName())) .append(
+		 * "</td><td >").append(pmdColumn.getColumnName()) .append("</td><td >")
+		 * .append(pmdColumn.getOrdinal_position()).append("</td><td >")
+		 * .append(pmdColumn.getExtra()) .append("</td><td >"
+		 * ).append(tableDev.getTableName()) .append("</td><td ></td><td>")
+		 * .append(developColumn.getOrdinal_position()).append("</td><td >")
+		 * .append(developColumn.getExtra()).append("</td><td>"); strSql =
+		 * "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() +
+		 * " change " + pmdColumn.getColumnName() + " " +
+		 * pmdColumn.getColumnName() + " " + pmdColumn.getDataType() +
+		 * AddDefault(pmdColumn) + GetPreColName(tablePdm, pmdColumn) + ";";
+		 * strSql = strSql.toUpperCase(); AddSqlVector(vSql, strSql, 9,
+		 * tableDev.getTableName()); sb[8].append(strSql).append("</td></tr>");
+		 * break;
+		 * 
+		 * case 10: logger.info("10、表和字段、字段类型都相同，字符集不同：" +
+		 * tableDev.getTableName() + " | " + pmdColumn.getColumnName() + " | " +
+		 * pmdColumn.getCHARACTER_SET_NAME() + "---" +
+		 * developColumn.getCHARACTER_SET_NAME());
+		 * sb[9].append("<tr").append(strClassTypeString) .append(
+		 * "><th scope=\"row\" abbr=\"L2 Cache\" class=\"specalt\">10"
+		 * ).append("</th><td>")
+		 * .append(GetParentTableName(tableDev.getTableName())) .append(
+		 * "</td><td >").append(pmdColumn.getColumnName()) .append("</td><td >")
+		 * .append(pmdColumn.getCHARACTER_SET_NAME()).append("</td><td >")
+		 * .append(pmdColumn.getDataType()) .append("</td><td >"
+		 * ).append(tableDev.getTableName()) .append("</td><td ></td><td>")
+		 * .append(developColumn.getCHARACTER_SET_NAME()).append("</td><td >")
+		 * .append(pmdColumn.getDataType()).append("</td><td>"); strSql =
+		 * "ALTER TABLE " + DbDomain + "." + tableDev.getTableName() +
+		 * " change " + pmdColumn.getColumnName() + " " +
+		 * pmdColumn.getColumnName() + " " + pmdColumn.getDataType() +
+		 * AddDefault(pmdColumn) + " CHARACTER SET " +
+		 * pmdColumn.getCHARACTER_SET_NAME() + " " +
+		 * pmdColumn.getCOLLATION_NAME() + ";"; // COLLATE strSql =
+		 * strSql.toUpperCase(); AddSqlVector(vSql, strSql, 10,
+		 * tableDev.getTableName()); sb[9].append(strSql).append("</td></tr>");
+		 * break;
+		 */
+>>>>>>> origin/master
 		}
 
 	}
