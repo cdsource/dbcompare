@@ -14,8 +14,8 @@ import java.sql.ResultSet;
  */
 public class CheckParentTableExist extends AbstractCheckTable
 {
-	private final String TitleName="CheckParentTableExist";
-	private final String CheckCountSql = "select * from zd.sys_partition_rule where base_name not in (select table_name from information_schema.TABLES ) order by base_name";
+	private final String titleName="CheckParentTableExist";
+	private final String checkCountSql = "select * from zd.sys_partition_rule where base_name not in (select table_name from information_schema.TABLES ) order by base_name";
 	/**
 	 * 
 	 */
@@ -45,27 +45,27 @@ public class CheckParentTableExist extends AbstractCheckTable
 	 * @see org.jpf.ci.dbs.compare.AbstractCheckTable#GetCheckSql()
 	 */
 	@Override
-	String GetCheckSql()
+	String getCheckSql()
 	{
 		// TODO Auto-generated method stub
-		return CheckCountSql;
+		return checkCountSql;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.jpf.ci.dbs.compare.AbstractCheckTable#GetCheckTitle()
 	 */
 	@Override
-	String GetCheckTitle()
+	String getCheckTitle()
 	{
 		// TODO Auto-generated method stub
-		return TitleName;
+		return titleName;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.jpf.ci.dbs.compare.AbstractCheckTable#FormatOutput(java.sql.ResultSet)
 	 */
 	@Override
-	void FormatOutput(ResultSet rs) throws Exception
+	void formatOutput(ResultSet rs) throws Exception
 	{
 		// TODO Auto-generated method stub
 		

@@ -12,7 +12,6 @@ package org.jpf.ci.dbs.compare;
  */
 public class CompareInfo
 {
-
 	/**
 	 * 
 	 */
@@ -22,26 +21,99 @@ public class CompareInfo
 	}
 	
     private String strCondName;
-    private String strDomain;
-    private String strJdbcUrl;
-    private String strPdmInfo;
+    private String DbDomain;
+    private String DevJdbcUrl;
+    private String PdmInfo;
     private String strExcludeTable;
-    private String strMails;
+
+	private String strMails;
     
-    //保存差异结果到数据库
+	//输出类型
+    private int sendResulType;
+    
+    private String AllMail;
+    //比较类型
+    private int CompareType;
+    
+	//保存差异结果到数据库
     private int DoSaveSql;
     //执行差异结果SQL
 	private int DoExec;
     //比较类型 表：1--10，索引 11-15
-    private String CompareTypes;
+    private String ResultTypes;
+    //版本信息或日期信息
+    private String pdmDtVers;
     
-    public String getCompareTypes()
+    private String pdmDbName;
+
+	private String PdmJdbcUrl;
+	
+    /**
+	 * @return the sendresulttype
+	 */
+	public int getSendresulttype()
 	{
-		return CompareTypes;
+		return sendResulType;
 	}
-	public void setCompareTypes(String CompareTypes)
+	/**
+	 * @param sendresulttype the sendresulttype to set
+	 */
+	public void setSendresulttype(int sendResulType)
 	{
-		this.CompareTypes = CompareTypes;
+		this.sendResulType = sendResulType;
+	}
+
+    public String getPdmDtVers() {
+		return pdmDtVers;
+	}
+	public void setPdmDtVers(String pdmDtVers) {
+		this.pdmDtVers = pdmDtVers;
+	}
+    
+    public int getCompareType()
+	{
+		return CompareType;
+	}
+	public void setCompareType(int compareType)
+	{
+		CompareType = compareType;
+	}
+	public String getAllMail()
+	{
+		return AllMail;
+	}
+	public void setAllMail(String allMail)
+	{
+		AllMail = allMail;
+	}
+
+    
+    public String getPdmJdbcUrl()
+	{
+		return PdmJdbcUrl;
+	}
+	public void setPdmJdbcUrl(String strPdmJdbcUrl)
+	{
+		this.PdmJdbcUrl = strPdmJdbcUrl;
+	}
+	public int getDoSaveSql()
+	{
+		return DoSaveSql;
+	}
+	public void setDoSaveSql(int doSaveSql)
+	{
+		DoSaveSql = doSaveSql;
+	}
+
+
+    
+    public String getResultTypes()
+	{
+		return ResultTypes;
+	}
+	public void setResultTypes(String ResultTypes)
+	{
+		this.ResultTypes = ResultTypes;
 	}
 
 
@@ -80,29 +152,29 @@ public class CompareInfo
 	{
 		this.strCondName = strCondName;
 	}
-	public String getStrDomain()
+	public String getDbDomain()
 	{
-		return strDomain;
+		return DbDomain;
 	}
-	public void setStrDomain(String strDomain)
+	public void setDbDomain(String strDomain)
 	{
-		this.strDomain = strDomain;
+		this.DbDomain = strDomain;
 	}
-	public String getStrJdbcUrl()
+	public String getDevJdbcUrl()
 	{
-		return strJdbcUrl;
+		return DevJdbcUrl;
 	}
-	public void setStrJdbcUrl(String strJdbcUrl)
+	public void setDevJdbcUrl(String strJdbcUrl)
 	{
-		this.strJdbcUrl = strJdbcUrl;
+		this.DevJdbcUrl = strJdbcUrl;
 	}
-	public String getStrPdmInfo()
+	public String getPdmInfo()
 	{
-		return strPdmInfo;
+		return PdmInfo;
 	}
-	public void setStrPdmInfo(String strPdmInfo)
+	public void setPdmInfo(String strPdmInfo)
 	{
-		this.strPdmInfo = strPdmInfo;
+		this.PdmInfo = strPdmInfo;
 	}
 	public String getStrExcludeTable()
 	{
@@ -111,5 +183,11 @@ public class CompareInfo
 	public void setStrExcludeTable(String strExcludeTable)
 	{
 		this.strExcludeTable = strExcludeTable;
+	}
+	public String getPdmDbName() {
+		return pdmDbName;
+	}
+	public void setPdmDbName(String pdmDbName) {
+		this.pdmDbName = pdmDbName;
 	}
 }

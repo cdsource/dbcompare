@@ -1,16 +1,12 @@
 /** 
-* @author ��ƽ�� 
+* @author 吴平福
 * E-mail:wupf@asiainfo.com 
-* @version ����ʱ�䣺2015��1��15�� ����8:47:45 
-* ��˵�� 
-*/ 
+* @version 创建时间：2015年1月15日 上午8:47:45 
+* 类说明
+*/  
 
 package org.jpf.ci.dbs.compare;
 
-
-/**
- * 
- */
 public class TableIndex
 {
 
@@ -68,9 +64,13 @@ public class TableIndex
 		this.iNON_UNIQUE=inNON_UNIQUE;
 	}
 	
-	public void AddColName(String columnName)
+	public void addColName(String columnName)
 	{
-		colNames+=columnName+",";
+		if(columnName!=null&&columnName!="")
+		{
+			colNames+=columnName+",";
+		}
+		
 
 	}
 

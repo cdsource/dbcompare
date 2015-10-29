@@ -1,8 +1,8 @@
 /** 
- * @author ÎâÆ½¸£ 
+ * @author å´å¹³ç¦ 
  * E-mail:wupf@asiainfo.com 
- * @version ´´½¨Ê±¼ä£º2015Äê1ÔÂ15ÈÕ ÏÂÎç4:25:25 
- * ÀàËµÃ÷ 
+ *@version åˆ›å»ºæ—¶é—´ï¼š2015å¹´1æœˆ15æ—¥ ä¸‹åˆ4:25:25 
+ * ç±»è¯´æ˜ 
  */
 
 package org.jpf.ci.dbs.compare;
@@ -20,8 +20,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
- * Oracle Êı¾İ¿â±È½Ï
+ * Oracle æ•°æ®åº“æ¯”è¾ƒ
  * 
  * @author wupingfu
  * @since 2013-2-28
@@ -32,19 +35,21 @@ public class OracleComparator
 	public static String url2 = "jdbc:oracle:thin:@localhost:1521:SIP";
 	public static String USERNAME = "admin";
 	public static String PASSWORD = "root";
-	public static boolean auto_syn = true;// ×Ô¶¯Í¬²½±í½á¹¹,true Ê±ÆôÓÃ
+	// è‡ªåŠ¨åŒæ­¥è¡¨ç»“æ„,true æ—¶å¯ç”¨
+	public static boolean auto_syn = true;
+	private static final Logger logger = LogManager.getLogger();
 
 	public static void main(String[] args) throws Exception
 	{
 		OracleComparator com = new OracleComparator();
 		Connection con1 = com.getConnection(url1, USERNAME, PASSWORD);
 		Connection con2 = com.getConnection(url2, USERNAME, PASSWORD);
-		System.out.println("ÒÑÁ¬½Óµ½Á½¸öÊı¾İ¿â...½«ÒÔÊı¾İ¿â1ÎªÖ÷Êı¾İ¿â½øĞĞ±È½Ï");
+		logger.info("å·²è¿æ¥åˆ°ä¸¤ä¸ªæ•°æ®åº“...å°†ä»¥æ•°æ®åº“1ä¸ºä¸»æ•°æ®åº“è¿›è¡Œæ¯”è¾ƒ");
 		String sql = "select TABLE_NAME from USER_TABLES";
-		List list1 = com.Rs2List(com.getRsBySQL(sql, con1));
-		List list2 = com.Rs2List(com.getRsBySQL(sql, con2));
+		List list1 = com.rs2List(com.getRsBySQL(sql, con1));
+		List list2 = com.rs2List(com.getRsBySQL(sql, con2));
 		com.compare(list1, list2, con1, con2);
-		System.out.println("±È½ÏÍê³É....");
+		logger.info("æ¯”è¾ƒå®Œæˆ....");
 	}
 
 	private void compare(List list1, List list2, Connection con1, Connection con2) throws Exception
@@ -54,23 +59,23 @@ public class OracleComparator
 			String name = (String) iterator.next();
 			if (list2.contains(name))
 			{
-				this.TableCompare(name, con1, con2);
+				this.tableCompare(name, con1, con2);
 			} else
 			{
 				if (name.indexOf("$") == -1)
 				{
-					System.out.println("Êı¾İ¿â2ÖĞ£¬È±ÉÙ±í:" + name);
+					logger.debug("æ•°æ®åº“2ä¸­ï¼Œç¼ºå°‘è¡¨:" + name);
 					if (auto_syn)
 					{
-						System.out.print("----------------×Ô¶¯´´½¨±í" + name + "...");
-						System.out.println(createTable(name, con1, con2));
+						logger.debug("----------------è‡ªåŠ¨åˆ›å»ºè¡¨" + name + "...");
+						logger.debug(createTable(name, con1, con2));
 					}
 				}
 			}
 		}
 	}
 
-	private void TableCompare(String name, Connection con1, Connection con2) throws Exception
+	private void tableCompare(String name, Connection con1, Connection con2) throws Exception
 	{
 		String sql = "select COLUMN_NAME,DATA_TYPE from USER_TAB_COLUMNS where TABLE_NAME='" + name + "' ";
 		Map<String, String> map1 = this.parseColumnList(this.getRsBySQL(sql, con1));
@@ -83,19 +88,19 @@ public class OracleComparator
 			{
 				if (!map2.get(cname).equals(map1.get(cname)))
 				{
-					System.out.println("Êı¾İ¿â2µÄ " + name + " ±íÖĞµÄ×Ö¶Î:" + cname + " ÓëÊı¾İ¿â1ÖĞÊı¾İÀàĞÍ²»Ò»ÖÂ");
+					logger.debug("æ•°æ®åº“2çš„ " + name + " è¡¨ä¸­çš„å­—æ®µ:" + cname + " ä¸æ•°æ®åº“1ä¸­æ•°æ®ç±»å‹ä¸ä¸€è‡´");
 					if (auto_syn)
 					{
-						System.out.println("----------------´ËÏîÄ¿ÇëÊÖ¶¯ĞŞ¸Ä!");
+						logger.debug("----------------æ­¤é¡¹ç›®è¯·æ‰‹åŠ¨ä¿®æ”¹!");
 					}
 				}
 			} else
 			{
-				System.out.println("Êı¾İ¿â2µÄ " + name + " ±íÖĞ£¬È±ÉÙ×Ö¶Î:" + cname);
+				logger.debug("æ•°æ®åº“2çš„ " + name + " è¡¨ä¸­ï¼Œç¼ºå°‘å­—æ®µ:" + cname);
 				if (auto_syn)
 				{
-					System.out.print("----------------×Ô¶¯Ìí¼Ó×Ö¶Î" + cname + "...");
-					System.out.println(appendColumn(name, cname, con1, con2));
+					logger.debug("----------------è‡ªåŠ¨æ·»åŠ å­—æ®µ" + cname + "...");
+					logger.debug(appendColumn(name, cname, con1, con2));
 				}
 			}
 		}
@@ -111,14 +116,14 @@ public class OracleComparator
 		return map;
 	}
 
-	private List Rs2List(ResultSet rs1) throws Exception
+	private List rs2List(ResultSet rs1) throws Exception
 	{
 		List list = new ArrayList();
 		while (rs1.next())
 		{
 			list.add(rs1.getString("TABLE_NAME"));
 		}
-		System.out.println(list.size());
+		logger.info(list.size());
 		return list;
 	}
 

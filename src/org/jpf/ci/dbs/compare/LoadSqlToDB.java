@@ -1,8 +1,8 @@
 /** 
-* @author ÎâÆ½¸£ 
+* @author å´å¹³ç¦
 * E-mail:wupf@asiainfo.com 
-* @version ´´½¨Ê±¼ä£º2015Äê4ÔÂ7ÈÕ ÏÂÎç10:45:47 
-* ÀàËµÃ÷ 
+* @version åˆ›å»ºæ—¶é—´ï¼š2015å¹´4æœˆ7æ—¥ ä¸‹åˆ10:45:47 
+* ç±»è¯´æ˜ 
 */ 
 
 package org.jpf.ci.dbs.compare;
@@ -40,15 +40,15 @@ public class LoadSqlToDB
 		try
 		{
 			DbDescInfo cDbDescInfo=null;
-			JpfFileUtil.CheckFile(DBINFOFILE);
-			NodeList nl = JpfXmlUtil.GetNodeList("dbsource", DBINFOFILE);
+			JpfFileUtil.checkFile(DBINFOFILE);
+			NodeList nl = JpfXmlUtil.getNodeList("dbsource", DBINFOFILE);
 			logger.debug(nl.getLength());
 			if(1==nl.getLength())
 			{
 				Element el = (Element) nl.item(0);
-				String strJdbcUrl = JpfXmlUtil.GetParStrValue(el, "dburl");
-				String strDbUsr = JpfXmlUtil.GetParStrValue(el, "dbusr");
-				String strDbPwd = JpfXmlUtil.GetParStrValue(el, "dbpwd");
+				String strJdbcUrl = JpfXmlUtil.getParStrValue(el, "dburl");
+				String strDbUsr = JpfXmlUtil.getParStrValue(el, "dbusr");
+				String strDbPwd = JpfXmlUtil.getParStrValue(el, "dbpwd");
 				logger.debug(strJdbcUrl);
 				logger.debug(strDbUsr);
 				logger.debug(strDbPwd);
@@ -56,9 +56,9 @@ public class LoadSqlToDB
 			}else {
 				logger.error("error source db info");
 			}
-			conn=cDbDescInfo.GetConn();
+			conn=cDbDescInfo.getConn();
 			Vector<String> v_File=new Vector<String>();
-			JpfFileUtil.GetFiles(strSqlFilePath, v_File);
+			JpfFileUtil.getFiles(strSqlFilePath, v_File);
 			for(String strSqlFile : v_File )
 			{
 				readSQLFile(conn,strSqlFile);
@@ -69,20 +69,20 @@ public class LoadSqlToDB
 			ex.printStackTrace();
 		}finally
 		{
-			JpfDbUtils.DoClear(conn);
+			JpfDbUtils.doClear(conn);
 		}
 	}
 
-	/**
+		/**
 	 * @param args
-	 * ±»²âÊÔÀàÃû£ºTODO
-	 * ±»²âÊÔ½Ó¿ÚÃû:TODO
-	 * ²âÊÔ³¡¾°£ºTODO
-	 * Ç°ÖÃ²ÎÊı£ºTODO
-	 * Èë²Î£º
-	 * Ğ£ÑéÖµ£º
-	 * ²âÊÔ±¸×¢£º
-	 * update 2015Äê4ÔÂ7ÈÕ
+	 * è¢«æµ‹è¯•ç±»åï¼šTODO
+	 * è¢«æµ‹è¯•æ¥å£å:TODO
+	 * æµ‹è¯•åœºæ™¯ï¼šTODO
+	 * å‰ç½®å‚æ•°ï¼šTODO
+	 * å…¥å‚ï¼š
+	 * æ ¡éªŒå€¼ï¼š
+	 * æµ‹è¯•å¤‡æ³¨ï¼š
+	 * update 2015å¹´4æœˆ7æ—¥
 	 */
 	public static void main(String[] args)
 	{
@@ -102,9 +102,9 @@ public class LoadSqlToDB
             StringBuilder sBuilder = new StringBuilder("");  
             String str = bufferedReader.readLine();  
             while (str != null) {  
-                // È¥µôÒ»Ğ©×¢ÊÍ£¬ºÍÒ»Ğ©Ã»ÓÃµÄ×Ö·û  
+                // å»æ‰ä¸€äº›æ³¨é‡Šï¼Œå’Œä¸€äº›æ²¡ç”¨çš„å­—ç¬¦  
                 if (!str.startsWith("#") && !str.startsWith("/*")  
-                        && !str.startsWith("¨C") && !str.startsWith("\n"))  
+                        && !str.startsWith("â€“") && !str.startsWith("\n"))  
                     sBuilder.append(str);  
                 str = bufferedReader.readLine();  
             }  
@@ -112,10 +112,10 @@ public class LoadSqlToDB
 
             for (String strSql : strArr) {  
 
-                System.out.println(strSql);  
-                JpfDbUtils.ExecUpdateSql(conn, strSql);
+                logger.debug(strSql);
+                JpfDbUtils.execUpdateSql(conn, strSql);
             }  
-            // ´´½¨Êı¾İÁ¬½Ó¶ÔÏó£¬ÏÂÃæµÄDBConnectionÊÇÎÒµÄÒ»¸öJDBCÀà  
+            // åˆ›å»ºæ•°æ®è¿æ¥å¯¹è±¡ï¼Œä¸‹é¢çš„DBConnectionæ˜¯æˆ‘çš„ä¸€ä¸ªJDBCç±»  
 
         } catch (Exception e) {  
             e.printStackTrace();  

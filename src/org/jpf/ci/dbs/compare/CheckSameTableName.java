@@ -15,9 +15,9 @@ import java.sql.ResultSet;
  */
 public class CheckSameTableName extends AbstractCheckTable
 {
-	private final String TitleName="CheckSameTableName";
+	private final String titleName="CheckSameTableName";
 	//private final String CheckCountSql = "select * from information_schema.TABLES where table_name in (select table_name from information_schema.TABLES t1 group by table_name having count(*)>1) order by table_name";
-	private final String CheckCountSql = "select * from information_schema.TABLES where table_schema=? and table_name in (select table_name from information_schema.TABLES t1 group by table_name having count(*)>1) order by table_name";
+	private final String checkCountSql = "select * from information_schema.TABLES where table_schema=? and table_name in (select table_name from information_schema.TABLES t1 group by table_name having count(*)>1) order by table_name";
 	/**
 	 * 
 	 */
@@ -43,27 +43,25 @@ public class CheckSameTableName extends AbstractCheckTable
 	 * @see org.jpf.ci.dbs.compare.AbstractCheckTable#GetCheckSql()
 	 */
 	@Override
-	String GetCheckSql()
+	String getCheckSql()
 	{
 		// TODO Auto-generated method stub
-		return CheckCountSql;
+		return checkCountSql;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.jpf.ci.dbs.compare.AbstractCheckTable#GetCheckTitle()
 	 */
-	@Override
-	String GetCheckTitle()
+	String getCheckTitle()
 	{
 		// TODO Auto-generated method stub
-		return TitleName;
+		return titleName;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.jpf.ci.dbs.compare.AbstractCheckTable#FormatOutput(java.sql.ResultSet)
 	 */
-	@Override
-	void FormatOutput(ResultSet rs) throws Exception
+	void formatOutput(ResultSet rs) throws Exception
 	{
 		// TODO Auto-generated method stub
 		String strTableName = "";

@@ -37,23 +37,23 @@ public final class CompareData  extends AbstractDbCompare
 	{
 		// TODO Auto-generated constructor stub
 	}
-	private String  GetCompareTableInfo(String strConfigFileName)throws Exception
+	private String  getCompareTableInfo(String strConfigFileName)throws Exception
 	{
 		String strTableInfo=""; 
-		JpfFileUtil.CheckFile(strConfigFileName);
-		NodeList nl = JpfXmlUtil.GetNodeList("comparetables", strConfigFileName);
+		JpfFileUtil.checkFile(strConfigFileName);
+		NodeList nl = JpfXmlUtil.getNodeList("comparetables", strConfigFileName);
 		logger.debug(nl.getLength());
 
 		if(1==nl.getLength())
 		{
 			Element el = (Element) nl.item(0);
-			strTableInfo = JpfXmlUtil.GetParStrValue(el, "tableinfo");
+			strTableInfo = JpfXmlUtil.getParStrValue(el, "tableinfo");
 		}
 		return  strTableInfo;
 	}
-	public void DoCompare(Connection conn_pdm, Connection conn_develop,final String strConfigFileName) throws Exception {
+	public void doCompare(Connection conn_pdm, Connection conn_develop,final String strConfigFileName) throws Exception {
 
-		String strTableName=GetCompareTableInfo(strConfigFileName);
+		String strTableName=getCompareTableInfo(strConfigFileName);
 	    ResultSet sourceResultSet = getResultSet(conn_pdm, strTableName);
 	    ResultSet targetResultSet = getResultSet(conn_develop, strTableName);
 	    Map<Long, String> sourceIdHash = new HashMap<Long, String>();
@@ -94,7 +94,7 @@ public final class CompareData  extends AbstractDbCompare
 	                }
 	            }
 	            if (rows++ % 10000 == 0) {
-	                System.out.println("Rows : " + rows);
+	                logger.debug("Rows : " + rows);
 	            }
 	        } while (true);
 	    } finally {
@@ -107,18 +107,18 @@ public final class CompareData  extends AbstractDbCompare
 	            targetIdHash.remove(mapEntry.getKey());
 	            continue;
 	        }
-	        System.out.println("Not in target : " + mapEntry.getValue());
+	        logger.info("Not in target : " + mapEntry.getValue());
 	    }
 	    for (final Map.Entry<Long, String> mapEntry : targetIdHash.entrySet()) {
 	        if (sourceIdHash.containsKey(mapEntry.getKey())) {
 	            sourceIdHash.remove(mapEntry.getKey());
 	            continue;
 	        }
-	        System.out.println("Not in source : " + mapEntry.getValue());
+	        logger.debug("Not in source : " + mapEntry.getValue());
 	    }
 
-	    System.out.println("In source and not target : " + sourceIdHash.size());
-	    System.out.println("In target and not source : " + targetIdHash.size());
+	    logger.debug("In source and not target : " + sourceIdHash.size());
+	    logger.debug("In target and not source : " + targetIdHash.size());
 	}
 
 	private ResultSet getResultSet(final Connection connection, final String tableName) {
@@ -203,20 +203,12 @@ public final class CompareData  extends AbstractDbCompare
 	        e.printStackTrace();
 	    }
 	}
-	/* (non-Javadoc)
-	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#DoWork(java.sql.Connection, java.sql.Connection)
-	 */
-	@Override
-	void DoWork(Connection conn_product, Connection conn_develop) throws Exception
-	{
-		// TODO Auto-generated method stub
-		
-	}
+
 	/* (non-Javadoc)
 	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetHtmlName()
 	 */
 	@Override
-	String GetHtmlName()
+	String getHtmlName()
 	{
 		// TODO Auto-generated method stub
 		return  "compare_index.html";
@@ -225,9 +217,33 @@ public final class CompareData  extends AbstractDbCompare
 	 * @see org.jpf.ci.dbs.compare.AbstractDbCompare#GetMailTitle()
 	 */
 	@Override
-	String GetMailTitle()
+	String getMailTitle()
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+	void doWork(Connection conn_product, Connection conn_develop,
+			CompareInfo cCompareInfo) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	void doWork(Connection conn_develop, CompareInfo cCompareInfo)
+			throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	void doWork(CompareInfo cCompareInfo) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+	String getExecSqlHtmlName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	String getErrorHtmlName() {
+		// TODO Auto-generated method stub
+		return "ErrorInformation.html";
 	}
 }

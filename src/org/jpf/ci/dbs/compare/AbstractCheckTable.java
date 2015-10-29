@@ -15,18 +15,18 @@ import org.apache.logging.log4j.Logger;
 import org.jpf.utils.JpfDateTimeUtil;
 
 /**
- * 
+ * @category 基础类
  */
 public abstract class AbstractCheckTable
 {
 	private static final Logger logger = LogManager.getLogger();
 	public StringBuffer sb = new StringBuffer();
 
-	abstract String GetCheckSql();
+	abstract String getCheckSql();
 
-	abstract String GetCheckTitle();
+	abstract String getCheckTitle();
 
-	abstract void FormatOutput(ResultSet rs) throws Exception;
+	abstract void formatOutput(ResultSet rs) throws Exception;
 
 	/**
 	 * 
@@ -35,13 +35,13 @@ public abstract class AbstractCheckTable
 	{
 	}
 
-	public void DoCheck(Connection conn, String strSqlParam)
+	public void doCheck(Connection conn, String strSqlParam)
 	{
 		// TODO Auto-generated constructor stub
 		try
 		{
-			DoWork(conn, strSqlParam); // �Ƚ����ݿ�
-			CompareUtil.writeFile(GetCheckTitle(), sb); // д���ļ�
+			doWork(conn, strSqlParam); 
+			//CompareUtil.writeFile(GetCheckTitle(), sb); 
 		} catch (Exception ex)
 		{
 			// TODO: handle exception
@@ -50,9 +50,9 @@ public abstract class AbstractCheckTable
 
 	}
 
-	private void DoWork(Connection conn, String strSqlParam) throws Exception
+	private void doWork(Connection conn, String strSqlParam) throws Exception
 	{
-		String sSql = GetCheckSql();
+		String sSql = getCheckSql();
 		logger.debug(sSql);
 		PreparedStatement pStmt = conn.prepareStatement(sSql);
 		if (null != strSqlParam)
@@ -61,9 +61,9 @@ public abstract class AbstractCheckTable
 		}
 		ResultSet rs = pStmt.executeQuery();
 
-		sb.append(GetCheckTitle()).append("\n").append(JpfDateTimeUtil.GetToday()).append("\n");
+		sb.append(getCheckTitle()).append("\n").append(JpfDateTimeUtil.getToday()).append("\n");
 
-		FormatOutput(rs);
+		formatOutput(rs);
 
 	}
 }

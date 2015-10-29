@@ -18,8 +18,16 @@ public class Column
 	//private int length;
 	//MYSQL
     private String Nullable;
-	
-    private String ColumnDefault="";
+	private int dataLength=0;
+    public int getDataLength() {
+		return dataLength;
+	}
+
+	public void setDataLength(int dataLength) {
+		this.dataLength = dataLength;
+	}
+
+	private String columnDefault="";
     
     private String Extra="";
     
@@ -74,12 +82,12 @@ public class Column
 
 	public String getColumnDefault()
 	{
-		return ColumnDefault;
+		return columnDefault;
 	}
 
 	public void setColumnDefault(final String ColumnDefault)
 	{
-		this.ColumnDefault = ColumnDefault;
+		this.columnDefault = ColumnDefault;
 	}
 
 	public void setNullable(String nullable)
@@ -93,7 +101,7 @@ public class Column
 		this.columnName = columnName;
 		this.dataType = dataType;
 		this.Nullable = Nullable;
-		this.ColumnDefault=ColumnDefault;
+		this.columnDefault=ColumnDefault;
 	}
 	public String getColumnName()
 	{

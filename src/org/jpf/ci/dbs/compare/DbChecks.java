@@ -28,7 +28,7 @@ public class DbChecks
 	private static final Logger logger = LogManager.getLogger();
 
 
-	private void DoCheck(DbDescInfo cDbDescInfo,String strDomain,StringBuffer sbTotal,StringBuffer sbDetail)
+	private void doCheck(DbDescInfo cDbDescInfo,String strDomain,StringBuffer sbTotal,StringBuffer sbDetail)
 	{
 		Connection conn=null;
 		try
@@ -37,7 +37,7 @@ public class DbChecks
 			long lTriger=0;
 			long lView=0;
 			long lAutoIncrement=0;
-			conn=cDbDescInfo.GetConn();
+			conn=cDbDescInfo.getConn();
 			String strSql="select trigger_schema,trigger_name from INFORMATION_SCHEMA.TRIGGERS  Where trigger_schema=?";
 			PreparedStatement  pstmt=conn.prepareStatement(strSql);
 			pstmt.setString(1, strDomain);
@@ -104,7 +104,7 @@ public class DbChecks
 			ex.printStackTrace();
 		}finally
 		{
-			JpfDbUtils.DoClear(conn);
+			JpfDbUtils.doClear(conn);
 		}
 	}
 	/**
@@ -118,52 +118,52 @@ public class DbChecks
 			StringBuffer sbTotal=new StringBuffer();
 			StringBuffer sbDetail=new StringBuffer();
 			
-			JpfFileUtil.CheckFile(strConfigFileName);
-			NodeList nl = JpfXmlUtil.GetNodeList("dbsource", strConfigFileName);
+			JpfFileUtil.checkFile(strConfigFileName);
+			NodeList nl = JpfXmlUtil.getNodeList("dbsource", strConfigFileName);
 			String strDefaultMail=""; 
 
 
 			if(1==nl.getLength())
 			{
 				Element el = (Element) nl.item(0);
-				strDefaultMail= JpfXmlUtil.GetParStrValue(el, "dbmails");
+				strDefaultMail= JpfXmlUtil.getParStrValue(el, "dbmails");
 			}else {
 				logger.error("error source db info");
 			}
-			nl = JpfXmlUtil.GetNodeList("dbcompare", strConfigFileName);
+			nl = JpfXmlUtil.getNodeList("dbcompare", strConfigFileName);
 			logger.debug(nl.getLength());
 			String strJdbcUrl="";
 			for (int j = 0; j < nl.getLength(); j++)
 			{
 				// System.out.println(nl.item(j).getNodeValue());
 				Element el = (Element) nl.item(j);
-				strJdbcUrl = JpfXmlUtil.GetParStrValue(el, "dburl");
-				String strDbUsr = JpfXmlUtil.GetParStrValue(el, "dbusr");
-				String strDbPwd = JpfXmlUtil.GetParStrValue(el, "dbpwd");
-				String strDomain = JpfXmlUtil.GetParStrValue(el, "dbdomain");
-				strDefaultMail = JpfXmlUtil.GetParStrValue(el, "dbmails")+","+strDefaultMail;
+				strJdbcUrl = JpfXmlUtil.getParStrValue(el, "dburl");
+				String strDbUsr = JpfXmlUtil.getParStrValue(el, "dbusr");
+				String strDbPwd = JpfXmlUtil.getParStrValue(el, "dbpwd");
+				String strDomain = JpfXmlUtil.getParStrValue(el, "dbdomain");
+				strDefaultMail = JpfXmlUtil.getParStrValue(el, "dbmails")+","+strDefaultMail;
 				logger.info(strDefaultMail);
 				DbDescInfo cDbDescInfo = new DbDescInfo(strJdbcUrl, strDbUsr, strDbPwd);
-				DoCheck(cDbDescInfo,strDomain,sbTotal,sbDetail);
+				doCheck(cDbDescInfo,strDomain,sbTotal,sbDetail);
 			}	
-			SendMail(sbTotal,sbDetail,strDefaultMail,strJdbcUrl);
+			sendMail(sbTotal,sbDetail,strDefaultMail,strJdbcUrl);
 		} catch (Exception ex)
 		{
 			// TODO: handle exception
 			ex.printStackTrace();
 		}
 	}
-	public  void SendMail(StringBuffer sbTotal, StringBuffer sbDetail,String strMailers, String strDbInfo) throws Exception
+	public  void sendMail(StringBuffer sbTotal, StringBuffer sbDetail,String strMailers, String strDbInfo) throws Exception
 	{
 		logger.debug("write Result File...");
 
-		String strMailText = JpfFileUtil.GetFileTxt("compare_check.html");
-		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.GetCurrDate());
+		String strMailText = JpfFileUtil.getFileTxt("compare_check.html");
+		strMailText = strMailText.replaceAll("#wupf1", JpfDateTimeUtil.getCurrDate());
 		strMailText = strMailText.replaceAll("#wupf3", strDbInfo);
 		strMailText = strMailText.replaceAll("#wupf4", sbDetail.toString());
 		strMailText = strMailText.replaceAll("#diffs", sbTotal.toString());
 		// strMailText+=sbAlterSql.toString();
-		JpfMail.SendMail(strMailers, strMailText, "GBK", "数据库非法的内容： 比对库" + strDbInfo);
+		JpfMail.sendMail(strMailers, strMailText, "GBK", "数据库非法的内容： 比对库" + strDbInfo);
 	}
 	/**
 	 * @param args
